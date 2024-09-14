@@ -18,50 +18,24 @@ import org.firstinspires.ftc.teamcode.messages.ThreeDeadWheelInputsMessage;
 
 @Config
 public final class ExternalOutputLocalizer implements Localizer {
-    public static class Params {
-        public double par0YTicks = -12150.536914757526;
-        public double par1YTicks = 12138.7507257621;
-        public double perpXTicks = 12011.640149531417;
+    private int lastPos;
+    private boolean initialized = false;
+
+    public ExternalOutputLocalizer(HardwareMap hardwareMap) {
+        //get from hardwaremap the thing u use for the optical sensor
+
+        //FlightRecorder.write("THREE_DEAD_WHEEL_PARAMS", PARAMS);
     }
-
-    public static Params PARAMS = new Params();
-
-    public final Encoder par0, par1, perp;
-
-    public final double inPerTick;
-
-    private int lastPar0Pos, lastPar1Pos, lastPerpPos;
-    private boolean initialized;
-
-    public ExternalOutputLocalizer(HardwareMap hardwareMap, double inPerTick) {
-        // TODO: make sure your config has **motors** with these names (or change them)
-        //   the encoders should be plugged into the slot matching the named motor
-        //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        par0 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "par0")));
-        par1 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "par1")));
-        perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "perp")));
-
-        // TODO: reverse encoder directions if needed
-        //   par0.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        this.inPerTick = inPerTick;
-
-        FlightRecorder.write("THREE_DEAD_WHEEL_PARAMS", PARAMS);
-    }
-
+    //ALL UNITS IN INCHES OR WHATEVER IT IS IDC
     public Twist2dDual<Time> update() {
-        PositionVelocityPair par0PosVel = par0.getPositionAndVelocity();
-        PositionVelocityPair par1PosVel = par1.getPositionAndVelocity();
-        PositionVelocityPair perpPosVel = perp.getPositionAndVelocity();
-
-        FlightRecorder.write("THREE_DEAD_WHEEL_INPUTS", new ThreeDeadWheelInputsMessage(par0PosVel, par1PosVel, perpPosVel));
+        //FlightRecorder.write("THREE_DEAD_WHEEL_INPUTS", new ThreeDeadWheelInputsMessage(par0PosVel, par1PosVel, perpPosVel));
+        int currentPos = 1 /* get your current position from the optical */;
+        //u probably will need seperate of these for x, y, theta or could bundle it up somehow
 
         if (!initialized) {
             initialized = true;
 
-            lastPar0Pos = par0PosVel.position;
-            lastPar1Pos = par1PosVel.position;
-            lastPerpPos = perpPosVel.position;
+            lastPos = currentPos;
 
             return new Twist2dDual<>(
                     Vector2dDual.constant(new Vector2d(0.0, 0.0), 2),
@@ -69,30 +43,28 @@ public final class ExternalOutputLocalizer implements Localizer {
             );
         }
 
-        int par0PosDelta = par0PosVel.position - lastPar0Pos;
-        int par1PosDelta = par1PosVel.position - lastPar1Pos;
-        int perpPosDelta = perpPosVel.position - lastPerpPos;
+        int PosDelta = currentPos - lastPos;
 
+        //std twist structure: fwd/back, strafe, angle
         Twist2dDual<Time> twist = new Twist2dDual<>(
                 new Vector2dDual<>(
                         new DualNum<Time>(new double[] {
-                                (PARAMS.par0YTicks * par1PosDelta - PARAMS.par1YTicks * par0PosDelta) / (PARAMS.par0YTicks - PARAMS.par1YTicks),
-                                (PARAMS.par0YTicks * par1PosVel.velocity - PARAMS.par1YTicks * par0PosVel.velocity) / (PARAMS.par0YTicks - PARAMS.par1YTicks),
-                        }).times(inPerTick),
+                                1 /* this is the relative position change in fwd/back */,
+                                1 /* this is the relative signed velocity in fwd/back */,
+                        }),
                         new DualNum<Time>(new double[] {
-                                (PARAMS.perpXTicks / (PARAMS.par0YTicks - PARAMS.par1YTicks) * (par1PosDelta - par0PosDelta) + perpPosDelta),
-                                (PARAMS.perpXTicks / (PARAMS.par0YTicks - PARAMS.par1YTicks) * (par1PosVel.velocity - par0PosVel.velocity) + perpPosVel.velocity),
-                        }).times(inPerTick)
+                                1 /* this is the relative position change in strafe */,
+                                1 /* this is the relative signed velocity in strafe */,
+                        })
                 ),
                 new DualNum<>(new double[] {
-                        (par0PosDelta - par1PosDelta) / (PARAMS.par0YTicks - PARAMS.par1YTicks),
-                        (par0PosVel.velocity - par1PosVel.velocity) / (PARAMS.par0YTicks - PARAMS.par1YTicks),
+                        1 /* this is the angle change, counterclockwise positive */,
+                        1 /* this is the angular velocity */,
                 })
         );
-
-        lastPar0Pos = par0PosVel.position;
-        lastPar1Pos = par1PosVel.position;
-        lastPerpPos = perpPosVel.position;
+        //the reason i can't just take the global values the optical thingy spits out is bc i need a twist for everything to work
+        //i could look into undoing the twist but that would take longer than i have now
+        lastPos = currentPos;
 
         return twist;
     }
