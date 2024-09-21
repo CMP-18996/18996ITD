@@ -7,9 +7,8 @@ import com.acmerobotics.roadrunner.Twist2dDual;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.Vector2dDual;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.common.OpticalOdometer;
+import org.firstinspires.ftc.teamcode.common.hardware.OpticalOdometer;
 import org.firstinspires.ftc.teamcode.drive.util.Localizer;
 
 @Config

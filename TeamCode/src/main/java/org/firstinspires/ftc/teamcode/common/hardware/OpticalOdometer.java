@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.common;
+package org.firstinspires.ftc.teamcode.common.hardware;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
