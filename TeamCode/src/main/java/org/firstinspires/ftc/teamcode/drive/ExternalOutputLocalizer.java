@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.drive;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.DualNum;
@@ -6,31 +6,27 @@ import com.acmerobotics.roadrunner.Time;
 import com.acmerobotics.roadrunner.Twist2dDual;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.Vector2dDual;
-import com.acmerobotics.roadrunner.ftc.Encoder;
-import com.acmerobotics.roadrunner.ftc.FlightRecorder;
-import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
-import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
-import com.acmerobotics.roadrunner.ftc.RawEncoder;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.messages.ThreeDeadWheelInputsMessage;
+import org.firstinspires.ftc.teamcode.common.OpticalOdometer;
+import org.firstinspires.ftc.teamcode.drive.util.Localizer;
 
 @Config
 public final class ExternalOutputLocalizer implements Localizer {
     private int lastPos;
+    private OpticalOdometer optOdo;
     private boolean initialized = false;
 
-    public ExternalOutputLocalizer(HardwareMap hardwareMap) {
-        //get from hardwaremap the thing u use for the optical sensor
-
+    public ExternalOutputLocalizer(OpticalOdometer optOdo) {
+        this.optOdo = optOdo;
         //FlightRecorder.write("THREE_DEAD_WHEEL_PARAMS", PARAMS);
     }
     //ALL UNITS IN INCHES OR WHATEVER IT IS IDC
     public Twist2dDual<Time> update() {
         //FlightRecorder.write("THREE_DEAD_WHEEL_INPUTS", new ThreeDeadWheelInputsMessage(par0PosVel, par1PosVel, perpPosVel));
-        int currentPos = 1 /* get your current position from the optical */;
-        //u probably will need seperate of these for x, y, theta or could bundle it up somehow
+        SparkFunOTOS.Pose2D currentPos = optOdo.getOtos().;
+        SparkFunOTOS.Pose2D currentVelo = optOdo.getOtos().getVelocity();
 
         if (!initialized) {
             initialized = true;
