@@ -24,22 +24,23 @@ public class IntakeSubsystem extends SubsystemBase {
         EJECTING(EJECTING_VALUE),
         TRANSFERRING(TRANSFERRING_VALUE);
         public double trapdoorValue;
-        TrapdoorState(double val){trapdoorValue = val;}
+        TrapdoorState(double val) {trapdoorValue = val;}
 
     }
     public enum IntakingState {
         ACTIVE(ACTIVE_VALUE),
         DISABLED(DISABLED_VALUE);
         public double intakingValue;
-        IntakingState(double val){intakingValue = val;}
+        IntakingState(double val) {intakingValue = val;}
     }
+
     public IntakeSubsystem(HardwareMap hardwareMap) {
         trapdoorServo = new SimpleServo(hardwareMap, "trapdoor", TRAPDOOR_MIN_ROT, TRAPDOOR_MAX_ROT);
         intakeRotationServo = new SimpleServo(hardwareMap, "intakeRotator", INTAKE_ROTATION_MIN_ROT, INTAKE_ROTATION_MAX_ROT);
         intakeServo1 = hardwareMap.get(CRServo.class, "intake1");
         intakeServo2 = hardwareMap.get(CRServo.class, "intake2");
     }
-    public void UpdateTrapdoorState(TrapdoorState setState) {
+    public void updateTrapdoorState(TrapdoorState setState) {
         trapdoorState = setState;
         trapdoorServo.setPosition(trapdoorState.trapdoorValue);
     }

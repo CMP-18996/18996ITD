@@ -9,7 +9,7 @@ public class LiftTrapdoorCommand extends InstantCommand{
 
     public LiftTrapdoorCommand(IntakeSubsystem intakeSubsystem, IntakeSubsystem.TrapdoorState state){
         super(
-                () -> intakeSubsystem.UpdateTrapdoorState(state)
+                () -> intakeSubsystem.updateTrapdoorState(state)
         );
     }
 }
