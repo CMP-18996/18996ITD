@@ -21,26 +21,26 @@ public class Robot {
         this.hardwareMap = hardwareMap;
         for (Subsystems subsystem : subsystems) {
             if (subsystem == Subsystems.ALL) {
-                hang = new HangSubsystem();
-                extension = new ExtensionSubsystem();
-                deposit = new DepositSubsystem();
-                lift = new LiftSubsystem();
-                intake = new IntakeSubsystem();
+                hang = new HangSubsystem(hardwareMap);
+                extension = new ExtensionSubsystem(hardwareMap);
+                deposit = new DepositSubsystem(hardwareMap);
+                lift = new LiftSubsystem(hardwareMap);
+                intake = new IntakeSubsystem(hardwareMap);
             }
             else if (subsystem == Subsystems.HANG) {
-                hang = new HangSubsystem();
+                hang = new HangSubsystem(hardwareMap);
             }
             else if (subsystem == Subsystems.EXTENSION) {
-                extension = new ExtensionSubsystem();
+                extension = new ExtensionSubsystem(hardwareMap);
             }
             else if (subsystem == Subsystems.DEPOSIT) {
-                deposit = new DepositSubsystem();
+                deposit = new DepositSubsystem(hardwareMap);
             }
             else if (subsystem == Subsystems.LIFT) {
-                lift = new LiftSubsystem();
+                lift = new LiftSubsystem(hardwareMap);
             }
             else if (subsystem == Subsystems.INTAKE) {
-                intake = new IntakeSubsystem();
+                intake = new IntakeSubsystem(hardwareMap);
             }
         }
     }
