@@ -20,8 +20,8 @@ public class IntakeSubsystem extends SubsystemBase {
     public static double DISABLED_VALUE = 0.0;
 
     // State
-    private CRServo intakeServo1, intakeServo2;
-    private ServoEx trapdoorServo, intakeRotationServo;
+    final private CRServo intakeServo1, intakeServo2;
+    final private ServoEx trapdoorServo, intakeRotationServo;
     private TrapdoorState trapdoorState = TrapdoorState.CLOSED;
     private IntakingState intakingState = IntakingState.DISABLED;
     private IntakeRotatorState intakeRotatorState = IntakeRotatorState.TRANSFERING;
@@ -61,6 +61,18 @@ public class IntakeSubsystem extends SubsystemBase {
     public void updateIntakeRotatorState(IntakeRotatorState setState) {
         intakeRotatorState = setState;
         intakeRotationServo.setPosition(intakeRotatorState.rotationValue);
+    }
+
+    public TrapdoorState getTrapdoorState() {
+        return trapdoorState;
+    }
+
+    public IntakingState getIntakingState() {
+        return intakingState;
+    }
+
+    public IntakeRotatorState getIntakeRotatorState() {
+        return intakeRotatorState;
     }
 
     public IntakeSubsystem(HardwareMap hardwareMap) {
