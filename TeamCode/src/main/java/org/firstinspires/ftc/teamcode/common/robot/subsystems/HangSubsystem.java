@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class HangSubsystem extends SubsystemBase {
-    public DcMotorEx hangMotor;
+    private DcMotorEx hangMotor;
     public HangSubsystem(HardwareMap hardwareMap) {
         hangMotor = hardwareMap.get(DcMotorEx.class, "hang");
     }
