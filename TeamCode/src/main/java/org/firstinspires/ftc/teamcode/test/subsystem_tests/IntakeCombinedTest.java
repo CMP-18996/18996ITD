@@ -50,5 +50,7 @@ public class IntakeCombinedTest extends CommandOpMode {
     @Override
     public void run() {
         CommandScheduler.getInstance().run();
+        telemetry.addData("Color:", intakeSubsystem.colorState.toString());
+        telemetry.update();
     }
 }
