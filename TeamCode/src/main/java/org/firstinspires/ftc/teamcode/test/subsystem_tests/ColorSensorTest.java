@@ -3,16 +3,20 @@ package org.firstinspires.ftc.teamcode.test.subsystem_tests;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.WaitCommand;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.common.commands.TrapdoorCommand;
+import org.firstinspires.ftc.teamcode.common.commands.IntakeCommand;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
-@TeleOp(name="Trapdoor Test")
-public class TrapdoorTest extends CommandOpMode {
+
+@TeleOp(name = "Color Sensor")
+public class ColorSensorTest extends CommandOpMode {
+
     IntakeSubsystem intakeSubsystem;
     HardwareMap hardwareMap;
     Subsystems subsystems = Subsystems.INTAKE;
@@ -22,16 +26,16 @@ public class TrapdoorTest extends CommandOpMode {
         CommandScheduler.getInstance().reset();
         Robot robot = new Robot(hardwareMap, subsystems);
         super.schedule(
-                new TrapdoorCommand(intakeSubsystem, IntakeSubsystem.TrapdoorState.EJECTING),
+                new IntakeCommand(intakeSubsystem, IntakeSubsystem.IntakingState.ACTIVE),
                 new WaitCommand(3000),
-                new TrapdoorCommand(intakeSubsystem, IntakeSubsystem.TrapdoorState.TRANSFERRING),
-                new WaitCommand(3000),
-                new TrapdoorCommand(intakeSubsystem, IntakeSubsystem.TrapdoorState.CLOSED)
+                new IntakeCommand(intakeSubsystem, IntakeSubsystem.IntakingState.DISABLED)
         );
     }
 
     @Override
     public void run() {
-        CommandScheduler.getInstance().run();
+        intakeSubsystem.updateColorState();
+        telemetry.addData("Color:", intakeSubsystem.colorState.toString());
+        telemetry.update();
     }
 }

@@ -4,6 +4,7 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -22,45 +23,73 @@ public class IntakeSubsystem extends SubsystemBase {
     // State
     final private CRServo intakeServo1, intakeServo2;
     final private ServoEx trapdoorServo, intakeRotationServo;
+    public ColorSensor colorSensor;
     private TrapdoorState trapdoorState = TrapdoorState.CLOSED;
     private IntakingState intakingState = IntakingState.DISABLED;
-    private IntakeRotatorState intakeRotatorState = IntakeRotatorState.TRANSFERING;
+    private IntakeRotatorState intakeRotatorState = IntakeRotatorState.TRANSFERRING;
+    public ColorState colorState = ColorState.NONE;
     public enum TrapdoorState {
         CLOSED(CLOSED_VALUE),
         EJECTING(EJECTING_VALUE),
         TRANSFERRING(TRANSFERRING_VALUE);
-        public double trapdoorValue;
-        TrapdoorState(double val) {trapdoorValue = val;}
-
+        public double val;
+        TrapdoorState(double inval) {val = inval;}
     }
     public enum IntakingState {
         ACTIVE(ACTIVE_VALUE),
         DISABLED(DISABLED_VALUE);
-        public double intakingValue;
-        IntakingState(double val) {intakingValue = val;}
+        public double val;
+        IntakingState(double inval) {val = inval;}
     }
 
     public enum IntakeRotatorState {
-        TRANSFERING(INTAKE_ROTATION_MIN_ROT),
+        TRANSFERRING(INTAKE_ROTATION_MIN_ROT),
         DROPPING(INTAKE_ROTATION_MAX_ROT);
-        public double rotationValue;
-        IntakeRotatorState(double val) {rotationValue = val;}
+        public double val;
+        IntakeRotatorState(double inval) {val = inval;}
     }
+    public enum ColorState {
+        NONE("None"),
+        YELLOW("Yellow"),
+        RED("Red"),
+        BLUE("Blue");
+        public String color;
+        ColorState(String incolor) {color = incolor;}
+        public String toString() {return color;}
 
+    }
+    public void updateColorState(){
+        int r, g, b;
+        r = colorSensor.red();
+        g = colorSensor.green();
+        b = colorSensor.blue();
+        if(r > g && r > b){
+            colorState = ColorState.RED;
+        }
+        else if(g > r && g > b){
+            colorState = ColorState.YELLOW;
+        }
+        else if(b > r && b > g){
+            colorState = ColorState.BLUE;
+        }
+        else{
+            colorState = ColorState.NONE;
+        }
+    }
     public void updateTrapdoorState(TrapdoorState setState) {
         trapdoorState = setState;
-        trapdoorServo.setPosition(trapdoorState.trapdoorValue);
+        trapdoorServo.setPosition(trapdoorState.val);
     }
 
     public void updateIntakingState(IntakingState setState) {
         intakingState = setState;
-        intakeServo1.setPower(intakingState.intakingValue);
-        intakeServo2.setPower(intakingState.intakingValue);
+        intakeServo1.setPower(intakingState.val);
+        intakeServo2.setPower(intakingState.val);
     }
 
     public void updateIntakeRotatorState(IntakeRotatorState setState) {
         intakeRotatorState = setState;
-        intakeRotationServo.setPosition(intakeRotatorState.rotationValue);
+        intakeRotationServo.setPosition(intakeRotatorState.val);
     }
 
     public TrapdoorState getTrapdoorState() {

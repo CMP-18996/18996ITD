@@ -6,13 +6,12 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.common.commands.TrapdoorCommand;
+import org.firstinspires.ftc.teamcode.common.commands.IntakeRotatorCommand;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
-
-@TeleOp(name="Trapdoor Test")
-public class TrapdoorTest extends CommandOpMode {
+@TeleOp(name = "Intake Transfer Test")
+public class IntakeTransferTest extends CommandOpMode {
     IntakeSubsystem intakeSubsystem;
     HardwareMap hardwareMap;
     Subsystems subsystems = Subsystems.INTAKE;
@@ -22,11 +21,13 @@ public class TrapdoorTest extends CommandOpMode {
         CommandScheduler.getInstance().reset();
         Robot robot = new Robot(hardwareMap, subsystems);
         super.schedule(
-                new TrapdoorCommand(intakeSubsystem, IntakeSubsystem.TrapdoorState.EJECTING),
+                new IntakeRotatorCommand(intakeSubsystem, IntakeSubsystem.IntakeRotatorState.DROPPING),
                 new WaitCommand(3000),
-                new TrapdoorCommand(intakeSubsystem, IntakeSubsystem.TrapdoorState.TRANSFERRING),
+                new IntakeRotatorCommand(intakeSubsystem, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
                 new WaitCommand(3000),
-                new TrapdoorCommand(intakeSubsystem, IntakeSubsystem.TrapdoorState.CLOSED)
+                new IntakeRotatorCommand(intakeSubsystem, IntakeSubsystem.IntakeRotatorState.DROPPING),
+                new WaitCommand(3000),
+                new IntakeRotatorCommand(intakeSubsystem, IntakeSubsystem.IntakeRotatorState.TRANSFERRING)
         );
     }
 
