@@ -10,11 +10,16 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class LiftSubsystem extends SubsystemBase {
     // Constants
     private final double P = .0001;
+    public final static int GROUND = 0;
+    public final static int LOW_RUNG = 100;
+    public final static int HIGH_RUNG = 200;
+    public final static int LOW_BASKET = 150;
+    public final static int HIGH_BASKET = 300;
 
     // State
     private final DcMotorImpl liftMotor;
     private int currTarget = 0;
-    private int currPosition = 0;
+    private int currPosition;
 
     public void setTargetPosition(int targetPosition) {
         currTarget = targetPosition; // TODO: Replace with actual states
