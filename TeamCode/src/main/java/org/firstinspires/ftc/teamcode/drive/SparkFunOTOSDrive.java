@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.drive;
 import static com.acmerobotics.roadrunner.ftc.OTOSKt.OTOSPoseToRRPose;
 import static com.acmerobotics.roadrunner.ftc.OTOSKt.RRPoseToOTOSPose;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -21,6 +22,7 @@ import org.firstinspires.ftc.teamcode.drive.util.PoseMessage;
  * Portions of this code made and released under the MIT License by SparkFun
  * Unless otherwise noted, comments are from SparkFun
  */
+@Config
 public class SparkFunOTOSDrive extends MecanumDrive {
     public static class Params {
         // Assuming you've mounted your sensor to a robot and it's not centered,

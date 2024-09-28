@@ -61,7 +61,7 @@ public class MecanumDrive {
         public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
                 RevHubOrientationOnRobot.LogoFacingDirection.UP;
         public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
 
         // drive model parameters
         public double inPerTick = 1; // SparkFun OTOS Note: you can probably leave this at 1
@@ -69,8 +69,8 @@ public class MecanumDrive {
         public double trackWidthTicks = 1;
 
         // feedforward parameters (in tick units)
-        public double kS = 0.1;
-        public double kV = 0.1;
+        public double kS = 3.0375158312543205;
+        public double kV = 0.3543375565882356;
         public double kA = 0.1;
 
         // path profile parameters (in inches)
@@ -111,7 +111,7 @@ public class MecanumDrive {
 
     public final VoltageSensor voltageSensor;
 
-    //public final LazyImu lazyImu;
+    public final LazyImu lazyImu;
     public Pose2d pose;
 
     public final LinkedList<Pose2d> poseHistory = new LinkedList<>();
@@ -143,12 +143,13 @@ public class MecanumDrive {
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // TODO: reverse motor directions if needed
-        //   leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // TODO: make sure your config has an IMU with this name (can be BNO or BHI)
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        //lazyImu = new LazyImu(hardwareMap, "imu", new RevHubOrientationOnRobot(
-        //PARAMS.logoFacingDirection, PARAMS.usbFacingDirection));
+        lazyImu = new LazyImu(hardwareMap, "imu", new RevHubOrientationOnRobot(
+        PARAMS.logoFacingDirection, PARAMS.usbFacingDirection));
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
