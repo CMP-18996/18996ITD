@@ -32,6 +32,9 @@ public class LiftSubsystem extends SubsystemBase {
         liftMotor.setPower(P * Math.abs(currPosition - currTarget)); // TODO: implement proportional controller
     }
 
+    public boolean motorWorking() {
+        return liftMotor.isBusy();
+    }
     public LiftSubsystem(HardwareMap hardwareMap) {
         liftMotor = hardwareMap.get(DcMotorImpl.class, "liftMotor");
         liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
