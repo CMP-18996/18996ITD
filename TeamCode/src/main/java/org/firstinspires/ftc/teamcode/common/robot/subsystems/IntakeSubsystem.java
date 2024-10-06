@@ -84,7 +84,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public void updateIntakingState(IntakingState setState) {
         intakingState = setState;
         intakeServo1.setPower(intakingState.val);
-        intakeServo2.setPower(intakingState.val);
+        intakeServo2.setPower(-1 * intakingState.val);
     }
 
     public void updateIntakeRotatorState(IntakeRotatorState setState) {
