@@ -15,11 +15,12 @@ public class IntakeTransferTest extends CommandOpMode {
     IntakeSubsystem intakeSubsystem;
     HardwareMap hardwareMap;
     Subsystems subsystems = Subsystems.INTAKE;
+    Robot robot;
 
     @Override
     public void initialize() {
         CommandScheduler.getInstance().reset();
-        Robot robot = new Robot(hardwareMap, subsystems);
+        robot = new Robot(hardwareMap, subsystems);
         super.schedule(
                 new IntakeRotatorCommand(intakeSubsystem, IntakeSubsystem.IntakeRotatorState.DROPPING),
                 new WaitCommand(3000),

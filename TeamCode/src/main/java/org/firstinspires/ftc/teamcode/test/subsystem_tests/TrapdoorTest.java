@@ -16,11 +16,12 @@ public class TrapdoorTest extends CommandOpMode {
     IntakeSubsystem intakeSubsystem;
     HardwareMap hardwareMap;
     Subsystems subsystems = Subsystems.INTAKE;
+    Robot robot;
 
     @Override
     public void initialize() {
         CommandScheduler.getInstance().reset();
-        Robot robot = new Robot(hardwareMap, subsystems);
+        robot = new Robot(hardwareMap, subsystems);
         super.schedule(
                 new TrapdoorCommand(intakeSubsystem, IntakeSubsystem.TrapdoorState.EJECTING),
                 new WaitCommand(3000),

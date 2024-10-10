@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.test.subsystem_tests;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.WaitCommand;
+import com.arcrobotics.ftclib.hardware.ServoEx;
+import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -19,11 +21,11 @@ public class IntakeCombinedTest extends CommandOpMode {
     IntakeSubsystem intakeSubsystem;
     HardwareMap hardwareMap;
     Subsystems subsystems = Subsystems.INTAKE;
-
+    Robot robot;
     @Override
     public void initialize() {
         CommandScheduler.getInstance().reset();
-        Robot robot = new Robot(hardwareMap, subsystems);
+        robot = new Robot(hardwareMap, subsystems);
         super.schedule(
                 new IntakeCommand(intakeSubsystem, IntakeSubsystem.IntakingState.ACTIVE),
                 new WaitCommand(3000),

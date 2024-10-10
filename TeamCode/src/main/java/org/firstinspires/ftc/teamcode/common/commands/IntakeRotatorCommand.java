@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 public class IntakeRotatorCommand extends InstantCommand {
     public IntakeRotatorCommand(IntakeSubsystem intakeSubsystem, IntakeSubsystem.IntakeRotatorState intakeRotatorState) {
         super(
-                () -> intakeSubsystem.updateIntakeRotatorState(intakeRotatorState)
+          //      () -> intakeSubsystem.updateIntakeRotatorState(intakeRotatorState)
         );
     }
 }

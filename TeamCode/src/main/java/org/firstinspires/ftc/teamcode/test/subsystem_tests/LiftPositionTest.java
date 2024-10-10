@@ -14,11 +14,12 @@ public class LiftPositionTest extends CommandOpMode {
     LiftSubsystem liftSubsystem;
     HardwareMap hardwareMap;
     Subsystems subsystems;
+    Robot robot;
 
     @Override
     public void initialize() {
         CommandScheduler.getInstance().reset();
-        Robot robot = new Robot(hardwareMap, subsystems.LIFT);
+        robot = new Robot(hardwareMap, subsystems.LIFT);
         super.schedule(
              new LiftSetPosition(liftSubsystem, liftSubsystem.GROUND),
              new LiftSetPosition(liftSubsystem, liftSubsystem.LOW_RUNG),

@@ -20,11 +20,13 @@ public class ColorSensorTest extends CommandOpMode {
     IntakeSubsystem intakeSubsystem;
     HardwareMap hardwareMap;
     Subsystems subsystems = Subsystems.INTAKE;
+    Robot robot;
+
 
     @Override
     public void initialize() {
         CommandScheduler.getInstance().reset();
-        Robot robot = new Robot(hardwareMap, subsystems);
+        robot = new Robot(hardwareMap, subsystems);
         super.schedule(
                 new IntakeCommand(intakeSubsystem, IntakeSubsystem.IntakingState.ACTIVE),
                 new WaitCommand(3000),

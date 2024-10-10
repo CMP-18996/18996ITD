@@ -84,7 +84,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public void updateIntakingState(IntakingState setState) {
         intakingState = setState;
         intakeServo1.setPower(intakingState.val);
-        intakeServo2.setPower(-1 * intakingState.val);
+        intakeServo2.setPower(intakingState.val);
     }
 
     public void updateIntakeRotatorState(IntakeRotatorState setState) {
@@ -105,12 +105,13 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public IntakeSubsystem(HardwareMap hardwareMap) {
+
         trapdoorServo = new SimpleServo(hardwareMap, "trapdoor", TRAPDOOR_MIN_ROT, TRAPDOOR_MAX_ROT);
         intakeRotationServo = new SimpleServo(hardwareMap, "intakeRotator", INTAKE_ROTATION_MIN_ROT, INTAKE_ROTATION_MAX_ROT);
         intakeServo1 = hardwareMap.get(CRServo.class, "intake1");
         intakeServo2 = hardwareMap.get(CRServo.class, "intake2");
         colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
         intakeServo1.setDirection(DcMotorSimple.Direction.FORWARD); // subject to change
-        intakeServo2.setDirection(DcMotorSimple.Direction.FORWARD); // subject to change
+        intakeServo2.setDirection(DcMotorSimple.Direction.REVERSE); // subject to change
     }
 }
