@@ -111,6 +111,6 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeServo2 = hardwareMap.get(CRServo.class, "intake2");
         colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
         intakeServo1.setDirection(DcMotorSimple.Direction.FORWARD); // subject to change
-        intakeServo1.setDirection(DcMotorSimple.Direction.FORWARD); // subject to change
+        intakeServo2.setDirection(DcMotorSimple.Direction.FORWARD); // subject to change
     }
 }
