@@ -23,7 +23,7 @@ public class IntakeSubsystem extends SubsystemBase {
     // State
     final private CRServo intakeServo1, intakeServo2;
     final private ServoEx trapdoorServo, intakeRotationServo;
-    public ColorSensor colorSensor;
+    public ColorSensor colorSensor; //TODO: isn't this and the above INTERFACES? you can't instantiate interfaces...
     private TrapdoorState trapdoorState = TrapdoorState.CLOSED;
     private IntakingState intakingState = IntakingState.DISABLED;
     private IntakeRotatorState intakeRotatorState = IntakeRotatorState.TRANSFERRING;
@@ -105,7 +105,6 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public IntakeSubsystem(HardwareMap hardwareMap) {
-
         trapdoorServo = new SimpleServo(hardwareMap, "trapdoor", TRAPDOOR_MIN_ROT, TRAPDOOR_MAX_ROT);
         intakeRotationServo = new SimpleServo(hardwareMap, "intakeRotator", INTAKE_ROTATION_MIN_ROT, INTAKE_ROTATION_MAX_ROT);
         intakeServo1 = hardwareMap.get(CRServo.class, "intake1");
