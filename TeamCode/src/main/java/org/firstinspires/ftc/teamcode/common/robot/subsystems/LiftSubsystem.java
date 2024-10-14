@@ -22,7 +22,11 @@ public class LiftSubsystem extends SubsystemBase {
     private int currPosition;
 
     public void setTargetPosition(int targetPosition) {
-        currTarget = targetPosition; // TODO: Replace with actual states
+        currTarget = targetPosition;
+    }
+
+    public int getCurrentPosition() {
+        return currPosition;
     }
 
     @Override
