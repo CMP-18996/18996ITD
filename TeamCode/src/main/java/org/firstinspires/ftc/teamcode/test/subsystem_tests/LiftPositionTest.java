@@ -12,7 +12,6 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
 public class LiftPositionTest extends CommandOpMode {
     LiftSubsystem liftSubsystem;
-    HardwareMap hardwareMap;
     Subsystems subsystems;
     Robot robot;
 

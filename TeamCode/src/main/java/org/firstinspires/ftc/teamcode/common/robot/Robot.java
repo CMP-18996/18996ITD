@@ -20,7 +20,6 @@ public class Robot {
     public Robot(HardwareMap hardwareMap, Subsystems... subsystems) {
         this.hardwareMap = hardwareMap;
         for (Subsystems subsystem : subsystems) {
-            //cases? - clark
             if (subsystem == Subsystems.ALL) {
                 hang = new HangSubsystem(hardwareMap);
                 extension = new ExtensionSubsystem(hardwareMap);

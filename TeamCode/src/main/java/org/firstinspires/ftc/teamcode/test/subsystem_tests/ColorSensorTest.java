@@ -18,7 +18,6 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 public class ColorSensorTest extends CommandOpMode {
 
     IntakeSubsystem intakeSubsystem;
-    HardwareMap hardwareMap;
     Subsystems subsystems = Subsystems.INTAKE;
     Robot robot;
 

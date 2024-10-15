@@ -14,7 +14,6 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 @TeleOp(name="Trapdoor Test")
 public class TrapdoorTest extends CommandOpMode {
     IntakeSubsystem intakeSubsystem;
-    HardwareMap hardwareMap;
     Subsystems subsystems = Subsystems.INTAKE;
     Robot robot;
 

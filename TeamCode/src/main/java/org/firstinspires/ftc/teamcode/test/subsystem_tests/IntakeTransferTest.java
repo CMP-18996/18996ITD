@@ -13,7 +13,6 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 @TeleOp(name = "Intake Transfer Test")
 public class IntakeTransferTest extends CommandOpMode {
     IntakeSubsystem intakeSubsystem;
-    HardwareMap hardwareMap;
     Subsystems subsystems = Subsystems.INTAKE;
     Robot robot;
 

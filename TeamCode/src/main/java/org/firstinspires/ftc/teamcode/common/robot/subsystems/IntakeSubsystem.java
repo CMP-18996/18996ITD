@@ -23,7 +23,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     // State
     final private CRServo intakeServo1, intakeServo2;
-    final private ServoEx trapdoorServo, intakeRotationServo;
+    // final private ServoEx trapdoorServo, intakeRotationServo;
     public ColorSensor colorSensor; //TODO: isn't this and the above INTERFACES? you can't instantiate interfaces...
     private TrapdoorState trapdoorState = TrapdoorState.CLOSED;
     private IntakingState intakingState = IntakingState.DISABLED;
@@ -79,7 +79,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
     public void updateTrapdoorState(TrapdoorState setState) {
         trapdoorState = setState;
-        trapdoorServo.setPosition(trapdoorState.val);
+        // trapdoorServo.setPosition(trapdoorState.val);
     }
 
     public void updateIntakingState(IntakingState setState) {
@@ -90,7 +90,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void updateIntakeRotatorState(IntakeRotatorState setState) {
         intakeRotatorState = setState;
-        intakeRotationServo.setPosition(intakeRotatorState.val);
+        // intakeRotationServo.setPosition(intakeRotatorState.val);
     }
 
     public TrapdoorState getTrapdoorState() {
@@ -106,8 +106,8 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public IntakeSubsystem(HardwareMap hardwareMap) {
-        trapdoorServo = new SimpleServo(hardwareMap, "trapdoor", TRAPDOOR_MIN_ROT, TRAPDOOR_MAX_ROT);
-        intakeRotationServo = new SimpleServo(hardwareMap, "intakeRotator", INTAKE_ROTATION_MIN_ROT, INTAKE_ROTATION_MAX_ROT);
+        // trapdoorServo = new SimpleServo(hardwareMap, "trapdoor", TRAPDOOR_MIN_ROT, TRAPDOOR_MAX_ROT);
+        // intakeRotationServo = new SimpleServo(hardwareMap, "intakeRotator", INTAKE_ROTATION_MIN_ROT, INTAKE_ROTATION_MAX_ROT);
         intakeServo1 = hardwareMap.get(CRServoImpl.class, "intake1");
         intakeServo2 = hardwareMap.get(CRServoImpl.class, "intake2");
         colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
