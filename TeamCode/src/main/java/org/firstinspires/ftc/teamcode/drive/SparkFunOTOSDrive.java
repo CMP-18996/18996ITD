@@ -3,14 +3,20 @@ package org.firstinspires.ftc.teamcode.drive;
 import static com.acmerobotics.roadrunner.ftc.OTOSKt.OTOSPoseToRRPose;
 import static com.acmerobotics.roadrunner.ftc.OTOSKt.RRPoseToOTOSPose;
 
+import static org.firstinspires.ftc.teamcode.drive.FusedOdometryOptical.fuse;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.Time;
+import com.acmerobotics.roadrunner.Twist2dDual;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.FlightRecorder;
 import com.acmerobotics.roadrunner.ftc.SparkFunOTOSCorrected;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.util.PoseMessage;
@@ -63,10 +69,14 @@ public class SparkFunOTOSDrive extends MecanumDrive {
     public static SparkFunOTOSDrive.Params PARAMS = new SparkFunOTOSDrive.Params();
     public SparkFunOTOSCorrected otos;
     private Pose2d lastOtosPose = pose;
+    public TwoDeadWheelLocalizer odometry;
+    public IMU imu; //change to actually use the right imu for the two dead wheel localizer
+    public final double IN_PER_TICK = 0.1434; //change to correct value from rr tuning
 
     public SparkFunOTOSDrive(HardwareMap hardwareMap, Pose2d pose) {
         super(hardwareMap, pose);
         otos = hardwareMap.get(SparkFunOTOSCorrected.class,"sensor_otos");
+        odometry = new TwoDeadWheelLocalizer(hardwareMap, imu, IN_PER_TICK);
         // RR localizer note:
         // don't change the units, it will stop Dashboard field view from working properly
         // and might cause various other issues
@@ -134,8 +144,16 @@ public class SparkFunOTOSDrive extends MecanumDrive {
 
         FlightRecorder.write("ESTIMATED_POSE", new PoseMessage(pose));
 
-        // RR localizer note:
-        // OTOS velocity units happen to be identical to Roadrunners, so we don't need any conversion!
-        return new PoseVelocity2d(new Vector2d(otosVel.x, otosVel.y),otosVel.h);
+        Twist2dDual<Time> twist = odometry.update();
+        pose = pose.plus(twist.value());
+
+        /*poseHistory.add(pose);
+        while (poseHistory.size() > 100) {
+            poseHistory.removeFirst();
+        }*/
+        PoseVelocity2d odometryVelocity = twist.velocity().value();
+        PoseVelocity2d opticalVelocity = new PoseVelocity2d(new Vector2d(otosVel.x, otosVel.y),otosVel.h);
+
+        return fuse(odometryVelocity, opticalVelocity);
     }
 }
