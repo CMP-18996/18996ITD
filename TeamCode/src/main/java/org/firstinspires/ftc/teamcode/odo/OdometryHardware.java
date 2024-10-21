@@ -1,19 +1,23 @@
 package org.firstinspires.ftc.teamcode.odo;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 
 /*
-    The purpose of this class is or organize all the odo hardware
+   The purpose of this class is or organize all the odo hardware
    OpMode will create instance of this class and pass it to OdometryFusion
    There are SO MANY different methods I could write for every possible action to variable number of sensors
    I have no idea what we will actually use so adding trivial methods may be needed if you don't see something
+
+   This Class has a public otos and pinpoint object, use odometryHardware.otos... for the raw driver methods
 
    TODO add limelight
    TODO add rev IMU (might as well even if its sucks, couldn't hurt as we don't have to use it)
@@ -25,8 +29,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
  */
 @Config
 public class OdometryHardware {
-    private final SparkFunOTOS otos;
-    private final GoBildaPinpointDriver pinpoint;
+
+    public final SparkFunOTOS otos;
+    public final GoBildaPinpointDriver pinpoint;
+    public final Limelight3A limelight;
 
     private static double OTOS_LINEAR_SCALAR = 1.0;
     private static double OTOS_ANGULAR_SCALAR = 1.0;
@@ -41,19 +47,54 @@ public class OdometryHardware {
     private static double START_POS_Y = 0;
     private static double START_POS_H = 0;
 
+    /* This Pose represents 3 different estimated poses:
+        SparkFun Optical Pose
+        goBilda Pinpoint Pose
+        Limelight Pose
+
+        All are estimated by (and onboard) their respective external devices.
+        Ideally, we do no actual localization work ourselves, only optimize
+        which sensor/combo of sensors we are using depending on circumstances.
+    */
+    public static class MultiPose2D {
+        public Pose2D otosPos;
+        public Pose2D pinpointPos;
+        public Pose2D limelightPos;
+
+        public MultiPose2D() {
+        }
+
+        public MultiPose2D(Pose2D otosPos, Pose2D pinpointPos, Pose2D limelightPos) {
+            this.otosPos = otosPos;
+            this.pinpointPos = pinpointPos;
+            this.limelightPos = limelightPos;
+        }
+
+        /*
+        public void set(SparkFunOTOS.Pose2D pose) {
+            this.x = pose.x;
+            this.y = pose.y;
+            this.h = pose.h;
+        }
+        */
+    }
+
     public OdometryHardware(HardwareMap hardwareMap) {
 
         this.otos = hardwareMap.get(SparkFunOTOS.class, "otos");
 
         this.pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"pinpoint");
 
+        this.limelight = hardwareMap.get(Limelight3A.class, "limelight");
+
         configureOtos();
 
         configurePinpoint();
 
-        otosCalibrateIMU();
+        otos.calibrateImu();
+        otos.resetTracking();
 
-        pinpointCalibrateIMU();
+        pinpoint.resetPosAndIMU();
 
         setPosition(START_POS_X, START_POS_Y, START_POS_H);
     }
@@ -78,21 +119,40 @@ public class OdometryHardware {
     }
 
     // ROBOT MUST BE STATIONARY
-    public void otosCalibrateIMU() {
-        otos.calibrateImu();
-    }
-
-    // ROBOT MUST BE STATIONARY
-    public void pinpointCalibrateIMU() {
-        pinpoint.recalibrateIMU();
-    }
-
-    // ROBOT MUST BE STATIONARY
     // good practice to setPosition() after if possible
     public void calibrateAll() {
-        otosCalibrateIMU();
+        //
+    }
 
-        pinpointCalibrateIMU();
+    public MultiPose2D getAllPosData() {
+        Pose2D otosPos = SparkFunPoseToNormalPose(otos.getPosition());
+
+        pinpoint.update();
+        Pose2D pinpointPos = pinpoint.getPosition();
+
+        return new MultiPose2D(otosPos, pinpointPos, null);
+        //TODO limelight w/ independent imu config
+    }
+
+    public MultiPose2D getAllVelData() {
+        Pose2D otosPos = SparkFunPoseToNormalPose(otos.getVelocity());
+
+        pinpoint.update();
+        Pose2D pinpointPos = pinpoint.getVelocity();
+
+        return new MultiPose2D(otosPos, pinpointPos, null);
+    }
+
+    public MultiPose2D getAllAccData() {
+        Pose2D otosPos = SparkFunPoseToNormalPose(otos.getAcceleration());
+
+        //Pin point doesnt have acceleration???
+        /*
+        pinpoint.update();
+        Pose2D pinpointPos = pinpoint.get();
+        */
+
+        return new MultiPose2D(otosPos, null, null);
     }
 
     private void configureOtos()
@@ -164,17 +224,12 @@ public class OdometryHardware {
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
     }
 
-    /* even goBilda says don't use this so... */
-    public float getPinpointYawScalar() {
-        return pinpoint.getYawScalar();
+    private void configureLimelight() {
+        limelight.pipelineSwitch(0);
     }
 
-    /* useless cant be bothered to actually write it */
-    public void getVersion() {
-        SparkFunOTOS.Version hwVersion = new SparkFunOTOS.Version();
-        SparkFunOTOS.Version fwVersion = new SparkFunOTOS.Version();
-        otos.getVersionInfo(hwVersion, fwVersion);
-
-        pinpoint.getDeviceVersion();
+    public static Pose2D SparkFunPoseToNormalPose(SparkFunOTOS.Pose2D pos) {
+        //sparkfun bro their custom pose is dumb
+        return new Pose2D(DistanceUnit.INCH, pos.x, pos.y, AngleUnit.DEGREES, pos.h);
     }
 }
