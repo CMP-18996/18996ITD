@@ -20,6 +20,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
    TODO bulk data reads
 
    TODO (maybe) rewrite the stupid sparkfun Pose2D system its really annoying
+
+   TODO GLOBAL POS SYSTEM!!!!
  */
 @Config
 public class OdometryHardware {
