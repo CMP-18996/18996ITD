@@ -64,21 +64,26 @@ public class OdometryFusion {
 
     public PoseVelocity2d getPoseVelocity2d() {
 
+        return null;
     }
 
     public Vector2d getLinearVector() {
 
+        return null;
     }
 
     public double getAngularVelocity() {
 
+        return 0;
     }
 
     public double getLinearXVelocity() {
 
+        return 0;
     }
 
     public double getLinearYVelocity() {
 
+        return 0;
     }
 }
