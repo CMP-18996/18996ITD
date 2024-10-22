@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
 public class LiftPositionTest extends CommandOpMode {
-    LiftSubsystem liftSubsystem;
+
     Subsystems subsystems;
     Robot robot;
 
@@ -22,13 +22,13 @@ public class LiftPositionTest extends CommandOpMode {
         robot = new Robot(hardwareMap, subsystems.LIFT);
         super.schedule(
             new SequentialCommandGroup(
-                new LiftSetPosition(liftSubsystem, liftSubsystem.GROUND),
-                new LiftSetPosition(liftSubsystem, liftSubsystem.LOW_RUNG),
-                new LiftSetPosition(liftSubsystem, liftSubsystem.HIGH_RUNG),
-                new LiftSetPosition(liftSubsystem, liftSubsystem.GROUND),
-                new LiftSetPosition(liftSubsystem, liftSubsystem.LOW_BASKET),
-                new LiftSetPosition(liftSubsystem, liftSubsystem.HIGH_BASKET),
-                new LiftSetPosition(liftSubsystem, liftSubsystem.GROUND)
+                new LiftSetPosition(robot.lift, robot.lift.GROUND),
+                new LiftSetPosition(robot.lift, robot.lift.LOW_RUNG),
+                new LiftSetPosition(robot.lift, robot.lift.HIGH_RUNG),
+                new LiftSetPosition(robot.lift, robot.lift.GROUND),
+                new LiftSetPosition(robot.lift, robot.lift.LOW_BASKET),
+                new LiftSetPosition(robot.lift, robot.lift.HIGH_BASKET),
+                new LiftSetPosition(robot.lift, robot.lift.GROUND)
             )
         );
     }

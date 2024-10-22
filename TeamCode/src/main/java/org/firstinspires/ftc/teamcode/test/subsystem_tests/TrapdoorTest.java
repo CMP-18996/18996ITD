@@ -13,7 +13,6 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
 @TeleOp(name="Trapdoor Test")
 public class TrapdoorTest extends CommandOpMode {
-    IntakeSubsystem intakeSubsystem;
     Subsystems subsystems = Subsystems.INTAKE;
     Robot robot;
 
@@ -22,11 +21,11 @@ public class TrapdoorTest extends CommandOpMode {
         CommandScheduler.getInstance().reset();
         robot = new Robot(hardwareMap, subsystems);
         super.schedule(
-                new TrapdoorCommand(intakeSubsystem, IntakeSubsystem.TrapdoorState.EJECTING),
+                new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.EJECTING),
                 new WaitCommand(3000),
-                new TrapdoorCommand(intakeSubsystem, IntakeSubsystem.TrapdoorState.TRANSFERRING),
+                new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.TRANSFERRING),
                 new WaitCommand(3000),
-                new TrapdoorCommand(intakeSubsystem, IntakeSubsystem.TrapdoorState.CLOSED)
+                new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.CLOSED)
         );
     }
 

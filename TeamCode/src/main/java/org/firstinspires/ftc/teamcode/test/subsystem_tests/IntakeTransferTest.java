@@ -13,7 +13,6 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 @TeleOp(name = "Intake Transfer Test")
 public class IntakeTransferTest extends CommandOpMode {
-    IntakeSubsystem intakeSubsystem;
     Subsystems subsystems = Subsystems.INTAKE;
     Robot robot;
 
@@ -23,13 +22,13 @@ public class IntakeTransferTest extends CommandOpMode {
         robot = new Robot(hardwareMap, subsystems);
         super.schedule(
             new SequentialCommandGroup(
-                new IntakeRotatorCommand(intakeSubsystem, IntakeSubsystem.IntakeRotatorState.DROPPING),
+                new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.DROPPING),
                 new WaitCommand(3000),
-                new IntakeRotatorCommand(intakeSubsystem, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
+                new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
                 new WaitCommand(3000),
-                new IntakeRotatorCommand(intakeSubsystem, IntakeSubsystem.IntakeRotatorState.DROPPING),
+                new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.DROPPING),
                 new WaitCommand(3000),
-                new IntakeRotatorCommand(intakeSubsystem, IntakeSubsystem.IntakeRotatorState.TRANSFERRING)
+                new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING)
             )
         );
     }
