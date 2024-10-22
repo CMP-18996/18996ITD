@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.common.robot.subsystems;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
-import com.qualcomm.robotcore.hardware.CRServo;
+import com.arcrobotics.ftclib.hardware.motors.CRServo;
 import com.qualcomm.robotcore.hardware.CRServoImpl;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -22,7 +22,8 @@ public class IntakeSubsystem extends SubsystemBase {
     public static double DISABLED_VALUE = 0.0;
 
     // State
-    final private CRServo intakeServo1, intakeServo2;
+    final private CRServoImpl intakeServo1;
+    final private CRServoImpl intakeServo2;
     // final private ServoEx trapdoorServo, intakeRotationServo;
     public ColorSensor colorSensor; //TODO: isn't this and the above INTERFACES? you can't instantiate interfaces...
     private TrapdoorState trapdoorState = TrapdoorState.CLOSED;
@@ -59,7 +60,7 @@ public class IntakeSubsystem extends SubsystemBase {
         public String toString() {return color;}
 
     }
-    public void updateColorState(){
+    public String updateColorState(){
         int r, g, b;
         r = colorSensor.red();
         g = colorSensor.green();
@@ -76,6 +77,7 @@ public class IntakeSubsystem extends SubsystemBase {
         else{
             colorState = ColorState.NONE;
         }
+        return colorState.toString();
     }
     public void updateTrapdoorState(TrapdoorState setState) {
         trapdoorState = setState;

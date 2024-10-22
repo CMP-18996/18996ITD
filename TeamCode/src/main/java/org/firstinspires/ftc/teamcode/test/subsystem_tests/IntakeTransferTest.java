@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.test.subsystem_tests;
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -21,6 +22,7 @@ public class IntakeTransferTest extends CommandOpMode {
         CommandScheduler.getInstance().reset();
         robot = new Robot(hardwareMap, subsystems);
         super.schedule(
+            new SequentialCommandGroup(
                 new IntakeRotatorCommand(intakeSubsystem, IntakeSubsystem.IntakeRotatorState.DROPPING),
                 new WaitCommand(3000),
                 new IntakeRotatorCommand(intakeSubsystem, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
@@ -28,6 +30,7 @@ public class IntakeTransferTest extends CommandOpMode {
                 new IntakeRotatorCommand(intakeSubsystem, IntakeSubsystem.IntakeRotatorState.DROPPING),
                 new WaitCommand(3000),
                 new IntakeRotatorCommand(intakeSubsystem, IntakeSubsystem.IntakeRotatorState.TRANSFERRING)
+            )
         );
     }
 

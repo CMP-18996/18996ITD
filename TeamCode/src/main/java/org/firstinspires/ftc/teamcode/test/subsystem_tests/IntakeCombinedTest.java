@@ -21,6 +21,7 @@ public class IntakeCombinedTest extends CommandOpMode {
     IntakeSubsystem intakeSubsystem;
     Subsystems subsystems = Subsystems.INTAKE;
     Robot robot;
+    // NEED TO REVAMP
     @Override
     public void initialize() {
         CommandScheduler.getInstance().reset();
@@ -28,7 +29,7 @@ public class IntakeCombinedTest extends CommandOpMode {
         super.schedule(
                 new IntakeCommand(intakeSubsystem, IntakeSubsystem.IntakingState.ACTIVE),
                 new WaitCommand(3000),
-                new ColorSensorCommand(intakeSubsystem)
+                new ColorSensorCommand(intakeSubsystem, IntakeSubsystem.ColorState.BLUE)
         );
         if(intakeSubsystem.colorState.toString().equals("Yellow") || intakeSubsystem.colorState.toString().equals("Red")){
             super.schedule(
