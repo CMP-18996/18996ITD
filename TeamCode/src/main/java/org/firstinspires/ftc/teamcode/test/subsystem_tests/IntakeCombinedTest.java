@@ -18,32 +18,32 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
 @TeleOp(name = "Intake Combined")
 public class IntakeCombinedTest extends CommandOpMode {
-    IntakeSubsystem intakeSubsystem;
     Subsystems subsystems = Subsystems.INTAKE;
     Robot robot;
+    // NEED TO REVAMP
     @Override
     public void initialize() {
         CommandScheduler.getInstance().reset();
         robot = new Robot(hardwareMap, subsystems);
         super.schedule(
-                new IntakeCommand(intakeSubsystem, IntakeSubsystem.IntakingState.ACTIVE),
+                new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.ACTIVE),
                 new WaitCommand(3000),
-                new ColorSensorCommand(intakeSubsystem)
+                new ColorSensorCommand(robot.intake, IntakeSubsystem.ColorState.BLUE)
         );
-        if(intakeSubsystem.colorState.toString().equals("Yellow") || intakeSubsystem.colorState.toString().equals("Red")){
+        if(robot.intake.colorState.toString().equals("Yellow") || robot.intake.colorState.toString().equals("Red")){
             super.schedule(
-                new TrapdoorCommand(intakeSubsystem, IntakeSubsystem.TrapdoorState.TRANSFERRING),
-                new IntakeRotatorCommand(intakeSubsystem, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
+                new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.TRANSFERRING),
+                new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
                 new WaitCommand(3000),
-                new TrapdoorCommand(intakeSubsystem, IntakeSubsystem.TrapdoorState.CLOSED),
-                new IntakeRotatorCommand(intakeSubsystem, IntakeSubsystem.IntakeRotatorState.DROPPING)
+                new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.CLOSED),
+                new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.DROPPING)
             );
         }
-        else if(intakeSubsystem.colorState.toString().equals("Blue") || intakeSubsystem.colorState.toString().equals("None")){
+        else if(robot.intake.colorState.toString().equals("Blue") || robot.intake.colorState.toString().equals("None")){
             super.schedule(
-                new TrapdoorCommand(intakeSubsystem, IntakeSubsystem.TrapdoorState.EJECTING),
+                new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.EJECTING),
                 new WaitCommand(3000),
-                new TrapdoorCommand(intakeSubsystem, IntakeSubsystem.TrapdoorState.CLOSED)
+                new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.CLOSED)
             );
         }
     }
@@ -51,7 +51,7 @@ public class IntakeCombinedTest extends CommandOpMode {
     @Override
     public void run() {
         CommandScheduler.getInstance().run();
-        telemetry.addData("Color:", intakeSubsystem.colorState.toString());
+        telemetry.addData("Color:", robot.intake.colorState.toString());
         telemetry.update();
     }
 }

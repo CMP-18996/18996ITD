@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.test.subsystem_tests;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.common.commands.LiftSetPosition;
@@ -11,7 +12,7 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
 public class LiftPositionTest extends CommandOpMode {
-    LiftSubsystem liftSubsystem;
+
     Subsystems subsystems;
     Robot robot;
 
@@ -20,13 +21,15 @@ public class LiftPositionTest extends CommandOpMode {
         CommandScheduler.getInstance().reset();
         robot = new Robot(hardwareMap, subsystems.LIFT);
         super.schedule(
-             new LiftSetPosition(liftSubsystem, liftSubsystem.GROUND),
-             new LiftSetPosition(liftSubsystem, liftSubsystem.LOW_RUNG),
-             new LiftSetPosition(liftSubsystem, liftSubsystem.HIGH_RUNG),
-             new LiftSetPosition(liftSubsystem, liftSubsystem.GROUND),
-             new LiftSetPosition(liftSubsystem, liftSubsystem.LOW_BASKET),
-             new LiftSetPosition(liftSubsystem, liftSubsystem.HIGH_BASKET),
-             new LiftSetPosition(liftSubsystem, liftSubsystem.GROUND)
+            new SequentialCommandGroup(
+                new LiftSetPosition(robot.lift, robot.lift.GROUND),
+                new LiftSetPosition(robot.lift, robot.lift.LOW_RUNG),
+                new LiftSetPosition(robot.lift, robot.lift.HIGH_RUNG),
+                new LiftSetPosition(robot.lift, robot.lift.GROUND),
+                new LiftSetPosition(robot.lift, robot.lift.LOW_BASKET),
+                new LiftSetPosition(robot.lift, robot.lift.HIGH_BASKET),
+                new LiftSetPosition(robot.lift, robot.lift.GROUND)
+            )
         );
     }
 
