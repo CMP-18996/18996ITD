@@ -8,7 +8,9 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.FlightRecorder;
+import com.acmerobotics.roadrunner.ftc.LazyImu;
 import com.acmerobotics.roadrunner.ftc.SparkFunOTOSCorrected;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -77,6 +79,9 @@ public class SparkFunOTOSDrive extends MecanumDrive {
         System.out.println("OTOS calibration beginning!");
         System.out.println(otos.setLinearScalar(PARAMS.linearScalar));
         System.out.println(otos.setAngularScalar(PARAMS.angularScalar));
+
+        lazyImu = new LazyImu(hardwareMap, "i", new RevHubOrientationOnRobot(
+                PARAMS.logoFacingDirection, PARAMS.usbFacingDirection));
 
         otos.setPosition(RRPoseToOTOSPose(pose));
         // The IMU on the OTOS includes a gyroscope and accelerometer, which could
