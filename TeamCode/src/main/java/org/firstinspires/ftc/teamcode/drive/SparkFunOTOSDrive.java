@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.drive;
 import static com.acmerobotics.roadrunner.ftc.OTOSKt.OTOSPoseToRRPose;
 import static com.acmerobotics.roadrunner.ftc.OTOSKt.RRPoseToOTOSPose;
 
-import static org.firstinspires.ftc.teamcode.drive.FusedOdometryOptical.fuse;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
@@ -70,13 +68,10 @@ public class SparkFunOTOSDrive extends MecanumDrive {
     public SparkFunOTOSCorrected otos;
     private Pose2d lastOtosPose = pose;
     public TwoDeadWheelLocalizer odometry;
-    public IMU imu; //change to actually use the right imu for the two dead wheel localizer
-    public final double IN_PER_TICK = 0.1434; //change to correct value from rr tuning
 
     public SparkFunOTOSDrive(HardwareMap hardwareMap, Pose2d pose) {
         super(hardwareMap, pose);
         otos = hardwareMap.get(SparkFunOTOSCorrected.class,"sensor_otos");
-        odometry = new TwoDeadWheelLocalizer(hardwareMap, imu, IN_PER_TICK);
         // RR localizer note:
         // don't change the units, it will stop Dashboard field view from working properly
         // and might cause various other issues
@@ -144,16 +139,6 @@ public class SparkFunOTOSDrive extends MecanumDrive {
 
         FlightRecorder.write("ESTIMATED_POSE", new PoseMessage(pose));
 
-        Twist2dDual<Time> twist = odometry.update();
-        pose = pose.plus(twist.value());
-
-        /*poseHistory.add(pose);
-        while (poseHistory.size() > 100) {
-            poseHistory.removeFirst();
-        }*/
-        PoseVelocity2d odometryVelocity = twist.velocity().value();
-        PoseVelocity2d opticalVelocity = new PoseVelocity2d(new Vector2d(otosVel.x, otosVel.y),otosVel.h);
-
-        return fuse(odometryVelocity, opticalVelocity);
+        return new PoseVelocity2d(new Vector2d(otosVel.x, otosVel.y),otosVel.h);
     }
 }
