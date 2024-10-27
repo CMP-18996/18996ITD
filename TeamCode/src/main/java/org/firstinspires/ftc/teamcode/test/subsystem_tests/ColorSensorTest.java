@@ -29,16 +29,21 @@ public class ColorSensorTest extends CommandOpMode {
         robot = new Robot(hardwareMap, subsystems);
         super.schedule(
             new SequentialCommandGroup(
-                new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.ACTIVE),
-                new WaitCommand(3000),
-                new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
-                new ColorSensorCommand(robot.intake, IntakeSubsystem.ColorState.YELLOW)
+                new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.ACTIVE)
+//                new WaitCommand(3000),
+//                new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
+//                new ColorSensorCommand(robot.intake, IntakeSubsystem.ColorState.YELLOW)
             )
         );
     }
 
     @Override
     public void run() {
-    CommandScheduler.getInstance().run();
+        CommandScheduler.getInstance().run();
+        if (robot.intake.updateColorState().equals("Yellow") && robot.intake.updateColorState().equals("Blue")) {
+            CommandScheduler.getInstance().schedule(
+                    new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED)
+            );
+        }
     }
 }
