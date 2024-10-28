@@ -9,7 +9,7 @@ public class TrapdoorCommand extends InstantCommand{
 
     public TrapdoorCommand(IntakeSubsystem intakeSubsystem, IntakeSubsystem.TrapdoorState state){
         super(
-            //    () -> intakeSubsystem.updateTrapdoorState(state)
+                () -> intakeSubsystem.updateTrapdoorState(state)
         );
     }
 }

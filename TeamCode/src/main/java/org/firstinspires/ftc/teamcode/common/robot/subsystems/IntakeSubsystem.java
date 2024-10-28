@@ -18,13 +18,14 @@ public class IntakeSubsystem extends SubsystemBase {
     public static double CLOSED_VALUE = .5;
     public static double EJECTING_VALUE = 1.0;
     public static double TRANSFERRING_VALUE = 0;
-    public static double ACTIVE_VALUE = 0.25;
+    public static double ACTIVE_VALUE = 1.00;
     public static double DISABLED_VALUE = 0.0;
 
     // State
     final private CRServoImpl intakeServo1;
     final private CRServoImpl intakeServo2;
-    // final private ServoEx trapdoorServo, intakeRotationServo;
+//     final private ServoEx trapdoorServo, intakeRotationServo;
+    final private ServoEx trapdoorServo;
     public ColorSensor colorSensor; //TODO: isn't this and the above INTERFACES? you can't instantiate interfaces...
     private TrapdoorState trapdoorState = TrapdoorState.CLOSED;
     private IntakingState intakingState = IntakingState.DISABLED;
@@ -81,7 +82,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
     public void updateTrapdoorState(TrapdoorState setState) {
         trapdoorState = setState;
-        // trapdoorServo.setPosition(trapdoorState.val);
+        trapdoorServo.setPosition(trapdoorState.val);
     }
 
     public void updateIntakingState(IntakingState setState) {
@@ -108,7 +109,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public IntakeSubsystem(HardwareMap hardwareMap) {
-        // trapdoorServo = new SimpleServo(hardwareMap, "trapdoor", TRAPDOOR_MIN_ROT, TRAPDOOR_MAX_ROT);
+         trapdoorServo = new SimpleServo(hardwareMap, "trapdoor", TRAPDOOR_MIN_ROT, TRAPDOOR_MAX_ROT);
         // intakeRotationServo = new SimpleServo(hardwareMap, "intakeRotator", INTAKE_ROTATION_MIN_ROT, INTAKE_ROTATION_MAX_ROT);
         intakeServo1 = hardwareMap.get(CRServoImpl.class, "intake1");
         intakeServo2 = hardwareMap.get(CRServoImpl.class, "intake2");
