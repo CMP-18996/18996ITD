@@ -33,8 +33,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public ColorState colorState = ColorState.NONE;
     public enum TrapdoorState {
         CLOSED(CLOSED_VALUE),
-        EJECTING(EJECTING_VALUE),
-        TRANSFERRING(TRANSFERRING_VALUE);
+        EJECTING(EJECTING_VALUE);
         public double val;
         TrapdoorState(double inval) {val = inval;}
     }
