@@ -27,10 +27,11 @@ public class ExtensionSubsystem extends SubsystemBase {
         }
         else {
             if (extensionState.equals(ExtensionState.CUSTOM)) {
+                extensionMotor.setTargetPosition(extensionState.position);
                 extensionMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
             extensionState = newExtensionState;
-            extensionMotor.setTargetPosition(extensionState.position);
+//            extensionMotor.setTargetPosition(extensionState.position);
         }
     }
 
@@ -58,8 +59,9 @@ public class ExtensionSubsystem extends SubsystemBase {
 
     public ExtensionSubsystem(HardwareMap hardwareMap) {
         extensionMotor = hardwareMap.get(DcMotorImpl.class, "extension");
-        extensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         extensionMotor.setTargetPosition(0);
+        extensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        extensionMotor.setTargetPosition(0);
         extensionMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         extensionMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
