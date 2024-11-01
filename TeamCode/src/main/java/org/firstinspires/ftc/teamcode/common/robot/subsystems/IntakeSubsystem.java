@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.common.robot.subsystems;
 
+import android.graphics.Color;
+
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
@@ -51,16 +53,12 @@ public class IntakeSubsystem extends SubsystemBase {
         IntakeRotatorState(double inval) {val = inval;}
     }
     public enum ColorState {
-        NONE("None"),
-        YELLOW("Yellow"),
-        RED("Red"),
-        BLUE("Blue");
-        public String color;
-        ColorState(String incolor) {color = incolor;}
-        public String toString() {return color;}
-
+        NONE,
+        YELLOW,
+        RED,
+        BLUE
     }
-    public String updateColorState(){
+    public ColorState updateColorState(){
         int r, g, b;
         r = colorSensor.red();
         g = colorSensor.green();
@@ -77,7 +75,7 @@ public class IntakeSubsystem extends SubsystemBase {
         else{
             colorState = ColorState.NONE;
         }
-        return colorState.toString();
+        return colorState;
     }
     public void updateTrapdoorState(TrapdoorState setState) {
         trapdoorState = setState;

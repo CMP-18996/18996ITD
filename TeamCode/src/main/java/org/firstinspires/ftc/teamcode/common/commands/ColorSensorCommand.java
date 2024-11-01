@@ -9,19 +9,14 @@ public class ColorSensorCommand extends CommandBase {
     IntakeSubsystem intakeSubsystem;
     IntakeSubsystem.ColorState commandColorState;
 
-    public ColorSensorCommand(IntakeSubsystem intakeSubsystem, IntakeSubsystem.ColorState colorState){
+    public ColorSensorCommand(IntakeSubsystem intakeSubsystem, IntakeSubsystem.ColorState colorState) {
         commandColorState = colorState;
         this.intakeSubsystem = intakeSubsystem;
         addRequirements(intakeSubsystem);
     }
 
     @Override
-    public void initialize() {
-        intakeSubsystem.updateColorState();
-    }
-
-    @Override
     public boolean isFinished() {
-        return (intakeSubsystem.updateColorState().equals(commandColorState.toString()));
+        return (intakeSubsystem.updateColorState().equals(commandColorState));
     }
 }
