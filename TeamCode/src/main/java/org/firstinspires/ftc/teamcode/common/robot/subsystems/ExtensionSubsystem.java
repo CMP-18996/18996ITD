@@ -44,6 +44,14 @@ public class ExtensionSubsystem extends SubsystemBase {
         extensionMotor.setPower(.6);
     }
 
+    public int getPosition() {
+        return extensionMotor.getCurrentPosition();
+    }
+
+    public int getAbsError() {
+        return Math.abs(extensionMotor.getCurrentPosition() - extensionState.position);
+    }
+
     public void setExtensionMotorPower(double power) {
         extensionMotor.setPower(power);
     }

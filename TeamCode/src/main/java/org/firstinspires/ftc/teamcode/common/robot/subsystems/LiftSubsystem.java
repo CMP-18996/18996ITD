@@ -41,6 +41,7 @@ public class LiftSubsystem extends SubsystemBase {
     }
     public LiftSubsystem(HardwareMap hardwareMap) {
         liftMotor = hardwareMap.get(DcMotorImpl.class, "liftMotor");
+        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         currPosition = liftMotor.getCurrentPosition();
