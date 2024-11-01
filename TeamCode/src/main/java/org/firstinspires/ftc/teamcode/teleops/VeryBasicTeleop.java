@@ -8,6 +8,7 @@ import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.common.commands.DepositRotationCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeCommand;
@@ -24,6 +25,7 @@ public class VeryBasicTeleop extends CommandOpMode {
     private Robot robot;
     private MecanumDrive drive;
     private MotorEx leftFront, rightFront, leftBack, rightBack;
+    private DcMotorEx extension;
 
     @Override
     public void initialize() {
@@ -34,6 +36,8 @@ public class VeryBasicTeleop extends CommandOpMode {
         leftBack = hardwareMap.get(MotorEx.class, "leftBack");
         rightBack = hardwareMap.get(MotorEx.class, "rightBack");
         drive = new MecanumDrive(leftFront, rightFront, leftBack, rightBack);
+
+        extension = hardwareMap.get(DcMotorEx.class, "extension");
     }
 
     /*
@@ -104,5 +108,7 @@ public class VeryBasicTeleop extends CommandOpMode {
         }
 
         CommandScheduler.getInstance().run();
+
+        extension.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
     }
 }

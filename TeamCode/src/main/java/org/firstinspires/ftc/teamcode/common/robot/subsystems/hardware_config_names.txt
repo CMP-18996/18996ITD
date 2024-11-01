@@ -1,0 +1,11 @@
+Motors:
+Drive motors - leftFront, rightFront, leftBack, rightBack
+Extension - extension
+Lift - liftMotor
+
+Servos:
+Deposit - transferRotator
+Intake - trapdoor, intakeRotator, intake1, intake2
+
+Misc:
+colorSensor
