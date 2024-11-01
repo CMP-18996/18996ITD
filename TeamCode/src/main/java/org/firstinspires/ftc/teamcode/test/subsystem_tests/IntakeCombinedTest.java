@@ -32,7 +32,7 @@ public class IntakeCombinedTest extends CommandOpMode {
         );
         if(robot.intake.colorState.toString().equals("Yellow") || robot.intake.colorState.toString().equals("Red")){
             super.schedule(
-                new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.TRANSFERRING),
+                new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.CLOSED),
                 new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
                 new WaitCommand(3000),
                 new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.CLOSED),
