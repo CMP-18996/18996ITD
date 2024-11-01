@@ -59,10 +59,10 @@ public class OpticalDriveTelemetry extends LinearOpMode {
         DcMotor rightFrontDrive = null;
         DcMotor rightBackDrive = null;
 
-        leftFrontDrive  = hardwareMap.get(DcMotor.class, "leftfront");
-        leftBackDrive  = hardwareMap.get(DcMotor.class, "leftback");
-        rightFrontDrive = hardwareMap.get(DcMotor.class, "rightfront");
-        rightBackDrive = hardwareMap.get(DcMotor.class, "rightback");
+        leftFrontDrive  = hardwareMap.get(DcMotor.class, "lF");
+        leftBackDrive  = hardwareMap.get(DcMotor.class, "lB");
+        rightFrontDrive = hardwareMap.get(DcMotor.class, "rF");
+        rightBackDrive = hardwareMap.get(DcMotor.class, "rB");
 
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -74,7 +74,7 @@ public class OpticalDriveTelemetry extends LinearOpMode {
         telemetry.update();
 
         // Get a reference to the sensor
-        myOtos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
+        myOtos = hardwareMap.get(SparkFunOTOS.class, "otos");
 
         // idk
         telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -103,9 +103,9 @@ public class OpticalDriveTelemetry extends LinearOpMode {
             double max;
 
             // fpv controls
-            double axial   = -gamepad1.right_stick_y;  // Note: pushing stick forward gives negative value
-            double lateral =  gamepad1.right_stick_x;
-            double yaw     =  gamepad1.left_stick_x;
+            double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
+            double lateral =  gamepad1.left_stick_x;
+            double yaw     =  gamepad1.right_stick_x;
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
@@ -147,6 +147,11 @@ public class OpticalDriveTelemetry extends LinearOpMode {
             telemetry.addData("X coordinate", pos.x);
             telemetry.addData("Y coordinate", pos.y);
             telemetry.addData("Heading angle", pos.h);
+
+            telemetry.addData("lF", leftFrontPower);
+            telemetry.addData("lB", leftBackPower);
+            telemetry.addData("rF", rightFrontPower);
+            telemetry.addData("rB", rightBackPower);
 
             // Update the telemetry on the driver station
             telemetry.update();

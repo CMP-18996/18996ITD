@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.test.vision_tests;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -17,9 +20,7 @@ public class TrackingTest extends LinearOpMode {
 
     OdometryHardware odometryHardware;
 
-    public static double kP = 0;
-    public static double kI = 0;
-    public static double kD = 0;
+    public static double kP = 0.01;
 
     private DcMotor leftFrontDrive = null;
     private DcMotor leftBackDrive = null;
@@ -29,16 +30,14 @@ public class TrackingTest extends LinearOpMode {
     @Override
     public void runOpMode() {
 
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
         odometryHardware = new OdometryHardware(hardwareMap);
 
-        PIDController pid = new PIDController(kP, kI, kD);
-
-        pid.setSetPoint(0);
-
-        leftFrontDrive  = hardwareMap.get(DcMotor.class, "left_front_drive");
-        leftBackDrive  = hardwareMap.get(DcMotor.class, "left_back_drive");
-        rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
-        rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
+        leftFrontDrive = hardwareMap.get(DcMotor.class, "lF");
+        leftBackDrive = hardwareMap.get(DcMotor.class, "lB");
+        rightFrontDrive = hardwareMap.get(DcMotor.class, "rF");
+        rightBackDrive = hardwareMap.get(DcMotor.class, "rB");
 
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -49,24 +48,16 @@ public class TrackingTest extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            if(gamepad1.triangle) {
-                pid.setPID(kP, kI, kD);
-
-                telemetry.addLine("Set new PID constants!");
-            }
-
             // Get the degrees of the april tag
             LLResult limelightResult = odometryHardware.limelight.getLatestResult();
-            double aprilTagYaw = limelightResult.getTx();
-
-            double output = pid.calculate(aprilTagYaw); // Calculate PID output
+            double aprilTagYaw = limelightResult.getTx() + 0.1;
 
             double max;
 
-            double leftFrontPower  = output;
-            double rightFrontPower = -output;
-            double leftBackPower   = output;
-            double rightBackPower  = -output;
+            double leftFrontPower  = aprilTagYaw * kP;
+            double rightFrontPower = -aprilTagYaw * kP;
+            double leftBackPower   = aprilTagYaw * kP;
+            double rightBackPower  = -aprilTagYaw * kP;
 
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
             max = Math.max(max, Math.abs(leftBackPower));
@@ -85,7 +76,7 @@ public class TrackingTest extends LinearOpMode {
             rightBackDrive.setPower(rightBackPower);
 
             telemetry.addData("tx", aprilTagYaw);
-            telemetry.addData("PID output", output);
+            telemetry.addData("output power", aprilTagYaw * kP);
 
             telemetry.update();
         }
