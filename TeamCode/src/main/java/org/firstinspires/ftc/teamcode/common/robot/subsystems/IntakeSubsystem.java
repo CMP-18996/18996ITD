@@ -24,6 +24,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public static double TRANSFERRING_VALUE = 0;
     public static double ACTIVE_VALUE = 1.00;
     public static double DISABLED_VALUE = 0.0;
+    public static double REVERSING_VALUE = -1.00;
 
     // State
     final private CRServoImpl intakeServo1;
@@ -43,7 +44,8 @@ public class IntakeSubsystem extends SubsystemBase {
     }
     public enum IntakingState {
         ACTIVE(ACTIVE_VALUE),
-        DISABLED(DISABLED_VALUE);
+        DISABLED(DISABLED_VALUE),
+        REVERSING(REVERSING_VALUE);
         public double val;
         IntakingState(double inval) {val = inval;}
     }

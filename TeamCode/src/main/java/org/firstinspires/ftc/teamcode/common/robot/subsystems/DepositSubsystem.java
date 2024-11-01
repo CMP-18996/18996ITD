@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.common.robot.subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+@Config
 public class DepositSubsystem extends SubsystemBase {
     // Constants
     final static double TRANSFER_ROTATOR_SERVO_MIN_ROT = 0.0;
