@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.common.robot.subsystems;
 
 import android.graphics.Color;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
@@ -11,6 +12,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+@Config
 public class IntakeSubsystem extends SubsystemBase {
     // Constants
     final static double TRAPDOOR_MIN_ROT = 0.0;
