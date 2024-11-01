@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.test.subsystem_tests;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
@@ -17,7 +18,7 @@ import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
-
+@Config
 @TeleOp(name = "Color Sensor")
 public class ColorSensorTest extends CommandOpMode {
 
@@ -40,7 +41,8 @@ public class ColorSensorTest extends CommandOpMode {
                 // new WaitCommand(3000),
                 // new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
                 // new ColorSensorCommand(robot.intake, IntakeSubsystem.ColorState.YELLOW)
-            )
+            ),
+            new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.CLOSED)
         );
     }
 
@@ -51,8 +53,10 @@ public class ColorSensorTest extends CommandOpMode {
         if (colorSensor.blue() > 150 || colorSensor.green() > 150) {
 //            occupied = true;
             CommandScheduler.getInstance().schedule(
-                    new ParallelCommandGroup(
+                    new SequentialCommandGroup(
+                            // new WaitCommand(300),
                             new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.CLOSED),
+                            new WaitCommand(400),
                             new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED)
                     )
             );
@@ -60,7 +64,7 @@ public class ColorSensorTest extends CommandOpMode {
         if (colorSensor.blue() <= 150 && colorSensor.green() <= 150) {
 //            occupied = false;
             CommandScheduler.getInstance().schedule(
-                    new WaitCommand(500),
+                    new WaitCommand(1000),
                     new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.EJECTING),
                     new WaitCommand(200),
                     new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.ACTIVE)

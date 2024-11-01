@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.common.robot.subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
@@ -9,14 +10,15 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+@Config
 public class IntakeSubsystem extends SubsystemBase {
     // Constants
     final static double TRAPDOOR_MIN_ROT = 0.0;
-    final static double TRAPDOOR_MAX_ROT = 0.0;
+    final static double TRAPDOOR_MAX_ROT = 0.5;
     final static double INTAKE_ROTATION_MIN_ROT = 0.0; // max and min rotation used as what arm is actually being rotated to, subject to change
     final static double INTAKE_ROTATION_MAX_ROT = 0.0;
-    public static double CLOSED_VALUE = .5;
-    public static double EJECTING_VALUE = 1.0;
+    public static double CLOSED_VALUE = 1.0;
+    public static double EJECTING_VALUE = 0.5;
     public static double TRANSFERRING_VALUE = 0;
     public static double ACTIVE_VALUE = 1.00;
     public static double DISABLED_VALUE = 0.0;
