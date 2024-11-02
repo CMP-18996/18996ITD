@@ -29,7 +29,7 @@ public class VeryBasicTeleop extends CommandOpMode {
 
     @Override
     public void initialize() {
-        robot = new Robot(hardwareMap, Subsystems.INTAKE, Subsystems.DEPOSIT, Subsystems.EXTENSION, Subsystems.LIFT);
+        robot = new Robot(hardwareMap, Subsystems.INTAKE, Subsystems.DEPOSIT, Subsystems.LIFT);
         CommandScheduler.getInstance().reset();
         leftFront = hardwareMap.get(MotorEx.class, "leftFront");
         rightFront = hardwareMap.get(MotorEx.class, "rightFront");
