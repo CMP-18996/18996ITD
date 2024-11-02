@@ -10,16 +10,14 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class DepositSubsystem extends SubsystemBase {
     // Constants
     final static double TRANSFER_ROTATOR_SERVO_MIN_ROT = 0.0;
-    final static double TRANSFER_ROTATOR_SERVO_READY_ROT = 0.0;
     final static double TRANSFER_ROTATOR_SERVO_MAX_ROT = 0.0;
 
 
     // State
     private final ServoEx transferRotatorServo;
-    private TransferRotatorState transferRotatorState = TransferRotatorState.TRANSFER_REST;
+    private TransferRotatorState transferRotatorState = TransferRotatorState.TRANSFER_READY;
     public enum TransferRotatorState {
-        TRANSFER_REST(TRANSFER_ROTATOR_SERVO_MIN_ROT),
-        TRANSFER_READY(TRANSFER_ROTATOR_SERVO_READY_ROT),
+        TRANSFER_READY(TRANSFER_ROTATOR_SERVO_MIN_ROT),
         DEPOSITING(TRANSFER_ROTATOR_SERVO_MAX_ROT);
 
         public double val;
