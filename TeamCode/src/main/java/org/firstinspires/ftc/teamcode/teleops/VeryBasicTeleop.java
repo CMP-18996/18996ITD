@@ -111,7 +111,7 @@ public class VeryBasicTeleop extends CommandOpMode {
             }
         );
 
-        gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+        gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 () -> {
                     CommandScheduler.getInstance().schedule(
                             new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.DROPPING),
@@ -119,7 +119,7 @@ public class VeryBasicTeleop extends CommandOpMode {
                     );
                 }
         );
-        gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+        gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenReleased(
                 () -> {
                     CommandScheduler.getInstance().schedule(
                             new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
