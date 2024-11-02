@@ -5,10 +5,13 @@ import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.common.commands.DepositRotationCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeCommand;
@@ -26,6 +29,7 @@ public class VeryBasicTeleop extends CommandOpMode {
     private MecanumDrive drive;
     private MotorEx leftFront, rightFront, leftBack, rightBack;
     private DcMotorEx extension;
+    private GamepadEx gamepad;
 
     @Override
     public void initialize() {
@@ -39,6 +43,8 @@ public class VeryBasicTeleop extends CommandOpMode {
         drive = new MecanumDrive(leftFront, rightFront, leftBack, rightBack);
 
         extension = hardwareMap.get(DcMotorEx.class, "extension");
+
+        gamepad = new GamepadEx(gamepad1);
     }
 
     /*
@@ -59,56 +65,70 @@ public class VeryBasicTeleop extends CommandOpMode {
         drive.driveRobotCentric(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
 
         // deposit, flips bucket, retracts lift
-        if (gamepad1.triangle) {
-            CommandScheduler.getInstance().schedule(
-                    new SequentialCommandGroup(
-                            new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET),
-                            new WaitCommand(400),
-                            new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
-                            new WaitCommand(600),
-                            new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY),
-                            new LiftSetPosition(robot.lift, LiftSubsystem.LOW_BASKET)
-                    )
-            );
-        }
+        gamepad.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
+                () -> {
+                    CommandScheduler.getInstance().schedule(
+                            new SequentialCommandGroup(
+                                    new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET),
+                                    new WaitCommand(400),
+                                    new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
+                                    new WaitCommand(600),
+                                    new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY),
+                                    new LiftSetPosition(robot.lift, LiftSubsystem.LOW_BASKET)
+                            )
+                    );
+                }
+        );
 
-        if (gamepad1.dpad_up) {
-            CommandScheduler.getInstance().schedule(
-                    new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET)
-            );
-        }
+        gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
+                () -> {
+                    CommandScheduler.getInstance().schedule(
+                            new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET)
+                    );
+                }
+        );
 
-        if (gamepad1.dpad_down) {
-            CommandScheduler.getInstance().schedule(
-                    new LiftSetPosition(robot.lift, LiftSubsystem.GROUND)
-            );
-        }
+        gamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
+                () -> {
+                    CommandScheduler.getInstance().schedule(
+                        new LiftSetPosition(robot.lift, LiftSubsystem.GROUND)
+                );
+            }
+        );
 
-        if (gamepad1.left_bumper) {
-            CommandScheduler.getInstance().schedule(
-                    new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)
-            );
-        }
-        else {
-            CommandScheduler.getInstance().schedule(
-                    new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED)
-            );
-        }
+        gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+                () -> {
+                    CommandScheduler.getInstance().schedule(
+                        new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)
+                    );
+                }
+        );
+        gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenReleased(
+                () -> {
+                    CommandScheduler.getInstance().schedule(
+                        new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED)
+                );
+            }
+        );
 
-        if (gamepad1.right_bumper) {
-            CommandScheduler.getInstance().schedule(
-                    new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.DROPPING),
-                    new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.ACTIVE)
-            );
-        }
-        else {
-            CommandScheduler.getInstance().schedule(
-                    new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
-                    new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED)
-            );
-        }
+        gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+                () -> {
+                    CommandScheduler.getInstance().schedule(
+                            new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.DROPPING),
+                            new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.ACTIVE)
+                    );
+                }
+        );
+        gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+                () -> {
+                    CommandScheduler.getInstance().schedule(
+                            new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
+                            new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED)
+                    );
+                }
+        );
 
-        CommandScheduler.getInstance().run();
+//        CommandScheduler.getInstance().run();
 
         extension.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
     }
