@@ -1,23 +1,26 @@
 package org.firstinspires.ftc.teamcode.odo;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 @TeleOp(name="OdoVisualizer")
+@Config
 public class OdoVisualizer extends LinearOpMode
 {
 
     SparkFunOTOS otos;
     GoBildaPinpointDriver pinpoint;
 
-    final double ROBOT_SIZE = 12; // Inches, length of one side of robot box
+    static double ROBOT_SIZE = 15; // Inches, length of one side of robot box
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -27,6 +30,8 @@ public class OdoVisualizer extends LinearOpMode
         otos = hardwareMap.get(SparkFunOTOS.class, "otos");
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"pinpoint");
+
+        //OdometryHardware odometryHardware = new OdometryHardware(hardwareMap);
 
         configureOtos();
 
@@ -92,6 +97,38 @@ public class OdoVisualizer extends LinearOpMode
                     .setStroke("red")
                     //.strokeRect(otosPos.x, otosPos.y, 12, 12);
                     .strokePolygon(otosXPoints, otosYPoints);
+
+            SparkFunOTOS.Pose2D otosVel = otos.getVelocity();
+            SparkFunOTOS.Pose2D otosAcc = otos.getAcceleration();
+
+            //TODO add standard deviation
+
+            //TODO add raw encoder data
+
+            //TODO heading and headingVel
+
+            packet.put("otosXVel", otosVel.x);
+            packet.put("otosYVel", otosVel.y);
+            packet.put("otosHVel", otosVel.h);
+
+            packet.put("otosXAcc", otosAcc.x);
+            packet.put("otosYAcc", otosAcc.y);
+            packet.put("otosHAcc", otosAcc.h);
+
+            packet.put("otosStatus", otos.getStatus());
+
+            packet.put("pinpointXVel", pinpoint.getVelX());
+            packet.put("pinpointYVel", pinpoint.getVelY());
+            packet.put("pinpointHVel", pinpoint.getHeadingVelocity());
+
+            // Acceleration doesn't exist?
+            /*
+            packet.put("pinpointXAcc", pinpoint.getVelX());
+            packet.put("pinpointYAcc", pinpoint.getVelY());
+            packet.put("pinpointHAcc", pinpoint.getHeadingVelocity());
+            */
+
+            packet.put("pinpointStatus", pinpoint.getDeviceStatus());
 
             dashboard.sendTelemetryPacket(packet);
         }
@@ -174,7 +211,7 @@ public class OdoVisualizer extends LinearOpMode
         // the origin. If your robot does not start at the origin, or you have
         // another source of location information (eg. vision odometry), you can set
         // the OTOS location to match and it will continue to track from there.
-        SparkFunOTOS.Pose2D currentPosition = new SparkFunOTOS.Pose2D(0, 0, 0);
+        SparkFunOTOS.Pose2D currentPosition = new SparkFunOTOS.Pose2D(0, -160, 0);
         otos.setPosition(currentPosition);
 
         // Get the hardware and firmware version

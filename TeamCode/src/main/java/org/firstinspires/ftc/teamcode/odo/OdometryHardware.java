@@ -93,6 +93,8 @@ public class OdometryHardware {
 
         configurePinpoint();
 
+        configureLimelight();
+
         calibrateAll();
 
         limelight.start();
