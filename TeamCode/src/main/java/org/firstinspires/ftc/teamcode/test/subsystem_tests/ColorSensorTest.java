@@ -33,7 +33,6 @@ public class ColorSensorTest extends CommandOpMode {
         CommandScheduler.getInstance().reset();
 //        occupied = false;
         robot = new Robot(hardwareMap, subsystems);
-        colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
         super.schedule(
             new SequentialCommandGroup(
                 new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.ACTIVE),
@@ -49,6 +48,10 @@ public class ColorSensorTest extends CommandOpMode {
     @Override
     public void run() {
         CommandScheduler.getInstance().run();
+        telemetry.addData("red:", colorSensor.red());
+        telemetry.addData("blue:", colorSensor.blue());
+        telemetry.addData("green:", colorSensor.green());
+
         // This conditional stays until the color stuff gets tuned
         if (colorSensor.blue() > 150 || colorSensor.green() > 150) {
 //            occupied = true;
