@@ -17,7 +17,7 @@ public class Drive {
         leftFrontDrive = hardwareMap.get(DcMotor.class, HardwareMapNames.LEFT_FRONT);
         leftBackDrive = hardwareMap.get(DcMotor.class, HardwareMapNames.LEFT_BACK);
         rightFrontDrive = hardwareMap.get(DcMotor.class, HardwareMapNames.RIGHT_FRONT);
-        rightBackDrive = hardwareMap.get(DcMotor.class, HardwareMapNames.LEFT_BACK);
+        rightBackDrive = hardwareMap.get(DcMotor.class, HardwareMapNames.RIGHT_BACK);
 
         configureMotors();
     }

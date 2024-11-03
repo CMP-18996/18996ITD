@@ -21,9 +21,9 @@ public class LinearPathing {
         this.odometryFusion = odometryFusion;
     }
 
-    public void pointToPointDrive(Pose2D goalPos) {
-        // GET VALUES
-        Pose2D currentPos = new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0);
+    public void pointToPointDrive(Pose2D goalPos, Pose2D currentPos) {
+
+        //Pose2D currentPos = new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0);
 
         double xPID = xPID(currentPos.getX(DistanceUnit.INCH));
         double yPID = yPID(currentPos.getY(DistanceUnit.INCH));

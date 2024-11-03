@@ -6,7 +6,7 @@ import com.acmerobotics.dashboard.config.Config;
 public class HardwareMapNames {
     // Intake
     public static String INTAKE_SERVO_1 = "intake1";
-    public static String INTAKE_SERVO_2 = "intake1";
+    public static String INTAKE_SERVO_2 = "intake2";
     public static String INTAKE_ROTATOR = "intakeRotator";
     public static String INTAKE_TRAPDOOR = "trapdoor";
     public static String INTAKE_COLOR_SENSOR = "colorSensor";
@@ -15,8 +15,8 @@ public class HardwareMapNames {
     public static String EXTENSION_MOTOR = "extension";
 
     // Lift
-    public static String LIFT_MOTOR = "liftMotor";
-    public static String BUCKET_SERVO = "transferRotator";
+    public static String LIFT_MOTOR = "lift";
+    public static String BUCKET_SERVO = "bucket";
     public static String SPECIMEN_SERVO = "specimen";
 
     // Hang
@@ -29,8 +29,8 @@ public class HardwareMapNames {
     public static String LIMELIGHT = "limelight";
 
     // Drive
-    public static String LEFT_FRONT = "leftFront";
-    public static String RIGHT_FRONT = "rightFront";
-    public static String LEFT_BACK = "leftBack";
-    public static String RIGHT_BACK = "rightBack";
+    public static String LEFT_FRONT = "lF";
+    public static String RIGHT_FRONT = "rF";
+    public static String LEFT_BACK = "lB";
+    public static String RIGHT_BACK = "rB";
 }
