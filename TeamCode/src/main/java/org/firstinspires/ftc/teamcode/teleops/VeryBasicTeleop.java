@@ -46,6 +46,8 @@ public class VeryBasicTeleop extends CommandOpMode {
         extension = hardwareMap.get(DcMotorEx.class, "extension");
 
         gamepad = new GamepadEx(gamepad1);
+        telemetry.addLine("Initialized");
+        telemetry.update();
     }
 
     /*
@@ -78,6 +80,8 @@ public class VeryBasicTeleop extends CommandOpMode {
                                     new LiftSetPosition(robot.lift, LiftSubsystem.LOW_BASKET)
                             )
                     );
+                    telemetry.addLine("Y pressed, flip bucket");
+                    telemetry.update();
                 }
         );
 
@@ -86,6 +90,8 @@ public class VeryBasicTeleop extends CommandOpMode {
                     super.schedule(
                             new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET)
                     );
+                    telemetry.addLine("Dpad up");
+                    telemetry.update();
                 }
         );
 
@@ -93,8 +99,10 @@ public class VeryBasicTeleop extends CommandOpMode {
                 () -> {
                     super.schedule(
                         new LiftSetPosition(robot.lift, LiftSubsystem.GROUND)
-                );
-            }
+                    );
+                    telemetry.addLine("Dpad down");
+                    telemetry.update();
+                }
         );
 
         gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
@@ -102,6 +110,8 @@ public class VeryBasicTeleop extends CommandOpMode {
                     super.schedule(
                         new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)
                     );
+                    telemetry.addLine("Left bumper");
+                    telemetry.update();
                 }
         );
         gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenReleased(
