@@ -1,5 +1,13 @@
 package org.firstinspires.ftc.teamcode.test.subsystem_tests;
 
+
+
+import org.firstinspires.ftc.teamcode.common.commands.ColorSensorCommand;
+import org.firstinspires.ftc.teamcode.common.commands.IntakeCommand;
+import org.firstinspires.ftc.teamcode.common.commands.TrapdoorCommand;
+import org.firstinspires.ftc.teamcode.common.robot.Robot;
+import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
@@ -10,13 +18,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
-import org.firstinspires.ftc.teamcode.common.commands.ColorSensorCommand;
-import org.firstinspires.ftc.teamcode.common.commands.IntakeCommand;
-import org.firstinspires.ftc.teamcode.common.commands.TrapdoorCommand;
-import org.firstinspires.ftc.teamcode.common.robot.Robot;
-import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
 @Config
 @TeleOp(name = "Color Sensor Tuner")
@@ -46,7 +47,6 @@ public class ColorSensorTuner extends CommandOpMode {
         telemetry.addData("red:", colorSensor.red());
         telemetry.addData("blue:", colorSensor.blue());
         telemetry.addData("green:", colorSensor.green());
-
         telemetry.update();
     }
 }
