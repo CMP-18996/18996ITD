@@ -34,6 +34,6 @@ public class DepositSubsystem extends SubsystemBase {
     }
 
     public DepositSubsystem(HardwareMap hardwareMap) {
-        transferRotatorServo = new SimpleServo(hardwareMap, "transferRotator", TRANSFER_ROTATOR_SERVO_MIN_ROT, TRANSFER_ROTATOR_SERVO_MAX_ROT);
+        transferRotatorServo = new SimpleServo(hardwareMap, "bucket", TRANSFER_ROTATOR_SERVO_MIN_ROT, TRANSFER_ROTATOR_SERVO_MAX_ROT);
     }
 }

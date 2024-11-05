@@ -42,7 +42,7 @@ public class LiftSubsystem extends SubsystemBase {
         return liftMotor.isBusy();
     }
     public LiftSubsystem(HardwareMap hardwareMap) {
-        liftMotor = hardwareMap.get(DcMotorImpl.class, "liftMotor");
+        liftMotor = hardwareMap.get(DcMotorImpl.class, "lift");
         liftMotor.setTargetPosition(GROUND);
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        liftMotor.setTargetPosition(GROUND);

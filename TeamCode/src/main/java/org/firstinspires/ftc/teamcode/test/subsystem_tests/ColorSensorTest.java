@@ -33,6 +33,7 @@ public class ColorSensorTest extends CommandOpMode {
         CommandScheduler.getInstance().reset();
 //        occupied = false;
         robot = new Robot(hardwareMap, subsystems);
+        colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
         super.schedule(
             new SequentialCommandGroup(
                 new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.ACTIVE),

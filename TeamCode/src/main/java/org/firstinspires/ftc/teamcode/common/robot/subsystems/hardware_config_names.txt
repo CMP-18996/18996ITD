@@ -1,10 +1,10 @@
 Motors:
 Drive motors - leftFront, rightFront, leftBack, rightBack
 Extension - extension
-Lift - liftMotor
+Lift - liftMotor or lift
 
 Servos:
-Deposit - transferRotator
+Deposit - transferRotator or bucket
 Intake - trapdoor, intakeRotator, intake1, intake2
 
 Misc:

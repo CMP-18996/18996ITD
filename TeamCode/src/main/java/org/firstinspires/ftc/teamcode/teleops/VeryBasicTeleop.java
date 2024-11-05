@@ -7,6 +7,7 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -27,7 +28,7 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 public class VeryBasicTeleop extends CommandOpMode {
     private Robot robot;
     private MecanumDrive drive;
-    private MotorEx leftFront, rightFront, leftBack, rightBack;
+    private Motor leftFront, rightFront, leftBack, rightBack;
     private DcMotorEx extension;
     private GamepadEx gamepad;
 
@@ -36,11 +37,11 @@ public class VeryBasicTeleop extends CommandOpMode {
 //        robot = new Robot(hardwareMap, Subsystems.INTAKE, Subsystems.DEPOSIT, Subsystems.LIFT);
         robot = new Robot(hardwareMap, Subsystems.INTAKE, Subsystems.DEPOSIT, Subsystems.LIFT);
         CommandScheduler.getInstance().reset();
-        leftFront = hardwareMap.get(MotorEx.class, "leftFront");
-        rightFront = hardwareMap.get(MotorEx.class, "rightFront");
-        leftBack = hardwareMap.get(MotorEx.class, "leftBack");
-        rightBack = hardwareMap.get(MotorEx.class, "rightBack");
-        drive = new MecanumDrive(leftFront, rightFront, leftBack, rightBack);
+//        leftFront = hardwareMap.get(Motor.class, "lF");
+//        rightFront = hardwareMap.get(Motor.class, "rF");
+//        leftBack = hardwareMap.get(Motor.class, "lB");
+//        rightBack = hardwareMap.get(Motor.class, "rB");
+//        drive = new MecanumDrive(leftFront, rightFront, leftBack, rightBack);
 
         extension = hardwareMap.get(DcMotorEx.class, "extension");
 
@@ -62,12 +63,12 @@ public class VeryBasicTeleop extends CommandOpMode {
     Right button - toggle intake rotator up to down, turns intake on or off
      */
     public void run() {
-        drive.driveRobotCentric(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+//        drive.driveRobotCentric(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
 
         // deposit, flips bucket, retracts lift
         gamepad.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
                 () -> {
-                    CommandScheduler.getInstance().schedule(
+                    super.schedule(
                             new SequentialCommandGroup(
                                     new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET),
                                     new WaitCommand(400),
@@ -82,7 +83,7 @@ public class VeryBasicTeleop extends CommandOpMode {
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 () -> {
-                    CommandScheduler.getInstance().schedule(
+                    super.schedule(
                             new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET)
                     );
                 }
@@ -90,7 +91,7 @@ public class VeryBasicTeleop extends CommandOpMode {
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
                 () -> {
-                    CommandScheduler.getInstance().schedule(
+                    super.schedule(
                         new LiftSetPosition(robot.lift, LiftSubsystem.GROUND)
                 );
             }
@@ -98,14 +99,14 @@ public class VeryBasicTeleop extends CommandOpMode {
 
         gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
                 () -> {
-                    CommandScheduler.getInstance().schedule(
+                    super.schedule(
                         new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)
                     );
                 }
         );
         gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenReleased(
                 () -> {
-                    CommandScheduler.getInstance().schedule(
+                    super.schedule(
                         new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED)
                 );
             }
@@ -128,7 +129,7 @@ public class VeryBasicTeleop extends CommandOpMode {
                 }
         );
 
-//        CommandScheduler.getInstance().run();
+        CommandScheduler.getInstance().run();
 
         extension.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
     }

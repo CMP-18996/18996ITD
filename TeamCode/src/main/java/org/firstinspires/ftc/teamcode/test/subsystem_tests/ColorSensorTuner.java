@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
 @Config
-@TeleOp(name = "Color Sensor")
+@TeleOp(name = "Color Sensor Tuner")
 public class ColorSensorTuner extends CommandOpMode {
 
     Subsystems subsystems = Subsystems.INTAKE;
@@ -31,9 +31,10 @@ public class ColorSensorTuner extends CommandOpMode {
     public void initialize() {
         CommandScheduler.getInstance().reset();
         robot = new Robot(hardwareMap, subsystems);
+        colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
         super.schedule(
                 new SequentialCommandGroup(
-                        new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.ACTIVE),
+//                        new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.ACTIVE),
                         new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.CLOSED)
                 )
         );
@@ -46,7 +47,7 @@ public class ColorSensorTuner extends CommandOpMode {
         telemetry.addData("blue:", colorSensor.blue());
         telemetry.addData("green:", colorSensor.green());
 
-
+        telemetry.update();
     }
 }
 
