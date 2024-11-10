@@ -3,10 +3,7 @@ package org.firstinspires.ftc.teamcode.test.subsystem_tests;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.WaitCommand;
-import com.arcrobotics.ftclib.hardware.ServoEx;
-import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.common.commands.ColorSensorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeCommand;
@@ -36,7 +33,7 @@ public class IntakeCombinedTest extends CommandOpMode {
                 new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
                 new WaitCommand(3000),
                 new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.CLOSED),
-                new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.DROPPING)
+                new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.PICKING_UP)
             );
         }
         else if(robot.intake.colorState.toString().equals("Blue") || robot.intake.colorState.toString().equals("None")){
