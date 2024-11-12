@@ -1,12 +1,9 @@
 package org.firstinspires.ftc.teamcode.common.robot.subsystems;
 
-import android.graphics.Color;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
-import com.arcrobotics.ftclib.hardware.motors.CRServo;
 import com.qualcomm.robotcore.hardware.CRServoImpl;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -17,8 +14,10 @@ public class IntakeSubsystem extends SubsystemBase {
     // Constants
     final static double TRAPDOOR_MIN_ROT = 0.0;
     final static double TRAPDOOR_MAX_ROT = 0.0;
-    final static double INTAKE_ROTATION_MIN_ROT = 0.0; // max and min rotation used as what arm is actually being rotated to, subject to change
-    final static double INTAKE_ROTATION_MAX_ROT = 0.0;
+    final static double INTAKE_ROTATION_TRANSFER = 0.0; // max and min rotation used as what arm is actually being rotated to, subject to change
+    final static double INTAKE_ROTATION_PICK_UP = 0.0;
+    final static double INTAKE_ROTATION_MOVING = 0.0;
+
     public static double CLOSED_VALUE = .5;
     public static double EJECTING_VALUE = 1.0;
     public static double TRANSFERRING_VALUE = 0;
@@ -38,6 +37,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public ColorState colorState = ColorState.NONE;
     public enum TrapdoorState {
         CLOSED(CLOSED_VALUE),
+        TRANSFERRING(TRANSFERRING_VALUE),
         EJECTING(EJECTING_VALUE);
         public double val;
         TrapdoorState(double inval) {val = inval;}
@@ -51,8 +51,10 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public enum IntakeRotatorState {
-        TRANSFERRING(INTAKE_ROTATION_MIN_ROT),
-        DROPPING(INTAKE_ROTATION_MAX_ROT);
+        TRANSFERRING(INTAKE_ROTATION_TRANSFER),
+        MOVING(INTAKE_ROTATION_MOVING),
+
+        PICKING_UP(INTAKE_ROTATION_PICK_UP);
         public double val;
         IntakeRotatorState(double inval) {val = inval;}
     }
@@ -94,7 +96,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void updateIntakeRotatorState(IntakeRotatorState setState) {
         intakeRotatorState = setState;
-         intakeRotationServo.setPosition(intakeRotatorState.val);
+        intakeRotationServo.setPosition(intakeRotatorState.val);
     }
 
     public TrapdoorState getTrapdoorState() {
@@ -111,7 +113,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public IntakeSubsystem(HardwareMap hardwareMap) {
         trapdoorServo = new SimpleServo(hardwareMap, "trapdoor", TRAPDOOR_MIN_ROT, TRAPDOOR_MAX_ROT);
-        intakeRotationServo = new SimpleServo(hardwareMap, "intakeRotator", INTAKE_ROTATION_MIN_ROT, INTAKE_ROTATION_MAX_ROT);
+        intakeRotationServo = new SimpleServo(hardwareMap, "intakeRotator", INTAKE_ROTATION_TRANSFER, INTAKE_ROTATION_PICK_UP);
         intakeServo1 = hardwareMap.get(CRServoImpl.class, "intake1");
         intakeServo2 = hardwareMap.get(CRServoImpl.class, "intake2");
         colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");

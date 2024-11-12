@@ -125,9 +125,11 @@ public class VeryBasicTeleop extends CommandOpMode {
         gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 () -> {
                     CommandScheduler.getInstance().schedule(
-                            new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.DROPPING),
+                            new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.PICKING_UP),
                             new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.ACTIVE)
                     );
+                    telemetry.addLine("Right bumper");
+                    telemetry.update();
                 }
         );
         gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenReleased(
