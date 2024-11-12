@@ -4,6 +4,7 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.common.commands.ExtendCommand;
 import org.firstinspires.ftc.teamcode.common.commands.ExtensionMotorPowerCommand;
@@ -14,6 +15,7 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
 import java.security.cert.Extension;
 
+@TeleOp(name="Extension Power Position")
 public class ExtensionPowerAndPositionTest extends CommandOpMode {
     Subsystems subsystems = Subsystems.EXTENSION;
     Robot robot;

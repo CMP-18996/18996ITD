@@ -8,11 +8,14 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class ExtensionSubsystem extends SubsystemBase {
     DcMotor extensionMotor;
     ExtensionState extensionState = ExtensionState.CONTRACTED;
+    public static int CONTRACTED_POS = 0;
+    public static int FULL_EXTENSION_POS = 200;
+    public static int HALF_EXTENDED_POS = 100;
 
     public enum ExtensionState {
-        CONTRACTED(0),
-        FULLY_EXTENDED(100),
-        HALF_EXTENDED(200),
+        CONTRACTED(CONTRACTED_POS),
+        FULLY_EXTENDED(FULL_EXTENSION_POS),
+        HALF_EXTENDED(HALF_EXTENDED_POS),
         CUSTOM(100);
         public int position;
         ExtensionState(int value) { position = value; }
