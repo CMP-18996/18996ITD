@@ -18,19 +18,23 @@ import org.firstinspires.ftc.teamcode.common.commands.DepositRotationCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeRotatorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.LiftSetPosition;
+import org.firstinspires.ftc.teamcode.common.robot.Drive;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
+import org.firstinspires.ftc.teamcode.odo.GoBildaPinpointDriver;
+import org.firstinspires.ftc.teamcode.odo.OdometryHardware;
 
 @TeleOp(name="Very Basic Teleop")
 public class VeryBasicTeleop extends CommandOpMode {
     private Robot robot;
-    private MecanumDrive drive;
-    private Motor leftFront, rightFront, leftBack, rightBack;
+    private Drive drive;
+//    private Motor leftFront, rightFront, leftBack, rightBack;
     private DcMotorEx extension;
     private GamepadEx gamepad;
+    OdometryHardware odo;
 
     @Override
     public void initialize() {
@@ -42,6 +46,9 @@ public class VeryBasicTeleop extends CommandOpMode {
 //        leftBack = hardwareMap.get(Motor.class, "lB");
 //        rightBack = hardwareMap.get(Motor.class, "rB");
 //        drive = new MecanumDrive(leftFront, rightFront, leftBack, rightBack);
+        drive = new Drive(hardwareMap);
+        odo = new OdometryHardware(hardwareMap);
+        drive.setDriveMode(Drive.DriveMode.FIELD_CENTRIC);
 
         extension = hardwareMap.get(DcMotorEx.class, "extension");
 
@@ -66,6 +73,8 @@ public class VeryBasicTeleop extends CommandOpMode {
      */
     public void run() {
 //        drive.driveRobotCentric(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+        odo.pinpoint.update(GoBildaPinpointDriver.readData.ONLY_UPDATE_HEADING);
+        drive.vectorDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, odo.pinpoint.getHeading());
 
         // deposit, flips bucket, retracts lift
         gamepad.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
@@ -91,6 +100,7 @@ public class VeryBasicTeleop extends CommandOpMode {
                             new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET)
                     );
                     telemetry.addLine("Dpad up");
+                    telemetry.addLine("" + robot.lift.motorWorking());
                     telemetry.update();
                 }
         );
@@ -101,6 +111,8 @@ public class VeryBasicTeleop extends CommandOpMode {
                         new LiftSetPosition(robot.lift, LiftSubsystem.GROUND)
                     );
                     telemetry.addLine("Dpad down");
+                    telemetry.addLine("" + robot.lift.motorWorking());
+
                     telemetry.update();
                 }
         );

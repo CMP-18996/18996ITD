@@ -12,11 +12,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 @Config
 public class IntakeSubsystem extends SubsystemBase {
     // Constants
-    static double TRAPDOOR_MIN_ROT = 0.0;
-    static double TRAPDOOR_MAX_ROT = 0.0;
-    static double INTAKE_ROTATION_TRANSFER = 0.0; // max and min rotation used as what arm is actually being rotated to, subject to change
-    static double INTAKE_ROTATION_PICK_UP = 0.0;
-    static double INTAKE_ROTATION_MOVING = 0.0;
+    public static double TRAPDOOR_MIN_ROT = 0.0;
+    public static double TRAPDOOR_MAX_ROT = 0.0;
+    public static double INTAKE_ROTATION_TRANSFER = 0.0; // max and min rotation used as what arm is actually being rotated to, subject to change
+    public static double INTAKE_ROTATION_PICK_UP = 0.0;
+    public static double INTAKE_ROTATION_MOVING = 0.0;
 
     public static double CLOSED_VALUE = .5;
     public static double EJECTING_VALUE = 1.0;
