@@ -67,5 +67,6 @@ public class ExtensionSubsystem extends SubsystemBase {
         extensionMotor.setTargetPosition(0);
         extensionMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         extensionMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.setState(ExtensionState.CONTRACTED);
     }
 }
