@@ -12,11 +12,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 @Config
 public class IntakeSubsystem extends SubsystemBase {
     // Constants
-    final static double TRAPDOOR_MIN_ROT = 0.0;
-    final static double TRAPDOOR_MAX_ROT = 0.0;
-    final static double INTAKE_ROTATION_TRANSFER = 0.0; // max and min rotation used as what arm is actually being rotated to, subject to change
-    final static double INTAKE_ROTATION_PICK_UP = 0.0;
-    final static double INTAKE_ROTATION_MOVING = 0.0;
+    static double TRAPDOOR_MIN_ROT = 0.0;
+    static double TRAPDOOR_MAX_ROT = 0.0;
+    static double INTAKE_ROTATION_TRANSFER = 0.0; // max and min rotation used as what arm is actually being rotated to, subject to change
+    static double INTAKE_ROTATION_PICK_UP = 0.0;
+    static double INTAKE_ROTATION_MOVING = 0.0;
 
     public static double CLOSED_VALUE = .5;
     public static double EJECTING_VALUE = 1.0;
@@ -119,5 +119,7 @@ public class IntakeSubsystem extends SubsystemBase {
         colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
         intakeServo1.setDirection(DcMotorSimple.Direction.FORWARD); // subject to change
         intakeServo2.setDirection(DcMotorSimple.Direction.REVERSE); // subject to change
+        this.updateIntakeRotatorState(IntakeRotatorState.TRANSFERRING);
+        this.updateIntakingState(IntakingState.DISABLED);
     }
 }

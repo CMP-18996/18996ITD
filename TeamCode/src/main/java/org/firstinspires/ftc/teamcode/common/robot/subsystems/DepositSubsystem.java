@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 @Config
 public class DepositSubsystem extends SubsystemBase {
     // Constants
-    final static double TRANSFER_ROTATOR_SERVO_MIN_ROT = 0.0;
-    final static double TRANSFER_ROTATOR_SERVO_MAX_ROT = 50.0;
+    static double TRANSFER_ROTATOR_SERVO_MIN_ROT = 0.0;
+    static double TRANSFER_ROTATOR_SERVO_MAX_ROT = 50.0;
 
 
     // State
@@ -35,5 +35,6 @@ public class DepositSubsystem extends SubsystemBase {
 
     public DepositSubsystem(HardwareMap hardwareMap) {
         transferRotatorServo = new SimpleServo(hardwareMap, "bucket", TRANSFER_ROTATOR_SERVO_MIN_ROT, TRANSFER_ROTATOR_SERVO_MAX_ROT);
+        this.updateTransferRotatorState(TransferRotatorState.TRANSFER_READY);
     }
 }
