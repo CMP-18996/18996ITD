@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 @Config
 public class DepositSubsystem extends SubsystemBase {
     // Constants
-    static double TRANSFER_ROTATOR_SERVO_MIN_ROT = 0.0;
-    static double TRANSFER_ROTATOR_SERVO_MAX_ROT = 50.0;
+    public static double TRANSFER_ROTATOR_SERVO_MIN_ROT = 0.0;
+    public static double TRANSFER_ROTATOR_SERVO_MAX_ROT = 50.0;
 
 
     // State

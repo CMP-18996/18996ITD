@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.common.robot.Drive;
 
 @Config
 public class LinearPathing {
@@ -34,7 +35,7 @@ public class LinearPathing {
         double y_power = (yPID * Math.cos(rad)) - (xPID * Math.sin(rad));
         double h_power = hPID;
 
-        drive.vectorDrive(x_power, y_power, h_power);
+        drive.vectorDrive(x_power, y_power, h_power, 0);
     }
 
     private double xPID(double x) {
