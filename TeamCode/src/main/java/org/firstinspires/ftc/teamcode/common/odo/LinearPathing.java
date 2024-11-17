@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.odo;
+package org.firstinspires.ftc.teamcode.common.odo;
 
 import com.acmerobotics.dashboard.config.Config;
 

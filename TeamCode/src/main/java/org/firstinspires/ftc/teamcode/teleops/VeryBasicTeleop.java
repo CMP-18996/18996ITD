@@ -4,15 +4,10 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
-import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.common.commands.DepositRotationCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeCommand;
@@ -24,8 +19,8 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
-import org.firstinspires.ftc.teamcode.odo.GoBildaPinpointDriver;
-import org.firstinspires.ftc.teamcode.odo.OdometryHardware;
+import org.firstinspires.ftc.teamcode.common.odo.GoBildaPinpointDriver;
+import org.firstinspires.ftc.teamcode.common.odo.OdometryHardware;
 
 @TeleOp(name="Very Basic Teleop")
 public class VeryBasicTeleop extends CommandOpMode {

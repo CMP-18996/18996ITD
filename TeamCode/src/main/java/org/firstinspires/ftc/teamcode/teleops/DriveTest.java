@@ -8,8 +8,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.common.robot.Drive;
-import org.firstinspires.ftc.teamcode.odo.GoBildaPinpointDriver;
-import org.firstinspires.ftc.teamcode.odo.OdometryHardware;
+import org.firstinspires.ftc.teamcode.common.odo.GoBildaPinpointDriver;
+import org.firstinspires.ftc.teamcode.common.odo.OdometryHardware;
 
 @TeleOp(name = "Drive Test")
 @Config

@@ -5,8 +5,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.drive.MecanumDrive;
-import org.firstinspires.ftc.teamcode.drive.SparkFunOTOSDrive;
+import org.firstinspires.ftc.teamcode.common.drive.SparkFunOTOSDrive;
 
 public final class SplineTest extends LinearOpMode {
     @Override

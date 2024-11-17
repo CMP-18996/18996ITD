@@ -20,7 +20,7 @@
  *   SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.odo;
+package org.firstinspires.ftc.teamcode.common.odo;
 
 import static com.qualcomm.robotcore.util.TypeConversion.byteArrayToInt;
 

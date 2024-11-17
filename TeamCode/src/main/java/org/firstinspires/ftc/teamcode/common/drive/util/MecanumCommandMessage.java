@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.drive.util;
+package org.firstinspires.ftc.teamcode.common.drive.util;
 
 public final class MecanumCommandMessage {
     public long timestamp;
