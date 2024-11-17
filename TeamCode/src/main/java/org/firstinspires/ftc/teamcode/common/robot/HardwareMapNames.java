@@ -20,7 +20,7 @@ public class HardwareMapNames {
     public static String SPECIMEN_SERVO = "specimen";
 
     // Hang
-    public static String HANG_MOTOR_1 = "hang1";
+    public static String HANG_MOTOR_1 = "hang";
     public static String HANG_MOTOR_2 = "hang1";
 
     // Odometry
