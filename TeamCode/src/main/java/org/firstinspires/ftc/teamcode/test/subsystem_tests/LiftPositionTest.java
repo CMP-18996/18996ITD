@@ -15,14 +15,12 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
 @TeleOp(name="Lift Position")
 public class LiftPositionTest extends CommandOpMode {
-
-    Subsystems subsystems;
     Robot robot;
 
     @Override
     public void initialize() {
         CommandScheduler.getInstance().reset();
-        robot = new Robot(hardwareMap, subsystems.LIFT);
+        robot = new Robot(hardwareMap, Subsystems.LIFT);
         CommandScheduler.getInstance().registerSubsystem(robot.lift);
         CommandScheduler.getInstance().schedule(
             new SequentialCommandGroup(
