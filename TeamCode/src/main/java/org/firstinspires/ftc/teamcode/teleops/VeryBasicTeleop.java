@@ -151,5 +151,9 @@ public class VeryBasicTeleop extends CommandOpMode {
         CommandScheduler.getInstance().run();
 
         extension.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
+
+        telemetry.addData("Lift target", robot.lift.getCurrTarget());
+        telemetry.addData("Lift current position", robot.lift.getCurrentPosition());
+        telemetry.update();
     }
 }
