@@ -115,24 +115,16 @@ public class HardwareTeleop extends LinearOpMode {
         Servo bucketServo = hardwareMap.get(Servo.class, HardwareMapNames.BUCKET_SERVO);
         bucketServo.scaleRange(0.0, 1.0);
 
+        DcMotorEx hang = hardwareMap.get(DcMotorEx.class, HardwareMapNames.HANG_MOTOR_1);
+        hang.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         Servo specimenServo = hardwareMap.get(Servo.class, HardwareMapNames.SPECIMEN_SERVO);
         specimenServo.scaleRange(0.6, 0.8);
 
-        DcMotor leftFrontDrive = hardwareMap.get(DcMotor.class, HardwareMapNames.LEFT_FRONT);
-        DcMotor leftBackDrive = hardwareMap.get(DcMotor.class, HardwareMapNames.LEFT_BACK);
-        DcMotor rightFrontDrive = hardwareMap.get(DcMotor.class, HardwareMapNames.RIGHT_FRONT);
-        DcMotor rightBackDrive = hardwareMap.get(DcMotor.class, HardwareMapNames.RIGHT_BACK);
-
-        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-
         bucketServo.setPosition(BUCKET_SERVO_IDLE);
         specimenServo.setPosition(SPECIMEN_CLOSED);
-        intakeRotator.setPosition(INTAKE_ROTATOR_ACTIVE/2);
-       // wait(100);
         intakeRotator.setPosition(INTAKE_ROTATOR_INACTIVE);
+
         intake1.setPower(0);
         intake2.setPower(0);
 
@@ -295,7 +287,18 @@ public class HardwareTeleop extends LinearOpMode {
                 liftPower /= Math.abs(liftPower);
                 telemetry.addLine("EXCEED POWER !!!!");
             }
-            liftMotor.setPower(liftPower - currentGamepad1.right_stick_y);
+            liftMotor.setPower(-currentGamepad1.right_stick_y);
+
+            if (currentGamepad1.dpad_up) {
+                hang.setPower(1.0);
+            }
+            else if (currentGamepad1.dpad_down) {
+                hang.setPower(-1.0);
+            }
+            else {
+                hang.setPower(0);
+            }
+
 
 
 
