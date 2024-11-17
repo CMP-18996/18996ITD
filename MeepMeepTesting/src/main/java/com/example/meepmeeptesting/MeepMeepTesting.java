@@ -18,6 +18,10 @@ public class MeepMeepTesting {
                         .splineTo(new Vector2d(54,54), Math.toRadians(45))
                         .setReversed(true)
                         .splineTo(new Vector2d(46,46), Math.toRadians(-90))
+                        .setReversed(false)
+                        .splineTo(new Vector2d(54,54), Math.toRadians(45))
+                        .setReversed(true)
+                        .splineTo(new Vector2d(0, 36), Math.toRadians(-90))
                         .build());
 
 
