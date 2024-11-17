@@ -3,10 +3,12 @@ package org.firstinspires.ftc.teamcode.auto;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.common.drive.SparkFunOTOSDrive;
 
+@Autonomous(name="auto for now")
 public class Auto extends OpMode {
     Pose2d beginPose;
     SparkFunOTOSDrive drive;
