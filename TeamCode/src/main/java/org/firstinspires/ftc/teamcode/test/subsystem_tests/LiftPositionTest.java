@@ -4,6 +4,7 @@ import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -22,11 +23,13 @@ public class LiftPositionTest extends CommandOpMode {
     public void initialize() {
         CommandScheduler.getInstance().reset();
         robot = new Robot(hardwareMap, subsystems.LIFT);
-        super.schedule(
+        CommandScheduler.getInstance().registerSubsystem(robot.lift);
+        CommandScheduler.getInstance().schedule(
             new SequentialCommandGroup(
                 new LiftSetPosition(robot.lift, robot.lift.GROUND),
                 new LiftSetPosition(robot.lift, robot.lift.LOW_RUNG),
                 new LiftSetPosition(robot.lift, robot.lift.HIGH_RUNG),
+                new WaitCommand(1000),
                 new LiftSetPosition(robot.lift, robot.lift.GROUND),
                 new LiftSetPosition(robot.lift, robot.lift.LOW_BASKET),
                 new LiftSetPosition(robot.lift, robot.lift.HIGH_BASKET),
