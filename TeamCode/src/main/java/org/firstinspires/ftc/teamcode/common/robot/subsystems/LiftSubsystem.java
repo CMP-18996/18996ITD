@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 @Config
 public class LiftSubsystem extends SubsystemBase {
     // Constants
-    private double P = .0001;
+    public static double P = .0001;
     public static int GROUND = 0;
     public static int LOW_RUNG = 100;
     public static int HIGH_RUNG = 200;
@@ -30,12 +30,16 @@ public class LiftSubsystem extends SubsystemBase {
     public int getCurrentPosition() {
         return currPosition;
     }
+    public int getCurrTarget() {
+        return currTarget;
+    }
 
     @Override
     public void periodic() {
         currPosition = liftMotor.getCurrentPosition();
         liftMotor.setTargetPosition(currTarget);
         liftMotor.setPower(P * Math.abs(currPosition - currTarget)); // TODO: implement proportional controller
+        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public boolean motorWorking() {
