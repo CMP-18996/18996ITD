@@ -1,17 +1,19 @@
 package org.firstinspires.ftc.teamcode.common.robot.subsystems;
 
+import static java.lang.Math.abs;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorImpl;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Range;
 
 @Config
 public class LiftSubsystem extends SubsystemBase {
     // Constants
     public static double P = .0001;
+    public static double F = .01;
     public static int GROUND = 0;
     public static int LOW_RUNG = 100;
     public static int HIGH_RUNG = 200;
@@ -36,10 +38,9 @@ public class LiftSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        currPosition = liftMotor.getCurrentPosition();
-        liftMotor.setTargetPosition(currTarget);
-        liftMotor.setPower(P * Math.abs(currPosition - currTarget)); // TODO: implement proportional controller
-        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        double error = currTarget - liftMotor.getCurrentPosition();
+        double power = Range.clip(P * error + F * (error / Math.max(abs(error), 0.01)), 2, 3);
+        liftMotor.setPower(power);
     }
 
     public boolean motorWorking() {
@@ -47,12 +48,9 @@ public class LiftSubsystem extends SubsystemBase {
     }
     public LiftSubsystem(HardwareMap hardwareMap) {
         liftMotor = hardwareMap.get(DcMotorImpl.class, "lift");
-        liftMotor.setTargetPosition(GROUND);
-        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        liftMotor.setTargetPosition(GROUND);
-        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         currPosition = liftMotor.getCurrentPosition();
-        this.setTargetPosition(GROUND);
     }
 }
