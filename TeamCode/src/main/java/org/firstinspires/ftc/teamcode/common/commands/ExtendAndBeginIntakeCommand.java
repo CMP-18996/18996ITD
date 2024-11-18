@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 public class ExtendAndBeginIntakeCommand extends SequentialCommandGroup {
     public ExtendAndBeginIntakeCommand(ExtensionSubsystem extensionSubsystem, IntakeSubsystem intakeSubsystem, LiftSubsystem liftSubsystem) {
         addCommands(
-                new LiftSetPosition(liftSubsystem, 0),
+                new LiftSetPosition(liftSubsystem, liftSubsystem.GROUND),
                 new IntakeRotatorCommand(intakeSubsystem, IntakeSubsystem.IntakeRotatorState.MOVING),
                 new ExtendCommand(extensionSubsystem, ExtensionSubsystem.ExtensionState.FULLY_EXTENDED),
                 new IntakeRotatorCommand(intakeSubsystem, IntakeSubsystem.IntakeRotatorState.PICKING_UP),
