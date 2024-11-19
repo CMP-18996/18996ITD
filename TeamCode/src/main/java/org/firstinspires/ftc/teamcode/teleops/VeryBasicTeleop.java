@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.common.commands.DepositRotationCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeRotatorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.LiftSetPosition;
+import org.firstinspires.ftc.teamcode.common.commands.RetractAndTransferCommand;
 import org.firstinspires.ftc.teamcode.common.robot.Drive;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
@@ -108,6 +109,16 @@ public class VeryBasicTeleop extends CommandOpMode {
                     telemetry.addLine("Dpad down");
                     telemetry.addLine("" + robot.lift.motorWorking());
 
+                    telemetry.update();
+                }
+        );
+
+        gamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
+                () -> {
+                    super.schedule(
+                            new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit)
+                    );
+                    telemetry.addLine("Dpad left");
                     telemetry.update();
                 }
         );
