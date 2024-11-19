@@ -4,6 +4,20 @@ import com.acmerobotics.dashboard.config.Config;
 
 @Config
 public class HardwareMapNames {
+
+
+    /*
+
+    control hub ports
+
+    0 -intake servo 1
+    1 - intake servo 2
+    2 - trapdoor
+    3 - intake rotator
+    4 - deposit rotator
+     */
+
+
     // Intake
     public static String INTAKE_SERVO_1 = "intake1";
     public static String INTAKE_SERVO_2 = "intake2";

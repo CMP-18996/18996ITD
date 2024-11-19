@@ -25,13 +25,19 @@ public class LiftPositionTest extends CommandOpMode {
         CommandScheduler.getInstance().schedule(
             new SequentialCommandGroup(
                 new LiftSetPosition(robot.lift, robot.lift.GROUND),
+                    new WaitCommand(3000),
                 new LiftSetPosition(robot.lift, robot.lift.LOW_RUNG),
+                    new WaitCommand(3000),
                 new LiftSetPosition(robot.lift, robot.lift.HIGH_RUNG),
-                new WaitCommand(1000),
+                    new WaitCommand(3000),
                 new LiftSetPosition(robot.lift, robot.lift.GROUND),
+                    new WaitCommand(3000),
                 new LiftSetPosition(robot.lift, robot.lift.LOW_BASKET),
+                    new WaitCommand(3000),
                 new LiftSetPosition(robot.lift, robot.lift.HIGH_BASKET),
-                new LiftSetPosition(robot.lift, robot.lift.GROUND)
+                    new WaitCommand(3000),
+                new LiftSetPosition(robot.lift, robot.lift.GROUND),
+                    new WaitCommand(3000)
             )
         );
     }
@@ -39,5 +45,8 @@ public class LiftPositionTest extends CommandOpMode {
     @Override
     public void run() {
         CommandScheduler.getInstance().run();
+        telemetry.addData("Target:", robot.lift.getCurrTarget());
+        telemetry.addData("Current Position", robot.lift.getCurrentPosition());
+        telemetry.update();
     }
 }
