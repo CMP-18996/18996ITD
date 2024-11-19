@@ -13,25 +13,24 @@ import com.qualcomm.robotcore.util.Range;
 @Config
 public class LiftSubsystem extends SubsystemBase {
     // Constants
-    public static double P = .0001;
-    public static double F = .01;
+    public static double P = .03;
+    public static double F = .1;
     public static int GROUND = 0;
-    public static int LOW_RUNG = 100;
-    public static int HIGH_RUNG = 200;
-    public static int LOW_BASKET = 150;
-    public static int HIGH_BASKET = 300;
+    public static int LOW_RUNG = 250;
+    public static int HIGH_RUNG = 650;
+    public static int LOW_BASKET = 450;
+    public static int HIGH_BASKET = 850;
 
     // State
     private final DcMotorImpl liftMotor;
     private int currTarget = 0;
-    private int currPosition;
 
     public void setTargetPosition(int targetPosition) {
         currTarget = targetPosition;
     }
 
     public int getCurrentPosition() {
-        return currPosition;
+        return liftMotor.getCurrentPosition();
     }
     public int getCurrTarget() {
         return currTarget;
@@ -40,7 +39,7 @@ public class LiftSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         double error = currTarget - liftMotor.getCurrentPosition();
-        double power = Range.clip(P * error + F * (error / Math.max(abs(error), 0.01)), -.6, .6);
+        double power = Range.clip(P * error + F * (error / Math.max(abs(error), 0.01)), -.6, 1);
         liftMotor.setPower(power);
     }
 
@@ -58,6 +57,5 @@ public class LiftSubsystem extends SubsystemBase {
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        currPosition = liftMotor.getCurrentPosition();
     }
 }

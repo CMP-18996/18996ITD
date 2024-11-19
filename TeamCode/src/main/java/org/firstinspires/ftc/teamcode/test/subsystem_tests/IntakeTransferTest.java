@@ -34,6 +34,9 @@ public class IntakeTransferTest extends CommandOpMode {
 
     @Override
     public void run() {
+        telemetry.addData("Intake Rotator State", robot.intake.getIntakeRotatorState());
+        telemetry.update();
+
         CommandScheduler.getInstance().run();
     }
 }

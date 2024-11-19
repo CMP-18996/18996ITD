@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.test.subsystem_tests;
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -24,18 +25,24 @@ public class ExtendCommandTest extends CommandOpMode {
         CommandScheduler.getInstance().reset();
         robot = new Robot(hardwareMap, subsystems);
         super.schedule(
-                new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.FULLY_EXTENDED),
-                new WaitCommand(1000),
-                new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CONTRACTED),
-                new WaitCommand(1000),
-                new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.HALF_EXTENDED),
-                new WaitCommand(1000),
-                new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CONTRACTED)
+                new SequentialCommandGroup(
+                        new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.FULLY_EXTENDED),
+                        new WaitCommand(3000),
+                        new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CONTRACTED),
+                        new WaitCommand(3000),
+                        new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.HALF_EXTENDED),
+                        new WaitCommand(3000),
+                        new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CONTRACTED)
+                )
         );
     }
 
     @Override
     public void run() {
+
         CommandScheduler.getInstance().run();
+        telemetry.addData("Target:", robot.extension.getTargetPosition());
+        telemetry.addData("Current Position", robot.extension.getPosition());
+        telemetry.update();
     }
 }

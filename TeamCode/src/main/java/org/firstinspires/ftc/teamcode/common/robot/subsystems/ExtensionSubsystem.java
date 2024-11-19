@@ -1,16 +1,22 @@
 package org.firstinspires.ftc.teamcode.common.robot.subsystems;
 
+import static java.lang.Math.abs;
+
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorImpl;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Range;
 
 public class ExtensionSubsystem extends SubsystemBase {
-    DcMotor extensionMotor;
+    DcMotorImpl extensionMotor;
     ExtensionState extensionState = ExtensionState.CONTRACTED;
     public static int CONTRACTED_POS = 0;
-    public static int FULL_EXTENSION_POS = 200;
-    public static int HALF_EXTENDED_POS = 100;
+    public static int FULL_EXTENSION_POS = 400;
+    public static int HALF_EXTENDED_POS = 200;
+    public static double P = .01;
+    public static double F = .07;
     private int targetPosition = 0;
 
     public enum ExtensionState {
@@ -40,19 +46,31 @@ public class ExtensionSubsystem extends SubsystemBase {
         return extensionMotor.getCurrentPosition();
     }
 
+    public int getTargetPosition() {
+        return targetPosition;
+    }
+
     public int getAbsError() {
-        return Math.abs(extensionMotor.getCurrentPosition() - extensionState.position);
+        return Math.abs(-extensionMotor.getCurrentPosition() - extensionState.position);
     }
 
     public void setExtensionMotorPower(double power) {
         extensionMotor.setPower(power);
     }
 
+    @Override
+    public void periodic() {
+        double error = targetPosition + extensionMotor.getCurrentPosition();
+        double power = Range.clip(P * error + F * (error / Math.max(abs(error), 0.01)), -.6, .6);
+        extensionMotor.setPower(power);
+    }
+
     public ExtensionSubsystem(HardwareMap hardwareMap) {
         extensionMotor = hardwareMap.get(DcMotorImpl.class, "extension");
+        extensionMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        extensionMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         extensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         extensionMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        extensionMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.setState(ExtensionState.CONTRACTED);
     }
 }
