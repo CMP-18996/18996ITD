@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.ExtensionSubsystem
 public class ExtensionPositionCommand extends InstantCommand {
     public ExtensionPositionCommand(ExtensionSubsystem extensionSubsystem, int position) {
         super(
-                () -> extensionSubsystem.setPosition(position)
+                () -> extensionSubsystem.setTargetPosition(position)
         );
     }
 }

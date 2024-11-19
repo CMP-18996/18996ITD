@@ -125,7 +125,8 @@ public class SparkFunOTOSDrive extends MecanumDrive {
         SparkFunOTOS.Pose2D otosVel = new SparkFunOTOS.Pose2D();
         SparkFunOTOS.Pose2D otosAcc = new SparkFunOTOS.Pose2D();
         otos.getPosVelAcc(otosPose,otosVel,otosAcc);
-        pose = OTOSPoseToRRPose(otosPose);
+        pose = OTOSPoseToRRPose(rot(otosPose));
+        otosVel = rot(otosVel);
         lastOtosPose = pose;
 
         // RR standard
@@ -137,5 +138,8 @@ public class SparkFunOTOSDrive extends MecanumDrive {
         FlightRecorder.write("ESTIMATED_POSE", new PoseMessage(pose));
 
         return new PoseVelocity2d(new Vector2d(otosVel.x, otosVel.y),otosVel.h);
+    }
+    public static SparkFunOTOS.Pose2D rot(SparkFunOTOS.Pose2D p) {
+       return new SparkFunOTOS.Pose2D(p.y, -p.x, p.h);
     }
 }

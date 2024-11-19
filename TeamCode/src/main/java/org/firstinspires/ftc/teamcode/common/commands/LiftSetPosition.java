@@ -21,6 +21,6 @@ public class LiftSetPosition extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return liftSubsystem.motorWorking();
+        return liftSubsystem.getAbsError() < 10;
     }
 }

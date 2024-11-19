@@ -34,45 +34,7 @@ public class VeryBasicTeleop extends CommandOpMode {
 
     @Override
     public void initialize() {
-//        robot = new Robot(hardwareMap, Subsystems.INTAKE, Subsystems.DEPOSIT, Subsystems.LIFT);
-        robot = new Robot(hardwareMap, Subsystems.INTAKE, Subsystems.DEPOSIT, Subsystems.LIFT);
-        CommandScheduler.getInstance().reset();
-//        leftFront = hardwareMap.get(Motor.class, "lF");
-//        rightFront = hardwareMap.get(Motor.class, "rF");
-//        leftBack = hardwareMap.get(Motor.class, "lB");
-//        rightBack = hardwareMap.get(Motor.class, "rB");
-//        drive = new MecanumDrive(leftFront, rightFront, leftBack, rightBack);
-        drive = new Drive(hardwareMap);
-        odo = new OdometryHardware(hardwareMap);
-        drive.setDriveMode(Drive.DriveMode.FIELD_CENTRIC);
-
-        extension = hardwareMap.get(DcMotorEx.class, "extension");
-
         gamepad = new GamepadEx(gamepad1);
-        telemetry.addLine("Initialized");
-        telemetry.update();
-    }
-
-    /*
-    Triangle - deposit, flips bucket, retracts lift
-    Circle - nothing
-    Cross - nothing
-    Square nothing
-    Dpad up - lift to highest
-    Dpad left - nothing
-    Dpad right - nothing
-    Dpad down - lift to lowest
-    Left trigger - extension back, variable
-    Right trigger - extension out, variable
-    Left button - held down, intake reverses
-    Right button - toggle intake rotator up to down, turns intake on or off
-     */
-    public void run() {
-//        drive.driveRobotCentric(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
-        odo.pinpoint.update(GoBildaPinpointDriver.readData.ONLY_UPDATE_HEADING);
-        drive.vectorDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, odo.pinpoint.getHeading());
-
-        // deposit, flips bucket, retracts lift
         gamepad.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
                 () -> {
                     super.schedule(
@@ -104,7 +66,7 @@ public class VeryBasicTeleop extends CommandOpMode {
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
                 () -> {
                     super.schedule(
-                        new LiftSetPosition(robot.lift, LiftSubsystem.GROUND)
+                            new LiftSetPosition(robot.lift, LiftSubsystem.GROUND)
                     );
                     telemetry.addLine("Dpad down");
                     telemetry.addLine("" + robot.lift.motorWorking());
@@ -126,7 +88,7 @@ public class VeryBasicTeleop extends CommandOpMode {
         gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
                 () -> {
                     super.schedule(
-                        new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)
+                            new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)
                     );
                     telemetry.addLine("Left bumper");
                     telemetry.update();
@@ -135,15 +97,15 @@ public class VeryBasicTeleop extends CommandOpMode {
         gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenReleased(
                 () -> {
                     super.schedule(
-                        new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED)
-                );
-            }
+                            new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED)
+                    );
+                }
         );
 
         gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 () -> {
                     CommandScheduler.getInstance().schedule(
-                        //    new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.DROPPING),
+                            //    new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.DROPPING),
                             new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.ACTIVE)
                     );
                 }
@@ -156,6 +118,46 @@ public class VeryBasicTeleop extends CommandOpMode {
                     );
                 }
         );
+
+//        robot = new Robot(hardwareMap, Subsystems.INTAKE, Subsystems.DEPOSIT, Subsystems.LIFT);
+        robot = new Robot(hardwareMap, Subsystems.INTAKE, Subsystems.DEPOSIT, Subsystems.LIFT);
+        CommandScheduler.getInstance().reset();
+//        leftFront = hardwareMap.get(Motor.class, "lF");
+//        rightFront = hardwareMap.get(Motor.class, "rF");
+//        leftBack = hardwareMap.get(Motor.class, "lB");
+//        rightBack = hardwareMap.get(Motor.class, "rB");
+//        drive = new MecanumDrive(leftFront, rightFront, leftBack, rightBack);
+        drive = new Drive(hardwareMap);
+        odo = new OdometryHardware(hardwareMap);
+        drive.setDriveMode(Drive.DriveMode.FIELD_CENTRIC);
+
+        extension = hardwareMap.get(DcMotorEx.class, "extension");
+
+
+        telemetry.addLine("Initialized");
+        telemetry.update();
+    }
+
+    /*
+    Triangle - deposit, flips bucket, retracts lift
+    Circle - nothing
+    Cross - nothing
+    Square nothing
+    Dpad up - lift to highest
+    Dpad left - nothing
+    Dpad right - nothing
+    Dpad down - lift to lowest
+    Left trigger - extension back, variable
+    Right trigger - extension out, variable
+    Left button - held down, intake reverses
+    Right button - toggle intake rotator up to down, turns intake on or off
+     */
+    public void run() {
+//        drive.driveRobotCentric(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+        odo.pinpoint.update(GoBildaPinpointDriver.readData.ONLY_UPDATE_HEADING);
+        drive.vectorDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, odo.pinpoint.getHeading());
+
+        // deposit, flips bucket, retracts lift
 
         CommandScheduler.getInstance().run();
 

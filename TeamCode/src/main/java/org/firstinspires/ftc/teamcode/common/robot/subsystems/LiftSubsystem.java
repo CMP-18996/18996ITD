@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorImpl;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
@@ -39,18 +40,24 @@ public class LiftSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         double error = currTarget - liftMotor.getCurrentPosition();
-        double power = Range.clip(P * error + F * (error / Math.max(abs(error), 0.01)), 2, 3);
+        double power = Range.clip(P * error + F * (error / Math.max(abs(error), 0.01)), -.6, .6);
         liftMotor.setPower(power);
     }
 
     public boolean motorWorking() {
         return liftMotor.isBusy();
     }
+
+    public int getAbsError() {
+        return Math.abs(currTarget - liftMotor.getCurrentPosition());
+    }
+
     public LiftSubsystem(HardwareMap hardwareMap) {
-        liftMotor = hardwareMap.get(DcMotorImpl.class, "lift");
+        liftMotor = hardwareMap.get(DcMotorImpl.class, "lift"); // port 1 as of 11/18
+        liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         currPosition = liftMotor.getCurrentPosition();
     }
 }
