@@ -9,12 +9,13 @@ public class HangSubsystem extends SubsystemBase {
     private DcMotorEx hangMotor;
     public static int UP_POSITION = 3600;
     public static int DOWN_POSITION = 0;
-    private int target;
-    public HangSubsystem(HardwareMap hardwareMap) {
-        hangMotor = hardwareMap.get(DcMotorEx.class, "hang");
-        hangMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-    }
+    private int target = 0;
 
+    public HangSubsystem(HardwareMap hardwareMap) {
+        //hangMotor = hardwareMap.get(DcMotorEx.class, "hang");
+        //hangMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+    /*
     public void updatePosition(int position) {
         target = position;
     }
@@ -24,5 +25,5 @@ public class HangSubsystem extends SubsystemBase {
         if (target - hangMotor.getCurrentPosition() > 10) {
             hangMotor.setPower(1);
         }
-    }
+    } */
 }

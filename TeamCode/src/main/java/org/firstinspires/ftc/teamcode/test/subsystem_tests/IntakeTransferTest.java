@@ -21,13 +21,15 @@ public class IntakeTransferTest extends CommandOpMode {
         robot = new Robot(hardwareMap, subsystems);
         super.schedule(
             new SequentialCommandGroup(
+                new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
+                new WaitCommand(3000),
                 new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.PICKING_UP),
+                new WaitCommand(3000),
+                new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
                 new WaitCommand(3000),
                 new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
                 new WaitCommand(3000),
-                new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.PICKING_UP),
-                new WaitCommand(3000),
-                new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING)
+                new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING)
             )
         );
     }

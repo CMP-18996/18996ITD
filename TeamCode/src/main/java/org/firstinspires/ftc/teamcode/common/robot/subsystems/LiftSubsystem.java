@@ -39,7 +39,11 @@ public class LiftSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         double error = currTarget - liftMotor.getCurrentPosition();
-        double power = Range.clip(P * error + F * (error / Math.max(abs(error), 0.01)), -.6, 1);
+        double power;
+        if (getAbsError() > 15) {
+            power = Range.clip(P * error + F * (error / Math.max(abs(error), 0.01)), -.6, 1);
+        }
+        else power = 0;
         liftMotor.setPower(power);
     }
 

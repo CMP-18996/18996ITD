@@ -43,8 +43,8 @@ public class HardwareMapNames {
     public static String LIMELIGHT = "limelight";
 
     // Drive
-    public static String LEFT_FRONT = "lF";
-    public static String RIGHT_FRONT = "rF";
-    public static String LEFT_BACK = "lB";
-    public static String RIGHT_BACK = "rB";
+    public static String LEFT_FRONT = "leftFront";
+    public static String RIGHT_FRONT = "rightFront";
+    public static String LEFT_BACK = "leftBack";
+    public static String RIGHT_BACK = "rightBack";
 }

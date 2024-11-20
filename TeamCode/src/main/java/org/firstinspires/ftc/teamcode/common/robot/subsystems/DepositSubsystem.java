@@ -5,16 +5,19 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 @Config
 public class DepositSubsystem extends SubsystemBase {
     // Constants
     public static double TRANSFER_ROTATOR_SERVO_MIN_ROT = 0.0;
-    public static double TRANSFER_ROTATOR_SERVO_MAX_ROT = 50.0;
+    public static double TRANSFER_ROTATOR_SERVO_MAX_ROT = 0.7;
 
 
     // State
-    private final ServoEx transferRotatorServo;
+    private final Servo transferRotatorServo;
     private TransferRotatorState transferRotatorState = TransferRotatorState.TRANSFER_READY;
     public enum TransferRotatorState {
         TRANSFER_READY(TRANSFER_ROTATOR_SERVO_MIN_ROT),
@@ -34,7 +37,7 @@ public class DepositSubsystem extends SubsystemBase {
     }
 
     public DepositSubsystem(HardwareMap hardwareMap) {
-        transferRotatorServo = new SimpleServo(hardwareMap, "bucket", TRANSFER_ROTATOR_SERVO_MIN_ROT, TRANSFER_ROTATOR_SERVO_MAX_ROT);
+        transferRotatorServo = hardwareMap.get(Servo.class, HardwareMapNames.BUCKET_SERVO);
         this.updateTransferRotatorState(TransferRotatorState.TRANSFER_READY);
     }
 }

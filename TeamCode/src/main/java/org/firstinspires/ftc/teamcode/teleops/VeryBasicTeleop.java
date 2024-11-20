@@ -34,15 +34,29 @@ public class VeryBasicTeleop extends CommandOpMode {
 
     @Override
     public void initialize() {
+//        robot = new Robot(hardwareMap, Subsystems.INTAKE, Subsystems.DEPOSIT, Subsystems.LIFT);
+        CommandScheduler.getInstance().reset();
+        robot = new Robot(hardwareMap, Subsystems.ALL);
+//        leftFront = hardwareMap.get(Motor.class, "lF");
+//        rightFront = hardwareMap.get(Motor.class, "rF");
+//        leftBack = hardwareMap.get(Motor.class, "lB");
+//        rightBack = hardwareMap.get(Motor.class, "rB");
+//        drive = new MecanumDrive(leftFront, rightFront, leftBack, rightBack);
+        drive = new Drive(hardwareMap);
+        //odo = new OdometryHardware(hardwareMap);
+        drive.setDriveMode(Drive.DriveMode.FIELD_CENTRIC);
+
+        extension = hardwareMap.get(DcMotorEx.class, "extension");
+
         gamepad = new GamepadEx(gamepad1);
         gamepad.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
                 () -> {
-                    super.schedule(
+                    schedule(
                             new SequentialCommandGroup(
                                     new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET),
-                                    new WaitCommand(400),
+                                    new WaitCommand(2000),
                                     new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
-                                    new WaitCommand(600),
+                                    new WaitCommand(1000),
                                     new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY),
                                     new LiftSetPosition(robot.lift, LiftSubsystem.LOW_BASKET)
                             )
@@ -54,7 +68,7 @@ public class VeryBasicTeleop extends CommandOpMode {
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 () -> {
-                    super.schedule(
+                    schedule(
                             new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET)
                     );
                     telemetry.addLine("Dpad up");
@@ -65,7 +79,7 @@ public class VeryBasicTeleop extends CommandOpMode {
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
                 () -> {
-                    super.schedule(
+                    schedule(
                             new LiftSetPosition(robot.lift, LiftSubsystem.GROUND)
                     );
                     telemetry.addLine("Dpad down");
@@ -77,7 +91,7 @@ public class VeryBasicTeleop extends CommandOpMode {
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
                 () -> {
-                    super.schedule(
+                    schedule(
                             new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit)
                     );
                     telemetry.addLine("Dpad left");
@@ -87,7 +101,7 @@ public class VeryBasicTeleop extends CommandOpMode {
 
         gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
                 () -> {
-                    super.schedule(
+                    schedule(
                             new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)
                     );
                     telemetry.addLine("Left bumper");
@@ -96,7 +110,7 @@ public class VeryBasicTeleop extends CommandOpMode {
         );
         gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenReleased(
                 () -> {
-                    super.schedule(
+                    schedule(
                             new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED)
                     );
                 }
@@ -104,7 +118,7 @@ public class VeryBasicTeleop extends CommandOpMode {
 
         gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 () -> {
-                    CommandScheduler.getInstance().schedule(
+                    schedule(
                             //    new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.DROPPING),
                             new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.ACTIVE)
                     );
@@ -112,27 +126,12 @@ public class VeryBasicTeleop extends CommandOpMode {
         );
         gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenReleased(
                 () -> {
-                    CommandScheduler.getInstance().schedule(
+                    schedule(
                             new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
                             new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED)
                     );
                 }
         );
-
-//        robot = new Robot(hardwareMap, Subsystems.INTAKE, Subsystems.DEPOSIT, Subsystems.LIFT);
-        robot = new Robot(hardwareMap, Subsystems.INTAKE, Subsystems.DEPOSIT, Subsystems.LIFT);
-        CommandScheduler.getInstance().reset();
-//        leftFront = hardwareMap.get(Motor.class, "lF");
-//        rightFront = hardwareMap.get(Motor.class, "rF");
-//        leftBack = hardwareMap.get(Motor.class, "lB");
-//        rightBack = hardwareMap.get(Motor.class, "rB");
-//        drive = new MecanumDrive(leftFront, rightFront, leftBack, rightBack);
-        drive = new Drive(hardwareMap);
-        odo = new OdometryHardware(hardwareMap);
-        drive.setDriveMode(Drive.DriveMode.FIELD_CENTRIC);
-
-        extension = hardwareMap.get(DcMotorEx.class, "extension");
-
 
         telemetry.addLine("Initialized");
         telemetry.update();
@@ -154,15 +153,12 @@ public class VeryBasicTeleop extends CommandOpMode {
      */
     public void run() {
 //        drive.driveRobotCentric(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
-        odo.pinpoint.update(GoBildaPinpointDriver.readData.ONLY_UPDATE_HEADING);
-        drive.vectorDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, odo.pinpoint.getHeading());
+        //odo.pinpoint.update(GoBildaPinpointDriver.readData.ONLY_UPDATE_HEADING);
+        //drive.vectorDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, odo.pinpoint.getHeading());
 
         // deposit, flips bucket, retracts lift
-
         CommandScheduler.getInstance().run();
-
-        extension.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
-
+        
         telemetry.addData("Lift target", robot.lift.getCurrTarget());
         telemetry.addData("Lift current position", robot.lift.getCurrentPosition());
         telemetry.update();

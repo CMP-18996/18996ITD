@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.CRServoImpl;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
@@ -17,8 +18,8 @@ public class IntakeSubsystem extends SubsystemBase {
     public static double TRAPDOOR_MIN_ROT = 0.0;
     public static double TRAPDOOR_MAX_ROT = 0.0;
     public static double INTAKE_ROTATION_TRANSFER = 0.0; // max and min rotation used as what arm is actually being rotated to, subject to change
-    public static double INTAKE_ROTATION_PICK_UP = 0.0;
-    public static double INTAKE_ROTATION_MOVING = 0.0;
+    public static double INTAKE_ROTATION_PICK_UP = 0.3;
+    public static double INTAKE_ROTATION_MOVING = 0.2;
 
     public static double CLOSED_VALUE = .5;
     public static double EJECTING_VALUE = 1.0;
@@ -31,7 +32,7 @@ public class IntakeSubsystem extends SubsystemBase {
     final private CRServoImpl intakeServo1;
     final private CRServoImpl intakeServo2;
 //     final private ServoEx trapdoorServo, intakeRotationServo;
-    final private ServoEx trapdoorServo, intakeRotationServo;
+    final private Servo trapdoorServo, intakeRotationServo;
     public ColorSensor colorSensor; //TODO: isn't this and the above INTERFACES? you can't instantiate interfaces...
     private TrapdoorState trapdoorState = TrapdoorState.CLOSED;
     private IntakingState intakingState = IntakingState.DISABLED;
@@ -114,8 +115,8 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public IntakeSubsystem(HardwareMap hardwareMap) {
-        trapdoorServo = new SimpleServo(hardwareMap, HardwareMapNames.INTAKE_TRAPDOOR, TRAPDOOR_MIN_ROT, TRAPDOOR_MAX_ROT);
-        intakeRotationServo = new SimpleServo(hardwareMap, HardwareMapNames.INTAKE_ROTATOR, 0, 360);
+        trapdoorServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_TRAPDOOR);
+        intakeRotationServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_ROTATOR);
         intakeServo1 = hardwareMap.get(CRServoImpl.class, HardwareMapNames.INTAKE_SERVO_1);
         intakeServo2 = hardwareMap.get(CRServoImpl.class, HardwareMapNames.INTAKE_SERVO_2);
         colorSensor = hardwareMap.get(ColorSensor.class, HardwareMapNames.INTAKE_COLOR_SENSOR);

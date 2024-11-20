@@ -61,7 +61,11 @@ public class ExtensionSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         double error = targetPosition + extensionMotor.getCurrentPosition();
-        double power = Range.clip(P * error + F * (error / Math.max(abs(error), 0.01)), -.6, .6);
+        double power;
+        if (getAbsError() > 15) {
+            power = Range.clip(P * error + F * (error / Math.max(abs(error), 0.01)), -.8, .8);
+        }
+        else power = 0;
         extensionMotor.setPower(power);
     }
 
