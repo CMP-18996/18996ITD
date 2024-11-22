@@ -43,7 +43,6 @@ public class VeryBasicTeleop extends CommandOpMode {
 //        drive = new MecanumDrive(leftFront, rightFront, leftBack, rightBack);
         drive = new Drive(hardwareMap);
         //odo = new OdometryHardware(hardwareMap);
-        drive.setDriveMode(Drive.DriveMode.FIELD_CENTRIC);
 
         extension = hardwareMap.get(DcMotorEx.class, "extension");
 

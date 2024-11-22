@@ -68,7 +68,6 @@ public class HardwareTeleop extends LinearOpMode {
         Gamepad previousGamepad1 = new Gamepad();
 
         drive = new Drive(hardwareMap);
-        drive.setDriveMode(Drive.DriveMode.FIELD_CENTRIC);
 
         odometryHardware = new OdometryHardware(hardwareMap);
 
@@ -342,7 +341,7 @@ public class HardwareTeleop extends LinearOpMode {
             //
             odometryHardware.pinpoint.update(GoBildaPinpointDriver.readData.ONLY_UPDATE_HEADING);
             double heading = odometryHardware.pinpoint.getHeading();
-            drive.vectorDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, heading);
+            drive.fieldCentricDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, heading);
 
             if (gamepad1.options) {
                 odometryHardware.pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.RADIANS, 0));

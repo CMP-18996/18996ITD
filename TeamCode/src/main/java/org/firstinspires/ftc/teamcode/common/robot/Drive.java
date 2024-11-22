@@ -1,26 +1,19 @@
 package org.firstinspires.ftc.teamcode.common.robot;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IMU;
 
 import org.jetbrains.annotations.NotNull;
 
 public class Drive {
-    private HardwareMap hardwareMap;
+    private final HardwareMap hardwareMap;
 
     private final DcMotor leftFrontDrive;
     private final DcMotor leftBackDrive;
     private final DcMotor rightFrontDrive;
     private final DcMotor rightBackDrive;
 
-    public enum DriveMode {
-        ROBOT_CENTRIC,
-        FIELD_CENTRIC;
-    }
-
-    private DriveMode driveMode = DriveMode.ROBOT_CENTRIC;
+    private DcMotor.ZeroPowerBehavior breakMode = DcMotor.ZeroPowerBehavior.FLOAT;
 
     public Drive(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
@@ -36,21 +29,20 @@ public class Drive {
     /*
     *  X and Y are the components of the linear movement vector [-1.0, 1.0]
     *  Turn is relative speed to rotate the robot [-1.0, 1.0]
-    *  CurrentHeading is the robot's current heading in RADIANS [-pi, pi]
      */
-    public void vectorDrive(double x, double y, double turn, double currentHeading){
-        if (driveMode == DriveMode.ROBOT_CENTRIC) {
-            calculateMotorPowers(x, y, turn);
-        }
-        else if (driveMode == DriveMode.FIELD_CENTRIC) {
-            double rotX = x * Math.cos(-currentHeading) - y * Math.sin(-currentHeading);
-            double rotY = x * Math.sin(-currentHeading) + y * Math.cos(-currentHeading);
-            calculateMotorPowers(rotX, rotY, turn);
-        }
-        else {
-            setMotorPowers(0, 0, 0, 0);
-        }
+    public void robotCentricDrive(double x, double y, double turn) {
+        calculateMotorPowers(x, y, turn);
+    }
 
+    /*
+     *  X and Y are the components of the linear movement vector [-1.0, 1.0]
+     *  Turn is relative speed to rotate the robot [-1.0, 1.0]
+     *  CurrentHeading is the robot's current heading in RADIANS [-pi, pi]
+     */
+    public void fieldCentricDrive(double x, double y, double turn, double heading) {
+        double rotX = x * Math.cos(-heading) - y * Math.sin(-heading);
+        double rotY = x * Math.sin(-heading) + y * Math.cos(-heading);
+        calculateMotorPowers(rotX, rotY, turn);
     }
 
     private void calculateMotorPowers(double x, double y, double turn) {
@@ -89,10 +81,10 @@ public class Drive {
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
-        leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        leftFrontDrive.setZeroPowerBehavior(breakMode);
+        leftBackDrive.setZeroPowerBehavior(breakMode);
+        rightFrontDrive.setZeroPowerBehavior(breakMode);
+        rightBackDrive.setZeroPowerBehavior(breakMode);
 
         leftFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -100,11 +92,17 @@ public class Drive {
         rightBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    public void setDriveMode(@NotNull DriveMode driveMode) {
-        this.driveMode = driveMode;
+    public void setBreakMode(@NotNull DcMotor.ZeroPowerBehavior breakMode) {
+        this.breakMode = breakMode;
+
+        leftFrontDrive.setZeroPowerBehavior(breakMode);
+        leftBackDrive.setZeroPowerBehavior(breakMode);
+        rightFrontDrive.setZeroPowerBehavior(breakMode);
+        rightBackDrive.setZeroPowerBehavior(breakMode);
+
     }
 
-    public DriveMode getDriveMode() {
-        return driveMode;
+    public DcMotor.ZeroPowerBehavior getBrakeMode() {
+        return breakMode;
     }
 }
