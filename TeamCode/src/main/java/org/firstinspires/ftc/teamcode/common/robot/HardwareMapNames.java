@@ -8,13 +8,31 @@ public class HardwareMapNames {
 
     /*
 
-    control hub ports
+    Control Hub:
 
-    0 -intake servo 1
-    1 - intake servo 2
-    2 - trapdoor
-    3 - intake rotator
-    4 - deposit rotator
+    ADD THESE!!!!
+
+        Servo:
+        0 - intake servo 1
+        1 - intake servo 2
+        2 - trapdoor
+        3 - intake rotator
+        4 - deposit rotator (bucket)
+
+        Motor:
+
+        I2C:
+
+        USB 3 (blue one):
+        limelight
+
+    Expansion Hub:
+
+        Motors:
+        0 - lift
+        1 - extension
+        2 - hang
+
      */
 
 
@@ -30,12 +48,16 @@ public class HardwareMapNames {
 
     // Lift
     public static String LIFT_MOTOR = "lift";
+
+    // Deposit
     public static String BUCKET_SERVO = "bucket";
+
+    // Specimen
     public static String SPECIMEN_SERVO = "specimen";
 
     // Hang
-    public static String HANG_MOTOR_1 = "hang";
-    public static String HANG_MOTOR_2 = "hang1";
+    public static String HANG_MOTOR_1 = "hang1";
+    public static String HANG_MOTOR_2 = "hang2";
 
     // Odometry
     public static String OTOS = "otos";

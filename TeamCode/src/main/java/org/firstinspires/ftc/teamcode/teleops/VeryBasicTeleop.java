@@ -20,8 +20,7 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
-import org.firstinspires.ftc.teamcode.common.odo.GoBildaPinpointDriver;
-import org.firstinspires.ftc.teamcode.common.odo.OdometryHardware;
+import org.firstinspires.ftc.teamcode.common.robot.OdometryHardware;
 
 @TeleOp(name="Very Basic Teleop")
 public class VeryBasicTeleop extends CommandOpMode {

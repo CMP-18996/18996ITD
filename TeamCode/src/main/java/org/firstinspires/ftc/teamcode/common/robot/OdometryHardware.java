@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.common.odo;
+package org.firstinspires.ftc.teamcode.common.robot;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -10,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.teamcode.common.odo.GoBildaPinpointDriver;
 
 
 /*
@@ -83,11 +84,11 @@ public class OdometryHardware {
 
     public OdometryHardware(HardwareMap hardwareMap) {
 
-        this.otos = hardwareMap.get(SparkFunOTOS.class, "otos");
+        this.otos = hardwareMap.get(SparkFunOTOS.class, HardwareMapNames.OTOS);
 
-        this.pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"pinpoint");
+        this.pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,HardwareMapNames.PINPOINT);
 
-        this.limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        this.limelight = hardwareMap.get(Limelight3A.class, HardwareMapNames.LIMELIGHT);
 
         configureOtos();
 

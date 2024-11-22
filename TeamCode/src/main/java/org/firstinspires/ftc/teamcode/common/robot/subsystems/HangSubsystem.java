@@ -12,7 +12,7 @@ public class HangSubsystem extends SubsystemBase {
     private int target = 0;
 
     public HangSubsystem(HardwareMap hardwareMap) {
-        //hangMotor = hardwareMap.get(DcMotorEx.class, "hang");
+        //hangMotor = hardwareMap.get(DcMotorEx.class, HardwareMapNames.HANG_MOTOR_1);
         //hangMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
     /*

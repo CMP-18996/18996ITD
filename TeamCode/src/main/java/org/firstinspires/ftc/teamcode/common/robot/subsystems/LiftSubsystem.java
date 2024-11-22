@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
+
 @Config
 public class LiftSubsystem extends SubsystemBase {
     // Constants
@@ -56,7 +58,7 @@ public class LiftSubsystem extends SubsystemBase {
     }
 
     public LiftSubsystem(HardwareMap hardwareMap) {
-        liftMotor = hardwareMap.get(DcMotorImpl.class, "lift"); // port 1 as of 11/18
+        liftMotor = hardwareMap.get(DcMotorImpl.class, HardwareMapNames.LIFT_MOTOR); // port 1 as of 11/18
         liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

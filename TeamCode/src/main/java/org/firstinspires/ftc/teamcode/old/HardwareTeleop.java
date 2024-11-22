@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.old;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDFController;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -19,10 +19,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.common.robot.Drive;
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 import org.firstinspires.ftc.teamcode.common.odo.GoBildaPinpointDriver;
-import org.firstinspires.ftc.teamcode.common.odo.OdometryHardware;
+import org.firstinspires.ftc.teamcode.common.robot.OdometryHardware;
 
 @TeleOp(name = "HardwareTeleop")
-@Config
+@Disabled
 public class HardwareTeleop extends LinearOpMode {
 
     public static double INTAKE_SERVO_SPEED = -1.0;

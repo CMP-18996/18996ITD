@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
+
 public class ExtensionSubsystem extends SubsystemBase {
     DcMotorImpl extensionMotor;
     ExtensionState extensionState = ExtensionState.CONTRACTED;
@@ -70,7 +72,7 @@ public class ExtensionSubsystem extends SubsystemBase {
     }
 
     public ExtensionSubsystem(HardwareMap hardwareMap) {
-        extensionMotor = hardwareMap.get(DcMotorImpl.class, "extension");
+        extensionMotor = hardwareMap.get(DcMotorImpl.class, HardwareMapNames.EXTENSION_MOTOR);
         extensionMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         extensionMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         extensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
