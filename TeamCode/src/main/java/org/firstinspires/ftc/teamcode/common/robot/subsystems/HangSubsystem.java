@@ -5,25 +5,51 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
+
 public class HangSubsystem extends SubsystemBase {
     private DcMotorEx hangMotor;
-    public static int UP_POSITION = 3600;
+    public static int L3_POSITION = 9600; // 9517 or 1000 - thanks Arjun!
+    public static int L2_POSITION = 4800;
+    public static int L3_HANGED_POSITION = 8200;
+    public static int L2_HANGED_POSITION = 4200;
     public static int DOWN_POSITION = 0;
-    private int target = 0;
+    private HangPosition target = HangPosition.DOWN;
 
     public HangSubsystem(HardwareMap hardwareMap) {
-        //hangMotor = hardwareMap.get(DcMotorEx.class, HardwareMapNames.HANG_MOTOR_1);
-        //hangMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        hangMotor = hardwareMap.get(DcMotorEx.class, HardwareMapNames.HANG_MOTOR_1);
+        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hangMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
-    /*
-    public void updatePosition(int position) {
+
+    public void updatePosition(HangPosition position) {
         target = position;
+    }
+
+    public int getError() {
+        return target.position - hangMotor.getCurrentPosition();
     }
 
     @Override
     public void periodic() {
-        if (target - hangMotor.getCurrentPosition() > 10) {
-            hangMotor.setPower(1);
+        if (Math.abs(target.position - hangMotor.getCurrentPosition()) > 5) {
+            hangMotor.setPower(-1 * Math.signum(target.position - hangMotor.getCurrentPosition()));
         }
-    } */
+        else {
+            hangMotor.setPower(0);
+        }
+    }
+
+    public enum HangPosition {
+        DOWN(DOWN_POSITION),
+        L2(L2_POSITION),
+        L2_HANGED(L2_HANGED_POSITION),
+        L3(L3_POSITION),
+        L3_HANGED(L3_HANGED_POSITION);
+
+         private int position;
+         HangPosition(int position) {
+             this.position = position;
+         }
+    }
 }
