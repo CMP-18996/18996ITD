@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.common.commands.DepositRotationCommand;
+import org.firstinspires.ftc.teamcode.common.commands.HangCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeRotatorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.LiftSetPosition;
@@ -17,6 +18,7 @@ import org.firstinspires.ftc.teamcode.common.commands.RetractAndTransferCommand;
 import org.firstinspires.ftc.teamcode.common.robot.Drive;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
+import org.firstinspires.ftc.teamcode.common.robot.subsystems.HangSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
@@ -60,6 +62,24 @@ public class VeryBasicTeleop extends CommandOpMode {
                             )
                     );
                     telemetry.addLine("Y pressed, flip bucket");
+                    telemetry.update();
+                }
+        );
+
+        gamepad.getGamepadButton(GamepadKeys.Button.X).whenPressed(
+                () -> {
+                    schedule(
+                            new HangCommand(robot.hang, HangSubsystem.HangPosition.L2)
+                    );
+                }
+        );
+
+        gamepad.getGamepadButton(GamepadKeys.Button.X).whenReleased(
+                () -> {
+                    schedule(
+                            new HangCommand(robot.hang, HangSubsystem.HangPosition.L2_HANGED)
+                    );
+                    telemetry.addLine("should be hanged at low rung");
                     telemetry.update();
                 }
         );
@@ -131,6 +151,7 @@ public class VeryBasicTeleop extends CommandOpMode {
                 }
         );
 
+
         telemetry.addLine("Initialized");
         telemetry.update();
     }
@@ -139,7 +160,7 @@ public class VeryBasicTeleop extends CommandOpMode {
     Triangle - deposit, flips bucket, retracts lift
     Circle - nothing
     Cross - nothing
-    Square nothing
+    Square - nothing
     Dpad up - lift to highest
     Dpad left - nothing
     Dpad right - nothing
