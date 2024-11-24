@@ -162,9 +162,10 @@ public class VeryBasicTeleop extends CommandOpMode {
     Cross - nothing
     Square - nothing
     Dpad up - lift to highest
-    Dpad left - nothing
-    Dpad right - nothing
+    Dpad left - nothing lift to low bar
+    Dpad right - nothing lift to high bar
     Dpad down - lift to lowest
+    dpad press the same thing goes to 0
     Left trigger - extension back, variable
     Right trigger - extension out, variable
     Left button - held down, intake reverses

@@ -23,7 +23,7 @@ public class ExtensionSubsystem extends SubsystemBase {
 
     public enum ExtensionState {
         CONTRACTED(CONTRACTED_POS),
-        FULLY_EXTENDED(FULL_EXTENSION_POS),
+        FULLY_EXTENDED(FULL_EXTENSION_POS), 
         HALF_EXTENDED(HALF_EXTENDED_POS),
         CUSTOM(100);
         public int position;
