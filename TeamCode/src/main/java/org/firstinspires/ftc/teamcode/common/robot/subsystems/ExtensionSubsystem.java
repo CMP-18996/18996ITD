@@ -60,6 +60,7 @@ public class ExtensionSubsystem extends SubsystemBase {
         return Math.abs(-extensionMotor.getCurrentPosition() - extensionState.position);
     }
 
+    @Deprecated
     public void setExtensionMotorPower(double power) {
         extensionMotor.setPower(power);
     }

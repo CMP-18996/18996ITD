@@ -86,13 +86,13 @@ public class EarlyTeleOp extends CommandOpMode {
                 new ConditionalCommand(
                         new SequentialCommandGroup(
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
-                                new WaitCommand(800),
+                                new WaitCommand(1400),
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY),
                                 new LiftSetPosition(robot.lift, robot.lift.GROUND)
                         ),
                         new SequentialCommandGroup(
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
-                                new WaitCommand(1200),
+                                new WaitCommand(1400),
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY)
                         ),
                         () -> robot.lift.getCurrentPosition() != robot.lift.GROUND
@@ -103,7 +103,8 @@ public class EarlyTeleOp extends CommandOpMode {
                 new ConditionalCommand(
                         new ScheduleCommand(
                                 new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.ACTIVE),
-                                new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.CLOSED)
+                                new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.CLOSED),
+                                new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.PICKING_UP)
                         ),
                         new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
                         () -> robot.intake.getIntakingState().equals(IntakeSubsystem.IntakingState.DISABLED)
@@ -152,5 +153,9 @@ public class EarlyTeleOp extends CommandOpMode {
         }
 
         drive.robotCentricDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
+
+        telemetry.addData("Detected Color:", detectedColor);
+        telemetry.addData("Extension State:", robot.extension.getState().toString());
+        telemetry.update();
     }
 }
