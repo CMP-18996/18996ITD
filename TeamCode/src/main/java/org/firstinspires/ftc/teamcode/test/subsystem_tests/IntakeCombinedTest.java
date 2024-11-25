@@ -5,7 +5,7 @@ import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.common.commands.ColorSensorCommand;
+import org.firstinspires.ftc.teamcode.common.commands.SingleColorSensorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeRotatorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.TrapdoorCommand;
@@ -25,7 +25,7 @@ public class IntakeCombinedTest extends CommandOpMode {
         super.schedule(
                 new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.ACTIVE),
                 new WaitCommand(3000),
-                new ColorSensorCommand(robot.intake, IntakeSubsystem.ColorState.BLUE)
+                new SingleColorSensorCommand(robot.intake, IntakeSubsystem.ColorState.BLUE)
         );
         if(robot.intake.colorState.toString().equals("Yellow") || robot.intake.colorState.toString().equals("Red")){
             super.schedule(

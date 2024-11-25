@@ -3,13 +3,15 @@ package org.firstinspires.ftc.teamcode.common.commands;
 import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 
-public class ColorSensorCommand extends CommandBase {
+/**
+ * Stops only after inputted color detected
+ */
+public class SingleColorSensorCommand extends CommandBase {
     IntakeSubsystem intakeSubsystem;
     IntakeSubsystem.ColorState commandColorState;
 
-    public ColorSensorCommand(IntakeSubsystem intakeSubsystem, IntakeSubsystem.ColorState colorState) {
+    public SingleColorSensorCommand(IntakeSubsystem intakeSubsystem, IntakeSubsystem.ColorState colorState) {
         commandColorState = colorState;
         this.intakeSubsystem = intakeSubsystem;
         addRequirements(intakeSubsystem);

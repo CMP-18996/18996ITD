@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
+import org.firstinspires.ftc.teamcode.common.robot.Team;
 
 @Config
 public class IntakeSubsystem extends SubsystemBase {
@@ -86,6 +87,33 @@ public class IntakeSubsystem extends SubsystemBase {
         }
         return colorState;
     }
+
+
+    public Team updateColorState2(){
+        int r, g, b;
+        r = colorSensor.red();
+        g = colorSensor.green();
+        b = colorSensor.blue();
+        Team returnedColorState;
+        if(r > g && r > b){
+            colorState = ColorState.RED;
+            returnedColorState = Team.RED;
+        }
+        else if(g > r && g > b){
+            colorState = ColorState.YELLOW;
+            returnedColorState = Team.NONE;
+        }
+        else if(b > r && b > g){
+            colorState = ColorState.BLUE;
+            returnedColorState = Team.BLUE;
+        }
+        else{
+            colorState = ColorState.NONE;
+            returnedColorState = Team.NONE;
+        }
+        return returnedColorState;
+    }
+
     public void updateTrapdoorState(TrapdoorState setState) {
         trapdoorState = setState;
         trapdoorServo.setPosition(trapdoorState.val);
@@ -120,6 +148,7 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeServo1 = hardwareMap.get(CRServoImpl.class, HardwareMapNames.INTAKE_SERVO_1);
         intakeServo2 = hardwareMap.get(CRServoImpl.class, HardwareMapNames.INTAKE_SERVO_2);
         colorSensor = hardwareMap.get(ColorSensor.class, HardwareMapNames.INTAKE_COLOR_SENSOR);
+        intakeRotationServo.setDirection(Servo.Direction.REVERSE);
         intakeServo1.setDirection(DcMotorSimple.Direction.FORWARD); // subject to change
         intakeServo2.setDirection(DcMotorSimple.Direction.REVERSE); // subject to change
         this.updateIntakeRotatorState(IntakeRotatorState.TRANSFERRING);

@@ -3,15 +3,11 @@ package org.firstinspires.ftc.teamcode.test.subsystem_tests;
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
-import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.common.commands.ColorSensorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.TrapdoorCommand;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;

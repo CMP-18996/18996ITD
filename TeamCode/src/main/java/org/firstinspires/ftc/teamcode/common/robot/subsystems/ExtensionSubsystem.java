@@ -44,6 +44,10 @@ public class ExtensionSubsystem extends SubsystemBase {
         targetPosition = position;
     }
 
+    public void setPower(double power) {
+        extensionMotor.setPower(power);
+    }
+
     public int getPosition() {
         return extensionMotor.getCurrentPosition();
     }
@@ -62,13 +66,15 @@ public class ExtensionSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        double error = targetPosition + extensionMotor.getCurrentPosition();
-        double power;
-        if (getAbsError() > 15) {
-            power = Range.clip(P * error + F * (error / Math.max(abs(error), 0.01)), -.8, .8);
+        if (!extensionState.equals(ExtensionState.CUSTOM)) {
+            double error = targetPosition + extensionMotor.getCurrentPosition();
+            double power;
+            if (getAbsError() > 15) {
+                power = Range.clip(P * error + F * (error / Math.max(abs(error), 0.01)), -.8, .8);
+            }
+            else power = 0;
+            extensionMotor.setPower(power);
         }
-        else power = 0;
-        extensionMotor.setPower(power);
     }
 
     public ExtensionSubsystem(HardwareMap hardwareMap) {
