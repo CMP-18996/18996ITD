@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.common.commands.IntakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeRotatorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.LiftSetPosition;
 import org.firstinspires.ftc.teamcode.common.commands.TrapdoorCommand;
+import org.firstinspires.ftc.teamcode.common.robot.Drive;
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.Team;
@@ -36,8 +37,12 @@ public class EarlyTeleOp extends CommandOpMode {
     private DcMotorEx extension;
     private boolean alreadyTransferred = false;
 
+    private Drive drive;
+
     @Override
     public void initialize() {
+        drive = new Drive(hardwareMap);
+
         CommandScheduler.getInstance().reset();
 
         robot = new Robot(hardwareMap, Subsystems.INTAKE, Subsystems.LIFT, Subsystems.DEPOSIT, Subsystems.HANG);
@@ -145,5 +150,7 @@ public class EarlyTeleOp extends CommandOpMode {
                     )
             );
         }
+
+        drive.robotCentricDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
     }
 }
