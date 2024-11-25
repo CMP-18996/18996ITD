@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 public class ExtensionSubsystem extends SubsystemBase {
     DcMotorImpl extensionMotor;
-    ExtensionState extensionState = ExtensionState.CONTRACTED;
+    ExtensionState extensionState = ExtensionState.CUSTOM;
     public static int CONTRACTED_POS = 0;
     public static int FULL_EXTENSION_POS = 400;
     public static int HALF_EXTENDED_POS = 200;

@@ -40,7 +40,7 @@ public class EarlyTeleOp extends CommandOpMode {
     public void initialize() {
         CommandScheduler.getInstance().reset();
 
-        robot = new Robot(hardwareMap, Subsystems.INTAKE, Subsystems.LIFT, Subsystems.DEPOSIT, Subsystems.HANG);
+        robot = new Robot(hardwareMap, Subsystems.ALL);
         gamepad = new GamepadEx(gamepad1);
 
         if (team.equals(Team.RED)) oppositeTeam = Team.BLUE;

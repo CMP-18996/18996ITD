@@ -16,15 +16,12 @@ import org.firstinspires.ftc.teamcode.common.robot.Team;
 @Config
 public class IntakeSubsystem extends SubsystemBase {
     // Constants
-    public static double TRAPDOOR_MIN_ROT = 0.0;
-    public static double TRAPDOOR_MAX_ROT = 0.0;
     public static double INTAKE_ROTATION_TRANSFER = 0.0; // max and min rotation used as what arm is actually being rotated to, subject to change
     public static double INTAKE_ROTATION_PICK_UP = 0.3;
     public static double INTAKE_ROTATION_MOVING = 0.2;
 
     public static double CLOSED_VALUE = .5;
     public static double EJECTING_VALUE = 1.0;
-    public static double TRANSFERRING_VALUE = 0;
     public static double ACTIVE_VALUE = 1.00;
     public static double DISABLED_VALUE = 0.0;
     public static double REVERSING_VALUE = -1.00;
@@ -41,7 +38,6 @@ public class IntakeSubsystem extends SubsystemBase {
     public ColorState colorState = ColorState.NONE;
     public enum TrapdoorState {
         CLOSED(CLOSED_VALUE),
-        TRANSFERRING(TRANSFERRING_VALUE),
         EJECTING(EJECTING_VALUE);
         public double val;
         TrapdoorState(double inval) {val = inval;}
@@ -69,10 +65,12 @@ public class IntakeSubsystem extends SubsystemBase {
         BLUE
     }
     public ColorState updateColorState(){
-        int r, g, b;
+        int r, g, b, a;
         r = colorSensor.red();
         g = colorSensor.green();
         b = colorSensor.blue();
+        a = colorSensor.alpha();
+        if (a < 100) return ColorState.NONE;
         if(r > g && r > b){
             colorState = ColorState.RED;
         }
