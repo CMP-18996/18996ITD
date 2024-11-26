@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.common.commands.DepositRotationCommand;
 import org.firstinspires.ftc.teamcode.common.commands.ExtendCommand;
+import org.firstinspires.ftc.teamcode.common.commands.HangCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeRotatorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.LiftSetPosition;
@@ -24,6 +25,7 @@ import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.Team;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.ExtensionSubsystem;
+import org.firstinspires.ftc.teamcode.common.robot.subsystems.HangSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
@@ -82,13 +84,13 @@ public class EarlyTeleOp extends CommandOpMode {
                 new ConditionalCommand(
                         new SequentialCommandGroup(
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
-                                new WaitCommand(1400),
+                                new WaitCommand(1000),
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY),
                                 new LiftSetPosition(robot.lift, robot.lift.GROUND)
                         ),
                         new SequentialCommandGroup(
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
-                                new WaitCommand(1400),
+                                new WaitCommand(1000),
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY)
                         ),
                         () -> robot.lift.getCurrentPosition() != robot.lift.GROUND
@@ -104,7 +106,7 @@ public class EarlyTeleOp extends CommandOpMode {
                         ),
                         new ScheduleCommand(
                                 new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
-                                new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING)
+                                new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING)
                         ),
                         () -> robot.intake.getIntakingState().equals(IntakeSubsystem.IntakingState.DISABLED)
                 )
@@ -114,6 +116,18 @@ public class EarlyTeleOp extends CommandOpMode {
                 new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)
         ).whenReleased(
                 new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED)
+        );
+
+        gamepad.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
+                new ConditionalCommand(
+                        new ScheduleCommand(
+                                new HangCommand(robot.hang, HangSubsystem.HangPosition.L3)
+                        ),
+                        new ScheduleCommand(
+                                new HangCommand(robot.hang, HangSubsystem.HangPosition.DOWN)
+                        ),
+                        () -> robot.hang.getCurrTarget() == HangSubsystem.HangPosition.DOWN
+                )
         );
     }
 
@@ -158,7 +172,7 @@ public class EarlyTeleOp extends CommandOpMode {
             );
         } */
 
-        drive.robotCentricDrive(gamepad2.left_stick_x, -gamepad2.left_stick_y, gamepad2.right_stick_x);
+        drive.robotCentricDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
 
         telemetry.addData("Detected Color:", detectedColor);
         telemetry.addData("Extension State:", robot.extension.getState().toString());

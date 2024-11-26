@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 public class DepositSubsystem extends SubsystemBase {
     // Constants
     public static double TRANSFER_ROTATOR_TRANSFER = 0.0;
-    public static double TRANSFER_ROTATOR_DEPOSIT = 0.7;
+    public static double TRANSFER_ROTATOR_DEPOSIT = 1.0;
     public static double TRANSFER_ROTATOR_READY = 0.4;
 
 
@@ -38,6 +38,7 @@ public class DepositSubsystem extends SubsystemBase {
 
     public DepositSubsystem(HardwareMap hardwareMap) {
         transferRotatorServo = hardwareMap.get(Servo.class, HardwareMapNames.BUCKET_SERVO);
+        transferRotatorServo.setDirection(Servo.Direction.REVERSE);
         this.updateTransferRotatorState(TransferRotatorState.TRANSFER_READY);
     }
 }
