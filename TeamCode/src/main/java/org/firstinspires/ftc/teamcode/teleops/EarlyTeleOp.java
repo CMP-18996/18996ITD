@@ -34,9 +34,7 @@ public class EarlyTeleOp extends CommandOpMode {
 
     private Robot robot;
     private GamepadEx gamepad;
-    private DcMotorEx extension;
     private boolean alreadyTransferred = false;
-
     private Drive drive;
 
     @Override
@@ -50,8 +48,6 @@ public class EarlyTeleOp extends CommandOpMode {
 
         if (team.equals(Team.RED)) oppositeTeam = Team.BLUE;
         else oppositeTeam = Team.RED;
-
-        extension = hardwareMap.get(DcMotorEx.class, HardwareMapNames.EXTENSION_MOTOR);
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 new ConditionalCommand(
@@ -106,9 +102,18 @@ public class EarlyTeleOp extends CommandOpMode {
                                 new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.CLOSED),
                                 new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.PICKING_UP)
                         ),
-                        new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
+                        new ScheduleCommand(
+                                new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
+                                new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING)
+                        ),
                         () -> robot.intake.getIntakingState().equals(IntakeSubsystem.IntakingState.DISABLED)
                 )
+        );
+
+        gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+                new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)
+        ).whenReleased(
+                new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED)
         );
     }
 
@@ -123,6 +128,7 @@ public class EarlyTeleOp extends CommandOpMode {
 
 
         Team detectedColor = robot.intake.updateColorState2();
+        /*
         if (detectedColor.equals(oppositeTeam)) {
             schedule(
                     new SequentialCommandGroup(
@@ -150,9 +156,9 @@ public class EarlyTeleOp extends CommandOpMode {
                             })
                     )
             );
-        }
+        } */
 
-        drive.robotCentricDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
+        drive.robotCentricDrive(gamepad2.left_stick_x, -gamepad2.left_stick_y, gamepad2.right_stick_x);
 
         telemetry.addData("Detected Color:", detectedColor);
         telemetry.addData("Extension State:", robot.extension.getState().toString());

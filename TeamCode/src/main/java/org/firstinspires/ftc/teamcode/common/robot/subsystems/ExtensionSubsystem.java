@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 public class ExtensionSubsystem extends SubsystemBase {
     DcMotorImpl extensionMotor;
-    ExtensionState extensionState = ExtensionState.CUSTOM;
+    ExtensionState extensionState;
     public static int CONTRACTED_POS = 0;
     public static int FULL_EXTENSION_POS = 400;
     public static int HALF_EXTENDED_POS = 200;
@@ -84,6 +84,6 @@ public class ExtensionSubsystem extends SubsystemBase {
         extensionMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         extensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         extensionMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        this.setState(ExtensionState.CONTRACTED);
+        this.setState(ExtensionState.CUSTOM);
     }
 }
