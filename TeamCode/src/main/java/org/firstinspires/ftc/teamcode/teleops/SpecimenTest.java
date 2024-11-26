@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.common.robot.OdometryHardware;
 @TeleOp(name = "Specimen Arm Test")
 @Config
 public class SpecimenTest extends LinearOpMode {
+
     private Servo arm1;
     private Servo arm2;
     private Servo armClaw;
