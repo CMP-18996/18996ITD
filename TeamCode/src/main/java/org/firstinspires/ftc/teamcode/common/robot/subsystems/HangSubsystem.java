@@ -9,10 +9,10 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 public class HangSubsystem extends SubsystemBase {
     private DcMotorEx hangMotor;
-    public static int L3_POSITION = 9600; // 9517 or 1000 - thanks Arjun!
-    public static int L2_POSITION = 4800;
-    public static int L3_HANGED_POSITION = 8200;
-    public static int L2_HANGED_POSITION = 4200;
+    public static int L3_POSITION = 3600; // 9517 or 1000 - thanks Arjun!
+    public static int L2_POSITION = 0;
+    public static int L3_HANGED_POSITION = 0;
+    public static int L2_HANGED_POSITION = 0;
     public static int DOWN_POSITION = 0;
     private HangPosition target = HangPosition.DOWN;
 
@@ -20,6 +20,7 @@ public class HangSubsystem extends SubsystemBase {
         hangMotor = hardwareMap.get(DcMotorEx.class, HardwareMapNames.HANG_MOTOR_1);
         hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         hangMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.updatePosition(HangPosition.DOWN);
     }
 
     public void updatePosition(HangPosition position) {
