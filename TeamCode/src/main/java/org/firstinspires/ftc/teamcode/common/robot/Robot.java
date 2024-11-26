@@ -7,6 +7,7 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.ExtensionSubsystem
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.HangSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
+import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
 public class Robot {
@@ -15,6 +16,7 @@ public class Robot {
     public HangSubsystem hang;
     public IntakeSubsystem intake;
     public LiftSubsystem lift;
+    public SpecimenSubsystem specimen;
     public HardwareMap hardwareMap;
 
     public Robot(HardwareMap hardwareMap, Subsystems... subsystems) {
@@ -26,6 +28,7 @@ public class Robot {
                 deposit = new DepositSubsystem(hardwareMap);
                 lift = new LiftSubsystem(hardwareMap);
                 intake = new IntakeSubsystem(hardwareMap);
+                specimen = new SpecimenSubsystem(hardwareMap);
             }
             else if (subsystem == Subsystems.HANG) {
                 hang = new HangSubsystem(hardwareMap);
@@ -38,6 +41,9 @@ public class Robot {
             }
             else if (subsystem == Subsystems.LIFT) {
                 lift = new LiftSubsystem(hardwareMap);
+            }
+            else if (subsystem == Subsystems.SPECIMEN) {
+                specimen = new SpecimenSubsystem(hardwareMap);
             }
             else if (subsystem == Subsystems.INTAKE) {
                 intake = new IntakeSubsystem(hardwareMap);
