@@ -1,13 +1,17 @@
 package org.firstinspires.ftc.teamcode.common.robot.subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.qualcomm.robotcore.hardware.DcMotorImpl;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
+@Config
 public class SpecimenSubsystem extends SubsystemBase {
-    private Servo armServo, wristServo, gripperServo;
+    private Servo wristServo, gripperServo;
+    private DcMotorImpl armMotor;
     public static double ARM_TRANSFERRING_POSITION = 0;
     public static double ARM_ATTACHING_POSITION = 0;
     public static double WRIST_TRANSFERRING_POSITION = 0;
@@ -18,7 +22,7 @@ public class SpecimenSubsystem extends SubsystemBase {
     private SpecimenPosition specimenPosition;
     private GripperPosition gripperPosition;
     public SpecimenSubsystem(HardwareMap hardwareMap) {
-        armServo = hardwareMap.get(Servo.class, HardwareMapNames.ARM_SERVO);
+        armMotor = hardwareMap.get(DcMotorImpl.class, HardwareMapNames.ARM_SERVO);
         wristServo = hardwareMap.get(Servo.class, HardwareMapNames.WRIST_SERVO);
         gripperServo = hardwareMap.get(Servo.class, HardwareMapNames.GRIPPER_SERVO);
         specimenPosition = SpecimenPosition.TRANSFERRING;
@@ -34,7 +38,7 @@ public class SpecimenSubsystem extends SubsystemBase {
     }
 
     public void periodic() {
-        armServo.setPosition(specimenPosition.armPosition);
+//        armMotor.setPosition(specimenPosition.armPosition);
         wristServo.setPosition(specimenPosition.wristPosition);
         gripperServo.setPosition(gripperPosition.gripper);
     }
