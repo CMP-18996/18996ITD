@@ -19,7 +19,9 @@ public class SpecimenSubsystem extends SubsystemBase {
     public static double WRIST_ATTACHING_POSITION = 0;
     public static double GRIPPER_OPEN = 0;
     public static double GRIPPER_CLOSED = 0;
-    public static double P = 0.005;
+    public static double Arm_P = 0.005;
+    private static double armTarget;
+    private static double wristTarget;
 
     private SpecimenPosition specimenPosition;
     private GripperPosition gripperPosition;
@@ -31,6 +33,9 @@ public class SpecimenSubsystem extends SubsystemBase {
         gripperPosition = GripperPosition.CLOSED;
         armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        armTarget = specimenPosition.armPosition;
+        wristTarget = specimenPosition.wristPosition;
     }
 
     public void setSpecimenPosition(SpecimenPosition position) {
@@ -41,16 +46,31 @@ public class SpecimenSubsystem extends SubsystemBase {
         gripperPosition = position;
     }
 
+    public void manualAdjustArm(int delta) {
+        setSpecimenPosition(SpecimenPosition.MANUAL);
+        armTarget += delta;
+    }
+
+    public void manualAdjustWrist(double delta) {
+        setSpecimenPosition(SpecimenPosition.MANUAL);
+        wristTarget += delta;
+    }
+
     public void periodic() {
 //        armMotor.setPosition(specimenPosition.armPosition);
-        armMotor.setPower(P * (specimenPosition.armPosition - armMotor.getCurrentPosition()));
-        wristServo.setPosition(specimenPosition.wristPosition);
+        if (specimenPosition != SpecimenPosition.MANUAL) {
+            armTarget = specimenPosition.armPosition;
+            wristTarget = specimenPosition.wristPosition;
+        }
+        armMotor.setPower(Arm_P * (armTarget - armMotor.getCurrentPosition()));
+        wristServo.setPosition(wristTarget);
         gripperServo.setPosition(gripperPosition.gripper);
     }
 
     public enum SpecimenPosition {
         TRANSFERRING(ARM_TRANSFERRING_POSITION, WRIST_TRANSFERRING_POSITION),
-        ATTACHING(ARM_ATTACHING_POSITION, WRIST_ATTACHING_POSITION);
+        ATTACHING(ARM_ATTACHING_POSITION, WRIST_ATTACHING_POSITION),
+        MANUAL(0, 0);
         public double armPosition, wristPosition;
         SpecimenPosition(double arm, double wrist) {
             this.armPosition = arm;
