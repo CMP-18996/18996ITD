@@ -1,14 +1,17 @@
 package org.firstinspires.ftc.teamcode.common.robot.subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorImpl;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
+@Config
 public class HangSubsystem extends SubsystemBase {
-    private DcMotorEx hangMotor;
+    private DcMotorImpl hangMotor;
     public static int L3_POSITION = 3600; // 9517 or 1000 - thanks Arjun!
     public static int L2_POSITION = 0;
     public static int L3_HANGED_POSITION = 0;
@@ -17,7 +20,7 @@ public class HangSubsystem extends SubsystemBase {
     private HangPosition target = HangPosition.DOWN;
 
     public HangSubsystem(HardwareMap hardwareMap) {
-        hangMotor = hardwareMap.get(DcMotorEx.class, HardwareMapNames.HANG_MOTOR_1);
+        hangMotor = hardwareMap.get(DcMotorImpl.class, HardwareMapNames.HANG_MOTOR_1);
         hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         hangMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.updatePosition(HangPosition.DOWN);
@@ -29,6 +32,10 @@ public class HangSubsystem extends SubsystemBase {
 
     public int getError() {
         return target.position - hangMotor.getCurrentPosition();
+    }
+
+    public HangPosition getTarget() {
+        return target;
     }
 
     @Override
