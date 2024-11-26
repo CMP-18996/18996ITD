@@ -51,9 +51,9 @@ public class HangSubsystem extends SubsystemBase {
     public enum HangPosition {
         DOWN(DOWN_POSITION),
         L2(L2_POSITION),
-        L2_HANGED(L2_HANGED_POSITION),
+        L2_HUNG(L2_HANGED_POSITION),
         L3(L3_POSITION),
-        L3_HANGED(L3_HANGED_POSITION);
+        L3_HUNG(L3_HANGED_POSITION);
 
          private int position;
          HangPosition(int position) {
