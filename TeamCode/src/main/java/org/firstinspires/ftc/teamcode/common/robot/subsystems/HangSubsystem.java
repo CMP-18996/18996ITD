@@ -11,8 +11,8 @@ public class HangSubsystem extends SubsystemBase {
     private DcMotorEx hangMotor;
     public static int L3_POSITION = 3600; // 9517 or 1000 - thanks Arjun!
     public static int L2_POSITION = 0;
-    public static int L3_HANGED_POSITION = 0;
-    public static int L2_HANGED_POSITION = 0;
+    public static int L3_HUNG_POSITION = 0;
+    public static int L2_HUNG_POSITION = 0;
     public static int DOWN_POSITION = 0;
     private HangPosition target = HangPosition.DOWN;
 
@@ -44,9 +44,9 @@ public class HangSubsystem extends SubsystemBase {
     public enum HangPosition {
         DOWN(DOWN_POSITION),
         L2(L2_POSITION),
-        L2_HANGED(L2_HANGED_POSITION),
+        L2_HUNG(L2_HUNG_POSITION),
         L3(L3_POSITION),
-        L3_HANGED(L3_HANGED_POSITION);
+        L3_HUNG(L3_HUNG_POSITION);
 
          private int position;
          HangPosition(int position) {
