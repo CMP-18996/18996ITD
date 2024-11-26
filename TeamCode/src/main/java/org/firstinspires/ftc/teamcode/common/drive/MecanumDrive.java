@@ -60,13 +60,13 @@ public class MecanumDrive {
         public double trackWidthTicks = 1.9020996764296623;
 
         // feedforward parameters (in tick units)
-        public double kS = 0.8; //minimum voltage to get the robot to move consistently
-        public double kV = 0.129; //making it go far enough idk
-        public double kA = 0.009; //idk it does something
+        public double kS = 0.675; //minimum voltage to get the robot to move consistently
+        public double kV = 0.16; //making it go far enough idk
+        public double kA = 0.01; //idk it does something
 
         // path profile parameters (in inches)
         public double maxWheelVel = 50;
-        public double minProfileAccel = -30; //sign?
+        public double minProfileAccel = -30;
         public double maxProfileAccel = 50;
 
         // turn profile parameters (in radians)
@@ -74,13 +74,13 @@ public class MecanumDrive {
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 6;
-        public double lateralGain = 4;
+        public double axialGain = 8;
+        public double lateralGain = 8;
         public double headingGain = 8; // shared with turn
 
-        public double axialVelGain = 0;
-        public double lateralVelGain = 0;
-        public double headingVelGain = 0; // shared with turn
+        public double axialVelGain = 1;
+        public double lateralVelGain = 1;
+        public double headingVelGain = 1; // shared with turn
     }
 
     public static Params PARAMS = new Params();
