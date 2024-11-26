@@ -77,7 +77,7 @@ public class VeryBasicTeleop extends CommandOpMode {
         gamepad.getGamepadButton(GamepadKeys.Button.X).whenReleased(
                 () -> {
                     schedule(
-                            new HangCommand(robot.hang, HangSubsystem.HangPosition.L2_HANGED)
+                            new HangCommand(robot.hang, HangSubsystem.HangPosition.L2_HUNG)
                     );
                     telemetry.addLine("should be hanged at low rung");
                     telemetry.update();

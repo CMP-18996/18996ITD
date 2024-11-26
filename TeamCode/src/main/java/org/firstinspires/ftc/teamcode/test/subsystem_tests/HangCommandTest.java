@@ -19,7 +19,7 @@ public class HangCommandTest extends CommandOpMode {
         CommandScheduler.getInstance().reset();
         robot = new Robot(hardwareMap, subsystems);
         super.schedule(
-                new HangCommand(robot.hang, HangSubsystem.HangPosition.L2_HANGED),
+                new HangCommand(robot.hang, HangSubsystem.HangPosition.L2_HUNG),
                 new HangCommand(robot.hang, HangSubsystem.HangPosition.L2)
                 );
     }
