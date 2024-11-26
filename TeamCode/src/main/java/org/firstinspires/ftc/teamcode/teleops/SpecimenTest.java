@@ -99,8 +99,8 @@ public class SpecimenTest extends LinearOpMode {
             //
             // MANUAL CONTROL
             //
-            double arm1Delta = -Math.pow(currentGamepad1.right_stick_y, 2)/20;
-            double arm2Delta = -Math.pow(currentGamepad1.left_stick_y, 2)/20;
+            double arm1Delta = -Math.pow(currentGamepad1.right_stick_y, 2)/10;
+            double arm2Delta = -Math.pow(currentGamepad1.left_stick_y, 2)/10;
 
             arm1_position += arm1Delta;
             arm2_position += arm2Delta;
