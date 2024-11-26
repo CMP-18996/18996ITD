@@ -35,17 +35,17 @@ public class SpecimenSubsystem extends SubsystemBase {
 
     public void periodic() {
         armServo.setPosition(specimenPosition.armPosition);
-        wristServo.setPosition(specimenPosition.wristPostion);
+        wristServo.setPosition(specimenPosition.wristPosition);
         gripperServo.setPosition(gripperPosition.gripper);
     }
 
     public enum SpecimenPosition {
         TRANSFERRING(ARM_TRANSFERRING_POSITION, WRIST_TRANSFERRING_POSITION),
         ATTACHING(ARM_ATTACHING_POSITION, WRIST_ATTACHING_POSITION);
-        public double armPosition, wristPostion;
+        public double armPosition, wristPosition;
         SpecimenPosition(double arm, double wrist) {
             this.armPosition = arm;
-            this.wristPostion = wrist;
+            this.wristPosition = wrist;
         }
     }
 
