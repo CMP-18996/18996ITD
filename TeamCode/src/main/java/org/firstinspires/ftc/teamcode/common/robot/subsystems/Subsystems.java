@@ -6,5 +6,6 @@ public enum Subsystems {
     HANG,
     INTAKE,
     LIFT,
+    SPECIMEN,
     ALL
 }
