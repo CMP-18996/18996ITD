@@ -7,6 +7,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.DownsampledWriter;
 import com.acmerobotics.roadrunner.ftc.FlightRecorder;
 import com.acmerobotics.roadrunner.ftc.SparkFunOTOSCorrected;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
@@ -64,7 +65,7 @@ public class SparkFunOTOSDrive extends MecanumDrive {
     public static SparkFunOTOSDrive.Params PARAMS = new SparkFunOTOSDrive.Params();
     public SparkFunOTOSCorrected otos;
     private Pose2d lastOtosPose = pose;
-    public TwoDeadWheelLocalizer odometry;
+    private final DownsampledWriter estimatedPoseWriter = new DownsampledWriter("ESTIMATED_POSE", 50_000_000);
 
     public SparkFunOTOSDrive(HardwareMap hardwareMap, Pose2d pose) {
         super(hardwareMap, pose);
@@ -125,8 +126,7 @@ public class SparkFunOTOSDrive extends MecanumDrive {
         SparkFunOTOS.Pose2D otosVel = new SparkFunOTOS.Pose2D();
         SparkFunOTOS.Pose2D otosAcc = new SparkFunOTOS.Pose2D();
         otos.getPosVelAcc(otosPose,otosVel,otosAcc);
-        pose = OTOSPoseToRRPose(rot(otosPose));
-        otosVel = rot(otosVel);
+        pose = OTOSPoseToRRPose(otosPose);
         lastOtosPose = pose;
 
         // RR standard
@@ -135,11 +135,10 @@ public class SparkFunOTOSDrive extends MecanumDrive {
             poseHistory.removeFirst();
         }
 
-        FlightRecorder.write("ESTIMATED_POSE", new PoseMessage(pose));
+        estimatedPoseWriter.write(new PoseMessage(pose));
 
+        // RR localizer note:
+        // OTOS velocity units happen to be identical to Roadrunners, so we don't need any conversion!
         return new PoseVelocity2d(new Vector2d(otosVel.x, otosVel.y),otosVel.h);
-    }
-    public static SparkFunOTOS.Pose2D rot(SparkFunOTOS.Pose2D p) {
-       return new SparkFunOTOS.Pose2D(p.y, -p.x, p.h);
     }
 }

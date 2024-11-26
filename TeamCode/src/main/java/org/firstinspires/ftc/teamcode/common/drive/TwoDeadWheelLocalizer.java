@@ -13,6 +13,7 @@ import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
 import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
@@ -34,7 +35,7 @@ public final class TwoDeadWheelLocalizer {
     public final Encoder par, perp;
     public final IMU imu;
 
-    private int lastParPos, lastPerpPos;
+    private double lastParPos, lastPerpPos;
     private Rotation2d lastHeading;
 
     private final double inPerTick;
@@ -89,8 +90,8 @@ public final class TwoDeadWheelLocalizer {
         if (!initialized) {
             initialized = true;
 
-            lastParPos = (int) parPosVel.position;
-            lastPerpPos = (int) perpPosVel.position;
+            lastParPos = parPosVel.position;
+            lastPerpPos = perpPosVel.position;
             lastHeading = heading;
 
             return new Twist2dDual<>(
@@ -99,8 +100,8 @@ public final class TwoDeadWheelLocalizer {
             );
         }
 
-        int parPosDelta = (int) (parPosVel.position - lastParPos);
-        int perpPosDelta = (int) (perpPosVel.position - lastPerpPos);
+        double parPosDelta = parPosVel.position - lastParPos;
+        double perpPosDelta = perpPosVel.position - lastPerpPos;
         double headingDelta = heading.minus(lastHeading);
 
         Twist2dDual<Time> twist = new Twist2dDual<>(
@@ -120,8 +121,8 @@ public final class TwoDeadWheelLocalizer {
                 })
         );
 
-        lastParPos = (int) parPosVel.position;
-        lastPerpPos = (int) perpPosVel.position;
+        lastParPos = parPosVel.position;
+        lastPerpPos = perpPosVel.position;
         lastHeading = heading;
 
         return twist;
