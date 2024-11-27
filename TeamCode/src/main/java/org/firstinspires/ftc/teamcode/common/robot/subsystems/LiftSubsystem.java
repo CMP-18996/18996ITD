@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 public class LiftSubsystem extends SubsystemBase {
     // Constants
     public static double P = .03;
-    public static double F = .1;
+    public static double F = .03;
     public static int GROUND = 0;
     public static int LOW_RUNG = 250;
     public static int HIGH_RUNG = 650;
