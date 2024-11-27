@@ -22,7 +22,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public static double CLOSED_VALUE = .5;
     public static double EJECTING_VALUE = 1.0;
-    public static double ACTIVE_VALUE = 1.00;
+    public static double ACTIVE_VALUE = 1.0;
     public static double DISABLED_VALUE = 0.0;
     public static double REVERSING_VALUE = -1.00;
 
@@ -53,7 +53,6 @@ public class IntakeSubsystem extends SubsystemBase {
     public enum IntakeRotatorState {
         TRANSFERRING(INTAKE_ROTATION_TRANSFER),
         MOVING(INTAKE_ROTATION_MOVING),
-
         PICKING_UP(INTAKE_ROTATION_PICK_UP);
         public double val;
         IntakeRotatorState(double inval) {val = inval;}

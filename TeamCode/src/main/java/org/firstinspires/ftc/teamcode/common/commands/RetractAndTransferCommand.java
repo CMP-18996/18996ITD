@@ -14,7 +14,7 @@ public class RetractAndTransferCommand extends SequentialCommandGroup {
     public static final int ROTATE_TIME = 400;
     public RetractAndTransferCommand(ExtensionSubsystem extensionSubsystem, IntakeSubsystem intakeSubsystem, DepositSubsystem depositSubsystem) {
         addCommands(
-                new IntakeCommand(intakeSubsystem, IntakeSubsystem.IntakingState.DISABLED),
+                //new IntakeCommand(intakeSubsystem, IntakeSubsystem.IntakingState.DISABLED),
                 new ExtendCommand(extensionSubsystem, ExtensionSubsystem.ExtensionState.CONTRACTED),
                 new DepositRotationCommand(depositSubsystem, DepositSubsystem.TransferRotatorState.TRANSFER_READY),
                 new IntakeRotatorCommand(intakeSubsystem, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),

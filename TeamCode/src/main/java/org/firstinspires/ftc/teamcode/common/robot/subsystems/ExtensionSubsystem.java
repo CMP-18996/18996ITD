@@ -15,7 +15,7 @@ public class ExtensionSubsystem extends SubsystemBase {
     DcMotorImpl extensionMotor;
     ExtensionState extensionState;
     public static int CONTRACTED_POS = 0;
-    public static int FULL_EXTENSION_POS = 400;
+    public static int FULL_EXTENSION_POS = 500;
     public static int HALF_EXTENDED_POS = 200;
     public static double P = .01;
     public static double F = .07;
@@ -71,9 +71,8 @@ public class ExtensionSubsystem extends SubsystemBase {
             double error = targetPosition + extensionMotor.getCurrentPosition();
             double power;
             if (getAbsError() > 15) {
-                power = Range.clip(P * error + F * (error / Math.max(abs(error), 0.01)), -.6, .6);
-            }
-            else power = 0;
+                power = Range.clip(P * error + F * (error / Math.max(abs(error), 0.01)), -.45, .45);
+            } else power = 0;
             extensionMotor.setPower(power);
         }
     }
