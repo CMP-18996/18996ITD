@@ -10,8 +10,8 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 
 @Config
 public class RetractAndTransferCommand extends SequentialCommandGroup {
-    public static final int REVERSE_INTAKE_TIME = 200;
-    public static final int ROTATE_TIME = 1200;
+    public static final int REVERSE_INTAKE_TIME = 400;
+    public static final int ROTATE_TIME = 400;
     public RetractAndTransferCommand(ExtensionSubsystem extensionSubsystem, IntakeSubsystem intakeSubsystem, DepositSubsystem depositSubsystem) {
         addCommands(
                 new IntakeCommand(intakeSubsystem, IntakeSubsystem.IntakingState.DISABLED),

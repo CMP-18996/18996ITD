@@ -42,10 +42,58 @@ public class Auto extends CommandOpMode {
 
         super.schedule(
                 new SequentialCommandGroup(
+                        new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
+                        new ExtendAndBeginIntakeCommand(robot.extension, robot.intake, robot.lift),
+                        new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
+                                .setReversed(false)
+                                .splineTo(new Vector2d(50.5,54), Math.toRadians(-90))
+                                .build())),
+                        new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit),
+                        new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
+                                .setReversed(true)
+                                .splineTo(new Vector2d(64,64), Math.toRadians(45))
+                                .build())),
+                        new ParallelDeadlineGroup(
+                                new WaitCommand(700),
+                                new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET)
+                        ),
+                        new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
+                        new WaitCommand(500),
+                        new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY),
+                        new ParallelDeadlineGroup(
+                                new WaitCommand(700),
+                                new LiftSetPosition(robot.lift, LiftSubsystem.GROUND)
+                        ),
+
                         new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
                         new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
                                 .setReversed(false)
-                                .splineTo(new Vector2d(50,55), Math.toRadians(-90))
+                                .splineTo(new Vector2d(61.5,54), Math.toRadians(-90))
+                                .build())),
+                        new ExtendAndBeginIntakeCommand(robot.extension, robot.intake, robot.lift),
+                        new WaitCommand(350),
+                        new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit),
+                        new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
+                                .setReversed(true)
+                                .splineTo(new Vector2d(64,64), Math.toRadians(45))
+                                .build())),
+                        new ParallelDeadlineGroup(
+                                new WaitCommand(700),
+                                new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET)
+                        ),
+                        new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
+                        new WaitCommand(350),
+                        new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY),
+                        new ParallelDeadlineGroup(
+                                new WaitCommand(700),
+                                new LiftSetPosition(robot.lift, LiftSubsystem.GROUND)
+                        ),
+
+                        new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
+                        new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
+                                .setReversed(false)
+                                .splineTo(new Vector2d(61,60), Math.toRadians(-90))
+                                .splineToConstantHeading(new Vector2d(70.5,54), Math.toRadians(-90))
                                 .build())),
                         new ExtendAndBeginIntakeCommand(robot.extension, robot.intake, robot.lift),
                         new WaitCommand(500),
@@ -55,62 +103,14 @@ public class Auto extends CommandOpMode {
                                 .splineTo(new Vector2d(64,64), Math.toRadians(45))
                                 .build())),
                         new ParallelDeadlineGroup(
-                                new WaitCommand(600),
+                                new WaitCommand(700),
                                 new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET)
                         ),
                         new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
-                        new WaitCommand(500),
+                        new WaitCommand(350),
                         new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY),
                         new ParallelDeadlineGroup(
-                                new WaitCommand(600),
-                                new LiftSetPosition(robot.lift, LiftSubsystem.GROUND)
-                        ),
-
-                        new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
-                        new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
-                                .setReversed(false)
-                                .splineTo(new Vector2d(61,55), Math.toRadians(-90))
-                                .build())),
-                        new ExtendAndBeginIntakeCommand(robot.extension, robot.intake, robot.lift),
-                        new WaitCommand(500),
-                        new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit),
-                        new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
-                                .setReversed(true)
-                                .splineTo(new Vector2d(72,64), Math.toRadians(45))
-                                .build())),
-                        new ParallelDeadlineGroup(
-                                new WaitCommand(600),
-                                new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET)
-                        ),
-                        new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
-                        new WaitCommand(500),
-                        new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY),
-                        new ParallelDeadlineGroup(
-                                new WaitCommand(600),
-                                new LiftSetPosition(robot.lift, LiftSubsystem.GROUND)
-                        ),
-
-                        new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
-                        new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
-                                .setReversed(false)
-                                .splineTo(new Vector2d(62,55), Math.toRadians(-90))
-                                .build())),
-                        new ExtendAndBeginIntakeCommand(robot.extension, robot.intake, robot.lift),
-                        new WaitCommand(500),
-                        new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit),
-                        new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
-                                .setReversed(true)
-                                .splineTo(new Vector2d(64,64), Math.toRadians(45))
-                                .build())),
-                        new ParallelDeadlineGroup(
-                                new WaitCommand(600),
-                                new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET)
-                        ),
-                        new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
-                        new WaitCommand(500),
-                        new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY),
-                        new ParallelDeadlineGroup(
-                                new WaitCommand(600),
+                                new WaitCommand(700),
                                 new LiftSetPosition(robot.lift, LiftSubsystem.GROUND)
                         )
                 )
