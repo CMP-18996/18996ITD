@@ -40,7 +40,7 @@ public class SparkFunOTOSDrive extends MecanumDrive {
         // tweaked slightly to compensate for imperfect mounting (eg. 1.3 degrees).
 
         // RR localizer note: These units are inches and radians.
-        public SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(-6.2297, -0.1442, 90);
+        public SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(-6.2297, -0.1442, Math.toRadians(0));
 
         // Here we can set the linear and angular scalars, which can compensate for
         // scaling issues with the sensor measurements. Note that as of firmware
