@@ -71,7 +71,7 @@ public class ExtensionSubsystem extends SubsystemBase {
             double error = targetPosition + extensionMotor.getCurrentPosition();
             double power;
             if (getAbsError() > 15) {
-                power = Range.clip(P * error + F * (error / Math.max(abs(error), 0.01)), -.8, .8);
+                power = Range.clip(P * error + F * (error / Math.max(abs(error), 0.01)), -.6, .6);
             }
             else power = 0;
             extensionMotor.setPower(power);

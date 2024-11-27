@@ -7,6 +7,7 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
+import com.arcrobotics.ftclib.command.ParallelDeadlineGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -17,11 +18,13 @@ import org.firstinspires.ftc.teamcode.common.commands.DepositRotationCommand;
 import org.firstinspires.ftc.teamcode.common.commands.ExtendAndBeginIntakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.ExtensionMotorPowerCommand;
 import org.firstinspires.ftc.teamcode.common.commands.ExtensionPositionCommand;
+import org.firstinspires.ftc.teamcode.common.commands.IntakeRotatorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.LiftSetPosition;
 import org.firstinspires.ftc.teamcode.common.commands.RetractAndTransferCommand;
 import org.firstinspires.ftc.teamcode.common.drive.SparkFunOTOSDrive;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
+import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
@@ -33,29 +36,85 @@ public class Auto extends CommandOpMode {
     @Override
     public void initialize() {
         CommandScheduler.getInstance().reset();
-        beginPose = new Pose2d(66, 66, Math.toRadians(-135));
+        beginPose = new Pose2d(64, 64, Math.toRadians(-135));
         drive = new SparkFunOTOSDrive(hardwareMap, beginPose);
         robot = new Robot(hardwareMap, Subsystems.EXTENSION, Subsystems.INTAKE, Subsystems.LIFT, Subsystems.DEPOSIT);
 
-        super.schedule(new InstantCommand(),
+        super.schedule(
                 new SequentialCommandGroup(
+                        new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
                         new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
                                 .setReversed(false)
-                                .splineTo(new Vector2d(60,52), Math.toRadians(-90))
+                                .splineTo(new Vector2d(50,55), Math.toRadians(-90))
                                 .build())),
                         new ExtendAndBeginIntakeCommand(robot.extension, robot.intake, robot.lift),
-                        new WaitCommand(2000),
+                        new WaitCommand(500),
                         new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit),
                         new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
                                 .setReversed(true)
-                                .splineTo(new Vector2d(66,66), Math.toRadians(45))
+                                .splineTo(new Vector2d(64,64), Math.toRadians(45))
                                 .build())),
-                        new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET),
-                        new WaitCommand(2000),
+                        new ParallelDeadlineGroup(
+                                new WaitCommand(600),
+                                new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET)
+                        ),
                         new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
-                        new WaitCommand(5000),
-                        new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY)
-        ));
+                        new WaitCommand(500),
+                        new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY),
+                        new ParallelDeadlineGroup(
+                                new WaitCommand(600),
+                                new LiftSetPosition(robot.lift, LiftSubsystem.GROUND)
+                        ),
+
+                        new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
+                        new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
+                                .setReversed(false)
+                                .splineTo(new Vector2d(61,55), Math.toRadians(-90))
+                                .build())),
+                        new ExtendAndBeginIntakeCommand(robot.extension, robot.intake, robot.lift),
+                        new WaitCommand(500),
+                        new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit),
+                        new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
+                                .setReversed(true)
+                                .splineTo(new Vector2d(72,64), Math.toRadians(45))
+                                .build())),
+                        new ParallelDeadlineGroup(
+                                new WaitCommand(600),
+                                new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET)
+                        ),
+                        new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
+                        new WaitCommand(500),
+                        new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY),
+                        new ParallelDeadlineGroup(
+                                new WaitCommand(600),
+                                new LiftSetPosition(robot.lift, LiftSubsystem.GROUND)
+                        ),
+
+                        new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
+                        new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
+                                .setReversed(false)
+                                .splineTo(new Vector2d(62,55), Math.toRadians(-90))
+                                .build())),
+                        new ExtendAndBeginIntakeCommand(robot.extension, robot.intake, robot.lift),
+                        new WaitCommand(500),
+                        new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit),
+                        new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
+                                .setReversed(true)
+                                .splineTo(new Vector2d(64,64), Math.toRadians(45))
+                                .build())),
+                        new ParallelDeadlineGroup(
+                                new WaitCommand(600),
+                                new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET)
+                        ),
+                        new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
+                        new WaitCommand(500),
+                        new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY),
+                        new ParallelDeadlineGroup(
+                                new WaitCommand(600),
+                                new LiftSetPosition(robot.lift, LiftSubsystem.GROUND)
+                        )
+                )
+        );
     }
 
     @Override
