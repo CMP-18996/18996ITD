@@ -71,7 +71,7 @@ public class HardwareMapNames {
     public static String RIGHT_BACK = "rightBack";
 
     // Specimen
-    public static String ARM_SERVO = "armServo";
-    public static String WRIST_SERVO = "wristServo";
-    public static String GRIPPER_SERVO = "gripper";
+    public static String ARM_MOTOR = "arm1";
+    public static String WRIST_SERVO = "arm2";
+    public static String GRIPPER_SERVO = "armClaw";
 }

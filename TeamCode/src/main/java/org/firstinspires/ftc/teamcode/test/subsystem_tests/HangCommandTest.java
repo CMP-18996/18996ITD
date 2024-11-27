@@ -20,15 +20,15 @@ public class HangCommandTest extends CommandOpMode {
         robot = new Robot(hardwareMap, subsystems);
         super.schedule(
                 new HangCommand(robot.hang, HangSubsystem.HangPosition.L3),
-                new HangCommand(robot.hang, HangSubsystem.HangPosition.L3_HUNG),
+                new HangCommand(robot.hang, HangSubsystem.HangPosition.DOWN),
                 new HangCommand(robot.hang, HangSubsystem.HangPosition.L3),
-                new HangCommand(robot.hang, HangSubsystem.HangPosition.L3_HUNG),
+                new HangCommand(robot.hang, HangSubsystem.HangPosition.DOWN),
                 new HangCommand(robot.hang, HangSubsystem.HangPosition.L3),
-                new HangCommand(robot.hang, HangSubsystem.HangPosition.L3_HUNG),
+                new HangCommand(robot.hang, HangSubsystem.HangPosition.DOWN),
                 new HangCommand(robot.hang, HangSubsystem.HangPosition.L3),
-                new HangCommand(robot.hang, HangSubsystem.HangPosition.L3_HUNG),
+                new HangCommand(robot.hang, HangSubsystem.HangPosition.DOWN),
                 new HangCommand(robot.hang, HangSubsystem.HangPosition.L3),
-                new HangCommand(robot.hang, HangSubsystem.HangPosition.L3_HUNG),
+                new HangCommand(robot.hang, HangSubsystem.HangPosition.DOWN),
                 new HangCommand(robot.hang, HangSubsystem.HangPosition.L3)
                 );
     }

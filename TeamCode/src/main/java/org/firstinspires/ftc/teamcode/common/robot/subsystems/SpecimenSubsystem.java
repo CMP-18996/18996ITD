@@ -13,24 +13,34 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 public class SpecimenSubsystem extends SubsystemBase {
     private Servo wristServo, gripperServo;
     private DcMotorImpl armMotor;
-    public static double ARM_TRANSFERRING_POSITION = 0;
-    public static double ARM_ATTACHING_POSITION = 0;
-    public static double WRIST_TRANSFERRING_POSITION = 0;
-    public static double WRIST_ATTACHING_POSITION = 0;
-    public static double GRIPPER_OPEN = 0;
-    public static double GRIPPER_CLOSED = 0;
+
+    // (motor encoder values)
+    public static int ARM_TRANSFERRING_POSITION = 35;
+    public static int ARM_ATTACHING_POSITION = 270;
+
+    // (servo values)
+    public static double WRIST_TRANSFERRING_POSITION = 0.73;
+    public static double WRIST_ATTACHING_POSITION = 0.24;
+
+    public static double GRIPPER_OPEN = 0.5;
+    public static double GRIPPER_CLOSED = 0.82;
+
     public static double Arm_P = 0.005;
+
     private static double armTarget;
     private static double wristTarget;
 
     private SpecimenPosition specimenPosition;
     private GripperPosition gripperPosition;
+
     public SpecimenSubsystem(HardwareMap hardwareMap) {
-        armMotor = hardwareMap.get(DcMotorImpl.class, HardwareMapNames.ARM_SERVO);
+        armMotor = hardwareMap.get(DcMotorImpl.class, HardwareMapNames.ARM_MOTOR);
         wristServo = hardwareMap.get(Servo.class, HardwareMapNames.WRIST_SERVO);
         gripperServo = hardwareMap.get(Servo.class, HardwareMapNames.GRIPPER_SERVO);
+
         specimenPosition = SpecimenPosition.TRANSFERRING;
         gripperPosition = GripperPosition.CLOSED;
+
         armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -62,6 +72,7 @@ public class SpecimenSubsystem extends SubsystemBase {
             armTarget = specimenPosition.armPosition;
             wristTarget = specimenPosition.wristPosition;
         }
+
         armMotor.setPower(Arm_P * (armTarget - armMotor.getCurrentPosition()));
         wristServo.setPosition(wristTarget);
         gripperServo.setPosition(gripperPosition.gripper);
