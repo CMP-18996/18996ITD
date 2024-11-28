@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.test.subsystem_tests;
 
 
 
+import org.firstinspires.ftc.teamcode.common.commands.IntakeRotatorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.TrapdoorCommand;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
@@ -30,6 +31,7 @@ public class ColorSensorTuner extends CommandOpMode {
         super.schedule(
                 new SequentialCommandGroup(
 //                        new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.ACTIVE),
+                        new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.PICKING_UP),
                         new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.CLOSED)
                 )
         );
@@ -41,6 +43,7 @@ public class ColorSensorTuner extends CommandOpMode {
         telemetry.addData("red:", colorSensor.red());
         telemetry.addData("blue:", colorSensor.blue());
         telemetry.addData("green:", colorSensor.green());
+        telemetry.addData("alpha", colorSensor.alpha());
         telemetry.update();
     }
 }

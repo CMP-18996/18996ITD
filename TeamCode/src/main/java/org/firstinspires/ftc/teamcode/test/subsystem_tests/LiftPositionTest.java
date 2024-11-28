@@ -26,10 +26,6 @@ public class LiftPositionTest extends CommandOpMode {
             new SequentialCommandGroup(
                 new LiftSetPosition(robot.lift, robot.lift.GROUND),
                     new WaitCommand(3000),
-                new LiftSetPosition(robot.lift, robot.lift.LOW_RUNG),
-                    new WaitCommand(3000),
-                new LiftSetPosition(robot.lift, robot.lift.HIGH_RUNG),
-                    new WaitCommand(3000),
                 new LiftSetPosition(robot.lift, robot.lift.GROUND),
                     new WaitCommand(3000),
                 new LiftSetPosition(robot.lift, robot.lift.LOW_BASKET),

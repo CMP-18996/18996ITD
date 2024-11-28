@@ -60,7 +60,7 @@ public class HardwareMapNames {
     public static String HANG_MOTOR_2 = "hang2";
 
     // Odometry
-    public static String OTOS = "otos";
+    public static String OTOS = "sensor_otos";
     public static String PINPOINT = "pinpoint";
     public static String LIMELIGHT = "limelight";
 
@@ -71,7 +71,7 @@ public class HardwareMapNames {
     public static String RIGHT_BACK = "rightBack";
 
     // Specimen
-    public static String ARM_MOTOR = "arm1";
-    public static String WRIST_SERVO = "arm2";
+    public static String ARM_MOTOR = "armMotor";
+    public static String WRIST_SERVO = "armServo";
     public static String GRIPPER_SERVO = "armClaw";
 }

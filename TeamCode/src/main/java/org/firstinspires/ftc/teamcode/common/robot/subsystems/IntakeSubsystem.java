@@ -70,6 +70,7 @@ public class IntakeSubsystem extends SubsystemBase {
         b = colorSensor.blue();
         a = colorSensor.alpha();
         if (a < 100) return ColorState.NONE;
+
         if(r > g && r > b){
             colorState = ColorState.RED;
         }
@@ -81,6 +82,8 @@ public class IntakeSubsystem extends SubsystemBase {
         }
         else{
             colorState = ColorState.NONE;
+            // this should NOT be NONE
+            // this is a edge case that we have to deal with
         }
         return colorState;
     }

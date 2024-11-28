@@ -15,17 +15,17 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 @Config
 public class LiftSubsystem extends SubsystemBase {
     // Constants
-    public static double P = .03;
-    public static double F = .03;
+    public static double P = 0.05;
+    public static double F = 0.25;
     public static int GROUND = 0;
-    public static int LOW_RUNG = 250;
-    public static int HIGH_RUNG = 650;
-    public static int LOW_BASKET = 450;
-    public static int HIGH_BASKET = 850;
+    public static int LOW_BASKET = 420;
+    public static int HIGH_BASKET = 860;
 
     // State
     private final DcMotorImpl liftMotor;
     private int currTarget = 0;
+
+    public double powerTELE;
 
     public void setTargetPosition(int targetPosition) {
         currTarget = targetPosition;
@@ -42,10 +42,16 @@ public class LiftSubsystem extends SubsystemBase {
     public void periodic() {
         double error = currTarget - liftMotor.getCurrentPosition();
         double power;
+
+        /*
         if (getAbsError() > 15) {
             power = Range.clip(P * error + F * (error / Math.max(abs(error), 0.01)), -.6, 1);
         }
         else power = 0;
+        */
+        power = Range.clip(P * error + F, -0.6, 1.0);
+        powerTELE = power;
+
         liftMotor.setPower(power);
     }
 

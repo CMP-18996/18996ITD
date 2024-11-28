@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.common.robot.subsystems;
 
 import static java.lang.Math.abs;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorImpl;
@@ -11,6 +12,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
+@Config
 public class ExtensionSubsystem extends SubsystemBase {
     DcMotorImpl extensionMotor;
     ExtensionState extensionState;
@@ -70,9 +72,14 @@ public class ExtensionSubsystem extends SubsystemBase {
         if (!extensionState.equals(ExtensionState.CUSTOM)) {
             double error = targetPosition + extensionMotor.getCurrentPosition();
             double power;
+
+            /*
             if (getAbsError() > 15) {
                 power = Range.clip(P * error + F * (error / Math.max(abs(error), 0.01)), -.4, .4);
             } else power = 0;
+            */
+
+            power = Range.clip(P * error, -1.0, 1.0);
             extensionMotor.setPower(power);
         }
     }

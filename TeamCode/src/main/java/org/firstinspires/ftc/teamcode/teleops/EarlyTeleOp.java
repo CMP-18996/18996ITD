@@ -10,8 +10,12 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.common.commands.DepositRotationCommand;
 import org.firstinspires.ftc.teamcode.common.commands.ExtendCommand;
 import org.firstinspires.ftc.teamcode.common.commands.HangCommand;
@@ -19,8 +23,10 @@ import org.firstinspires.ftc.teamcode.common.commands.IntakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeRotatorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.LiftSetPosition;
 import org.firstinspires.ftc.teamcode.common.commands.TrapdoorCommand;
+import org.firstinspires.ftc.teamcode.common.odo.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.common.robot.Drive;
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
+import org.firstinspires.ftc.teamcode.common.robot.OdometryHardware;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.Team;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
@@ -29,6 +35,8 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.HangSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
+import java.nio.file.Watchable;
+
 @TeleOp
 public class EarlyTeleOp extends CommandOpMode {
     private Team team = Team.RED;
@@ -36,12 +44,16 @@ public class EarlyTeleOp extends CommandOpMode {
 
     private Robot robot;
     private GamepadEx gamepad;
-    private boolean alreadyTransferred = false;
+    private boolean alreadyTrans = false;
     private Drive drive;
+    private OdometryHardware odometryHardware;
 
     @Override
     public void initialize() {
         drive = new Drive(hardwareMap);
+        drive.setBreakMode(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        odometryHardware = new OdometryHardware(hardwareMap);
 
         CommandScheduler.getInstance().reset();
 
@@ -84,13 +96,13 @@ public class EarlyTeleOp extends CommandOpMode {
                 new ConditionalCommand(
                         new SequentialCommandGroup(
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
-                                new WaitCommand(1000),
+                                new WaitCommand(800),
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY),
                                 new LiftSetPosition(robot.lift, robot.lift.GROUND)
                         ),
                         new SequentialCommandGroup(
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
-                                new WaitCommand(1000),
+                                new WaitCommand(800),
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY)
                         ),
                         () -> robot.lift.getCurrentPosition() != robot.lift.GROUND
@@ -126,7 +138,7 @@ public class EarlyTeleOp extends CommandOpMode {
                         new ScheduleCommand(
                                 new HangCommand(robot.hang, HangSubsystem.HangPosition.DOWN)
                         ),
-                        () -> robot.hang.getCurrTarget() == HangSubsystem.HangPosition.DOWN
+                        () -> robot.hang.getCurrTarget().equals(HangSubsystem.HangPosition.DOWN)
                 )
         );
     }
@@ -141,41 +153,57 @@ public class EarlyTeleOp extends CommandOpMode {
         }
 
 
-        Team detectedColor = robot.intake.updateColorState2();
+        //Team detectedColor = robot.intake.updateColorState2();
+        IntakeSubsystem.ColorState detectedColor = robot.intake.updateColorState();
+
+
         /*
-        if (detectedColor.equals(oppositeTeam)) {
+        if (detectedColor.equals(IntakeSubsystem.ColorState.BLUE)) {
             schedule(
                     new SequentialCommandGroup(
-                            new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
                             new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.EJECTING),
                             new WaitCommand(200),
-                            new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.ACTIVE)
+                            new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.CLOSED)
                     )
             );
         }
 
-        else if (detectedColor.equals(team) && !alreadyTransferred) {
-            alreadyTransferred = true;
+         */
+
+
+        if (detectedColor.equals(IntakeSubsystem.ColorState.RED) && !alreadyTrans) {
+            alreadyTrans = true;
 
             schedule(
                     new SequentialCommandGroup(
                             new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
                             new WaitCommand(300),
-                            new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
                             new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CONTRACTED),
+                            new WaitCommand(300),
+                            new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
                             new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING),
+                            new WaitCommand(1000),
+                            new LiftSetPosition(robot.lift, robot.lift.HIGH_BASKET),
+                            new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.READY_TO_DEPOSIT),
                             new InstantCommand(() -> {
-                                alreadyTransferred = false;
+                                alreadyTrans = false;
                                 robot.extension.setState(ExtensionSubsystem.ExtensionState.CUSTOM);
                             })
                     )
             );
-        } */
+        }
+
+        if (gamepad1.options) {
+            odometryHardware.pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
+            telemetry.addData("HIUEGHUIAEHGUIEAHG", "HAEGHIJEAGJAE");
+        }
+
+        //odometryHardware.pinpoint.update(GoBildaPinpointDriver.readData.ONLY_UPDATE_HEADING);
+        //double heading = odometryHardware.pinpoint.getHeading();
 
         drive.robotCentricDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
 
         telemetry.addData("Detected Color:", detectedColor);
-        telemetry.addData("Extension State:", robot.extension.getState().toString());
         telemetry.update();
     }
 }
