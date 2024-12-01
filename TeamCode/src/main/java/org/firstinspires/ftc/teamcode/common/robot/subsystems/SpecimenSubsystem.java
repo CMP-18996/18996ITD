@@ -66,6 +66,7 @@ public class SpecimenSubsystem extends SubsystemBase {
         wristTarget += delta;
     }
 
+
     public void periodic() {
 //        armMotor.setPosition(specimenPosition.armPosition);
         if (specimenPosition != SpecimenPosition.MANUAL) {
