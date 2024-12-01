@@ -4,8 +4,11 @@ import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorImpl;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
@@ -15,20 +18,33 @@ public class SpecimenSubsystem extends SubsystemBase {
     private DcMotorImpl armMotor;
 
     // (motor encoder values)
-    public static int ARM_TRANSFERRING_POSITION = 35;
-    public static int ARM_ATTACHING_POSITION = 270;
+    public static int ARM_CHAMBER_POSITION = 550;
+    public static int ARM_WALL_POSITION = 100;
+    public static int ARM_REST_POSITION = 50;
 
     // (servo values)
-    public static double WRIST_TRANSFERRING_POSITION = 0.73;
-    public static double WRIST_ATTACHING_POSITION = 0.24;
+    public static double WRIST_CHAMBER_POSITION = 0.73;
+    public static double WRIST_WALL_POSITION = 0.24;
+    public static double WRIST_REST_POSITION = 0.6;
 
     public static double GRIPPER_OPEN = 0.5;
     public static double GRIPPER_CLOSED = 0.82;
-
-    public static double Arm_P = 0.000;
-
-    private static double armTarget;
+    private static int armTarget;
     private static double wristTarget;
+
+    public static double Kp = 0.008;
+    public static double Kd = -0.0007;
+    public static double Ki = 0.02;
+
+    public static double Kg = 0.2;
+
+    public static double MAX_EXTENSION_SPEED = 1.0;
+    public static double MAX_RETURN_SPEED = 1.0;
+
+    int lastError = 0;
+
+    double integralSum = 0;
+    ElapsedTime timer = new ElapsedTime();
 
     private SpecimenPosition specimenPosition;
     private GripperPosition gripperPosition;
@@ -38,52 +54,95 @@ public class SpecimenSubsystem extends SubsystemBase {
         wristServo = hardwareMap.get(Servo.class, HardwareMapNames.WRIST_SERVO);
         gripperServo = hardwareMap.get(Servo.class, HardwareMapNames.GRIPPER_SERVO);
 
-        specimenPosition = SpecimenPosition.TRANSFERRING;
+        specimenPosition = SpecimenPosition.REST;
         gripperPosition = GripperPosition.CLOSED;
 
         armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        armMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        wristServo.setDirection(Servo.Direction.FORWARD);
+
         armTarget = specimenPosition.armPosition;
         wristTarget = specimenPosition.wristPosition;
     }
 
-    public void setSpecimenPosition(SpecimenPosition position) {
-        specimenPosition = position;
+    public GripperPosition getGripperPosition() {
+        return gripperPosition;
     }
 
-    public void setGripper(GripperPosition position) {
+    public void setSpecimenPosition(SpecimenPosition position) {
+        specimenPosition = position;
+        integralSum = 0;
+        lastError = 0;
+        timer.reset();
+    }
+
+    public void setGripperState(GripperPosition position) {
         gripperPosition = position;
+        gripperServo.setPosition(position.val);
     }
 
     public void manualAdjustArm(int delta) {
         setSpecimenPosition(SpecimenPosition.MANUAL);
         armTarget += delta;
+        integralSum = 0;
+        lastError = 0;
+        timer.reset();
     }
 
     public void manualAdjustWrist(double delta) {
         setSpecimenPosition(SpecimenPosition.MANUAL);
         wristTarget += delta;
+        integralSum = 0;
+        lastError = 0;
+        timer.reset();
     }
 
+    @Override
     public void periodic() {
+
 //        armMotor.setPosition(specimenPosition.armPosition);
         if (specimenPosition != SpecimenPosition.MANUAL) {
             armTarget = specimenPosition.armPosition;
             wristTarget = specimenPosition.wristPosition;
         }
+        double angleFromTicks = -( (360 * (armMotor.getCurrentPosition())) /1503.6) - 2;
+        double G = -Kg * Math.cos(Math.toRadians(angleFromTicks));
 
-        armMotor.setPower(Arm_P * (armTarget - armMotor.getCurrentPosition()));
+        int error = armTarget + armMotor.getCurrentPosition();
+        double P = Kp * -error;
+
+        double D = Kd * (error - lastError) / timer.seconds();
+
+        integralSum = integralSum + (error * timer.seconds());
+        double I = Ki * -integralSum;
+
+        if (angleFromTicks > 90) {
+            I = 0;
+        }
+
+        lastError = error;
+        timer.reset();
+
+        double power = Range.clip(P + D + I + G, -MAX_EXTENSION_SPEED, MAX_RETURN_SPEED);
+        armMotor.setPower(power);
         wristServo.setPosition(wristTarget);
-        gripperServo.setPosition(gripperPosition.gripper);
+        /*armMotor.setPower(Arm_P * (armTarget - armMotor.getCurrentPosition()));
+        wristServo.setPosition(wristTarget);
+        gripperServo.setPosition(gripperPosition.gripper);*/
     }
 
     public enum SpecimenPosition {
-        TRANSFERRING(ARM_TRANSFERRING_POSITION, WRIST_TRANSFERRING_POSITION),
-        ATTACHING(ARM_ATTACHING_POSITION, WRIST_ATTACHING_POSITION),
-        MANUAL(0, 0);
-        public double armPosition, wristPosition;
-        SpecimenPosition(double arm, double wrist) {
+        CHAMBER(ARM_CHAMBER_POSITION, WRIST_CHAMBER_POSITION),
+        WALL(ARM_WALL_POSITION, WRIST_WALL_POSITION),
+        REST(ARM_REST_POSITION, WRIST_REST_POSITION),
+        MANUAL(0, 0.0);
+        public int armPosition;
+        public double wristPosition;
+        SpecimenPosition(int arm, double wrist) {
             this.armPosition = arm;
             this.wristPosition = wrist;
         }
@@ -93,9 +152,9 @@ public class SpecimenSubsystem extends SubsystemBase {
         OPEN(GRIPPER_OPEN),
         CLOSED(GRIPPER_CLOSED);
 
-        public double gripper;
+        public double val;
         GripperPosition(double position) {
-            this.gripper = position;
+            this.val = position;
         }
     }
 }

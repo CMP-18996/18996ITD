@@ -11,4 +11,3 @@ public class InstantLiftCommand extends InstantCommand {
         );
     }
 }
-//hi
