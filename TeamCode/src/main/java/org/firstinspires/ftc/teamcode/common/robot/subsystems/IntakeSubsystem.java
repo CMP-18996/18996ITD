@@ -18,7 +18,7 @@ public class IntakeSubsystem extends SubsystemBase {
     // Constants
     public static double INTAKE_ROTATION_TRANSFER = 0.0; // max and min rotation used as what arm is actually being rotated to, subject to change
     public static double INTAKE_ROTATION_PICK_UP = 0.42;
-    public static double INTAKE_ROTATION_MOVING = 0.2;
+    public static double INTAKE_ROTATION_MOVING = 0.1;
 
     public static double CLOSED_VALUE = .5;
     public static double EJECTING_VALUE = 1.0;
@@ -28,7 +28,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
     // State
     final private CRServoImpl intakeServo1;
-    final private CRServoImpl intakeServo2;
 //     final private ServoEx trapdoorServo, intakeRotationServo;
     final private Servo trapdoorServo, intakeRotationServo;
     public ColorSensor colorSensor; //TODO: isn't this and the above INTERFACES? you can't instantiate interfaces...
@@ -122,7 +121,6 @@ public class IntakeSubsystem extends SubsystemBase {
     public void updateIntakingState(IntakingState setState) {
         intakingState = setState;
         intakeServo1.setPower(intakingState.val);
-        intakeServo2.setPower(intakingState.val);
     }
 
     public void updateIntakeRotatorState(IntakeRotatorState setState) {
@@ -146,11 +144,9 @@ public class IntakeSubsystem extends SubsystemBase {
         trapdoorServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_TRAPDOOR);
         intakeRotationServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_ROTATOR);
         intakeServo1 = hardwareMap.get(CRServoImpl.class, HardwareMapNames.INTAKE_SERVO_1);
-        intakeServo2 = hardwareMap.get(CRServoImpl.class, HardwareMapNames.INTAKE_SERVO_2);
         colorSensor = hardwareMap.get(ColorSensor.class, HardwareMapNames.INTAKE_COLOR_SENSOR);
         intakeRotationServo.setDirection(Servo.Direction.REVERSE);
         intakeServo1.setDirection(DcMotorSimple.Direction.FORWARD); // subject to change
-        intakeServo2.setDirection(DcMotorSimple.Direction.REVERSE); // subject to change
         this.updateIntakeRotatorState(IntakeRotatorState.TRANSFERRING);
         this.updateIntakingState(IntakingState.DISABLED);
     }
