@@ -73,16 +73,13 @@ public class SPECIKEMARMTET extends LinearOpMode {
             currentGamepad1.copy(gamepad1);
 
             if (currentGamepad1.circle && !previousGamepad1.circle) {
-                //ARM_ADDITION = 0.0;
                 arm1_position = 550;
             }
             else if (currentGamepad1.square && !previousGamepad1.square) {
                 arm1_position = 50;
-                //ARM_ADDITION = 0.0;
             }
             else if (currentGamepad1.triangle && !previousGamepad1.triangle) {
                 arm1_position = 100;
-                //ARM_ADDITION = 0.0;
             }
 
             arm1_position += (int) ((currentGamepad1.right_trigger - currentGamepad1.left_trigger) * 10);
