@@ -43,19 +43,22 @@ public class SpecimenSubsystem extends SubsystemBase {
 
     int lastError = 0;
 
+    public double power;
+    public int error;
+
     double integralSum = 0;
     ElapsedTime timer = new ElapsedTime();
 
-    private SpecimenPosition specimenPosition;
-    private GripperPosition gripperPosition;
+    public SpecimenPosition specimenPosition;
+    public GripperPosition gripperPosition;
 
     public SpecimenSubsystem(HardwareMap hardwareMap) {
         armMotor = hardwareMap.get(DcMotorImpl.class, HardwareMapNames.ARM_MOTOR);
         wristServo = hardwareMap.get(Servo.class, HardwareMapNames.WRIST_SERVO);
         gripperServo = hardwareMap.get(Servo.class, HardwareMapNames.GRIPPER_SERVO);
 
-        specimenPosition = SpecimenPosition.REST;
-        gripperPosition = GripperPosition.CLOSED;
+        specimenPosition = SpecimenPosition.CHAMBER;
+        gripperPosition = GripperPosition.OPEN;
 
         armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -109,10 +112,11 @@ public class SpecimenSubsystem extends SubsystemBase {
             armTarget = specimenPosition.armPosition;
             wristTarget = specimenPosition.wristPosition;
         }
+
         double angleFromTicks = -( (360 * (armMotor.getCurrentPosition())) /1503.6) - 2;
         double G = -Kg * Math.cos(Math.toRadians(angleFromTicks));
 
-        int error = armTarget + armMotor.getCurrentPosition();
+        error = armTarget + armMotor.getCurrentPosition();
         double P = Kp * -error;
 
         double D = Kd * (error - lastError) / timer.seconds();
@@ -120,14 +124,16 @@ public class SpecimenSubsystem extends SubsystemBase {
         integralSum = integralSum + (error * timer.seconds());
         double I = Ki * -integralSum;
 
+        /*
         if (angleFromTicks > 90) {
             I = 0;
         }
+        */
 
         lastError = error;
         timer.reset();
 
-        double power = Range.clip(P + D + I + G, -MAX_EXTENSION_SPEED, MAX_RETURN_SPEED);
+        power = Range.clip(P + D + I + G, -MAX_EXTENSION_SPEED, MAX_RETURN_SPEED);
         armMotor.setPower(power);
         wristServo.setPosition(wristTarget);
         /*armMotor.setPower(Arm_P * (armTarget - armMotor.getCurrentPosition()));

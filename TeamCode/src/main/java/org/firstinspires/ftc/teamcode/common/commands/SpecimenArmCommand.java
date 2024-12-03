@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
 
-public class SpecimenArmCommand extends CommandBase {
+public class SpecimenArmCommand extends InstantCommand {
     SpecimenSubsystem specimenSubsystem;
     SpecimenSubsystem.SpecimenPosition specimenPosition;
     public SpecimenArmCommand(SpecimenSubsystem specimenSubsystem, SpecimenSubsystem.SpecimenPosition specimenPosition) {
@@ -19,7 +19,10 @@ public class SpecimenArmCommand extends CommandBase {
         specimenSubsystem.setSpecimenPosition(specimenPosition);
     }
 
+    /*
     public boolean isFinished() {
         return true;
     }
+    */
+
 }

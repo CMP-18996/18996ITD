@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.test.subsystem_tests;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
@@ -16,6 +17,7 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 import org.firstinspires.ftc.teamcode.teleops.SPECIKEMARMTET;
 
 @TeleOp(name =  "MLK Jr")
+@Config
 public class SpecimenTest extends CommandOpMode {
     Subsystems subsystems = Subsystems.SPECIMEN;
     Robot robot;
@@ -45,5 +47,10 @@ public class SpecimenTest extends CommandOpMode {
     @Override
     public void run() {
         CommandScheduler.getInstance().run();
+        telemetry.addData("POWER", robot.specimen.power);
+        telemetry.addData("ERR", robot.specimen.error);
+        telemetry.addData("POSITIIN", robot.specimen.specimenPosition);
+        telemetry.addData("GRI", robot.specimen.gripperPosition);
+        telemetry.update();
     }
 }
