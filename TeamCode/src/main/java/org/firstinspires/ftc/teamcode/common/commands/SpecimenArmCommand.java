@@ -21,6 +21,6 @@ public class SpecimenArmCommand extends CommandBase {
 
 
     public boolean isFinished() {
-        return specimenSubsystem.getAbsError() < 5;
+        return specimenSubsystem.getAbsError() < 5 || specimenSubsystem.getSpecimenState() != specimenPosition;
     }
 }

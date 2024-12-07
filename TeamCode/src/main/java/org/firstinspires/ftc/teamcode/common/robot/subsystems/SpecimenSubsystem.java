@@ -83,6 +83,10 @@ public class SpecimenSubsystem extends SubsystemBase {
         timer.reset();
     }
 
+    public SpecimenPosition getSpecimenState() {
+        return specimenPosition;
+    }
+
     public void setGripperState(GripperPosition position) {
         gripperPosition = position;
         gripperServo.setPosition(position.val);
