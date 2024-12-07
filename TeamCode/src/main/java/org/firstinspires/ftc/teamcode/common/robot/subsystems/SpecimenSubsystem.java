@@ -104,6 +104,10 @@ public class SpecimenSubsystem extends SubsystemBase {
         timer.reset();
     }
 
+    public int getAbsError() {
+        return armMotor.getCurrentPosition() - armTarget;
+    }
+
     @Override
     public void periodic() {
 
