@@ -16,15 +16,15 @@ import org.firstinspires.ftc.teamcode.common.robot.Team;
 @Config
 public class IntakeSubsystem extends SubsystemBase {
     // Constants
-    public static double INTAKE_ROTATION_TRANSFER = 0.0; // max and min rotation used as what arm is actually being rotated to, subject to change
-    public static double INTAKE_ROTATION_PICK_UP = 0.42;
+    public static double INTAKE_ROTATION_TRANSFER = 0.6; // max and min rotation used as what arm is actually being rotated to, subject to change
+    public static double INTAKE_ROTATION_PICK_UP = 0;
     public static double INTAKE_ROTATION_MOVING = 0.1;
 
     public static double CLOSED_VALUE = .5;
     public static double EJECTING_VALUE = 1.0;
-    public static double ACTIVE_VALUE = 1.0;
+    public static double ACTIVE_VALUE = -1.0;
     public static double DISABLED_VALUE = 0.0;
-    public static double REVERSING_VALUE = -1.00;
+    public static double REVERSING_VALUE = 1.00;
 
     // State
     final private CRServoImpl intakeServo1;
@@ -126,6 +126,16 @@ public class IntakeSubsystem extends SubsystemBase {
     public void updateIntakeRotatorState(IntakeRotatorState setState) {
         intakeRotatorState = setState;
         intakeRotationServo.setPosition(intakeRotatorState.val);
+    }
+
+    public void updateIntakeRotatorStateManual(double val) {
+        if (val < 0) {
+            intakeRotationServo.setPosition(0);
+        } else if (val > 1) {
+            intakeRotationServo.setPosition(1);
+        } else {
+            intakeRotationServo.setPosition(val);
+        }
     }
 
     public TrapdoorState getTrapdoorState() {
