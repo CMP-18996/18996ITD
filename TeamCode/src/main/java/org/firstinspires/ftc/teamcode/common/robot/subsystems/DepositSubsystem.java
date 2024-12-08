@@ -12,8 +12,7 @@ public class DepositSubsystem extends SubsystemBase {
     // Constants
     public static double TRANSFER_ROTATOR_TRANSFER = 0.0;
     public static double TRANSFER_ROTATOR_DEPOSIT = 1.0;
-    public static double TRANSFER_ROTATOR_READY = 0.4;
-
+    public static double TRANSFER_ROTATOR_READY = 0.5;
 
     // State
     private final Servo transferRotatorServo;
@@ -38,7 +37,7 @@ public class DepositSubsystem extends SubsystemBase {
 
     public DepositSubsystem(HardwareMap hardwareMap) {
         transferRotatorServo = hardwareMap.get(Servo.class, HardwareMapNames.BUCKET_SERVO);
-        transferRotatorServo.setDirection(Servo.Direction.REVERSE);
+        transferRotatorServo.setDirection(Servo.Direction.FORWARD);
         this.updateTransferRotatorState(TransferRotatorState.TRANSFER_READY);
     }
 }

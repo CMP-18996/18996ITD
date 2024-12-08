@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.common.robot;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.jetbrains.annotations.NotNull;
 
+@Config
 public class Drive {
     private final HardwareMap hardwareMap;
 
@@ -13,10 +15,35 @@ public class Drive {
     private final DcMotor rightFrontDrive;
     private final DcMotor rightBackDrive;
 
-    private DcMotor.ZeroPowerBehavior breakMode = DcMotor.ZeroPowerBehavior.FLOAT;
+    private DcMotor.ZeroPowerBehavior breakMode = DcMotor.ZeroPowerBehavior.BRAKE;
+
+    private AutoAlignMode autoAlignMode;
+
+    public static double Heading_P = 0.01;
+    public static double Heading_I = 0;
+    public static double Heading_D = 0;
+    public static double Heading_F = 0.15;
+
+    public double TURN_ = 0;
+
+
+    public enum AutoAlignMode {
+        NONE(0),
+        WALL(90),
+        BUCKET(225),
+        CHAMBER(270);
+
+        private double angle;
+
+        AutoAlignMode(double angle) {
+            this.angle = angle;
+        }
+    }
 
     public Drive(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
+
+        autoAlignMode = AutoAlignMode.NONE;
 
         leftFrontDrive = hardwareMap.get(DcMotor.class, HardwareMapNames.LEFT_FRONT);
         leftBackDrive = hardwareMap.get(DcMotor.class, HardwareMapNames.LEFT_BACK);
@@ -26,10 +53,30 @@ public class Drive {
         configureMotors();
     }
 
+    public void setAutoAlignMode(AutoAlignMode autoAlignMode) {
+        this.autoAlignMode = autoAlignMode;
+    }
+
+    public AutoAlignMode getAutoAlignMode() {
+        return autoAlignMode;
+    }
+
     /*
     *  X and Y are the components of the linear movement vector [-1.0, 1.0]
     *  Turn is relative speed to rotate the robot [-1.0, 1.0]
      */
+    public void robotCentricDrive(double x, double y, double turn, double heading) {
+        if (autoAlignMode == AutoAlignMode.NONE) {
+            calculateMotorPowers(x, y, turn);
+        }
+        else {
+            turn = calculateHeadingPID(Math.toRadians(autoAlignMode.angle), heading);
+            TURN_= turn;
+            calculateMotorPowers(x, y, turn);
+        }
+    }
+
+    @Deprecated
     public void robotCentricDrive(double x, double y, double turn) {
         calculateMotorPowers(x, y, turn);
     }
@@ -45,7 +92,18 @@ public class Drive {
         calculateMotorPowers(rotX, rotY, turn);
     }
 
+    private double calculateHeadingPID(double setpoint, double value) {
+        double error = setpoint - value;
+
+        double P = Heading_P * error;
+
+        //double F = Heading_F * Math.signum(error);
+
+        return P;
+    }
+
     private void calculateMotorPowers(double x, double y, double turn) {
+        /*
         double theta = Math.atan2(y, x);
         double power = Math.hypot(x, y);
 
@@ -64,6 +122,14 @@ public class Drive {
             leftBackPower   /= power + turn;
             rightBackPower  /= power + turn;
         }
+         */
+
+        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(turn), 1);
+        double leftFrontPower = (y + x + turn) / denominator;
+        double leftBackPower = (y - x + turn) / denominator;
+        double rightFrontPower = (y - x - turn) / denominator;
+        double rightBackPower = (y + x - turn) / denominator;
+
 
         setMotorPowers(leftFrontPower, leftBackPower, rightFrontPower, rightBackPower);
     }

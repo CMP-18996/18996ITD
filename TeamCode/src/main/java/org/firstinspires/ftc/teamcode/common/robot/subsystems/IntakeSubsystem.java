@@ -16,15 +16,15 @@ import org.firstinspires.ftc.teamcode.common.robot.Team;
 @Config
 public class IntakeSubsystem extends SubsystemBase {
     // Constants
-    public static double INTAKE_ROTATION_TRANSFER = 0.6; // max and min rotation used as what arm is actually being rotated to, subject to change
-    public static double INTAKE_ROTATION_PICK_UP = 0;
-    public static double INTAKE_ROTATION_MOVING = 0.1;
+    public static double INTAKE_ROTATION_TRANSFER = 0.35; // max and min rotation used as what arm is actually being rotated to, subject to change
+    public static double INTAKE_ROTATION_PICK_UP = 0.975;
+    public static double INTAKE_ROTATION_MOVING = 0.6;
 
     public static double CLOSED_VALUE = .5;
     public static double EJECTING_VALUE = 1.0;
-    public static double ACTIVE_VALUE = -1.0;
+    public static double ACTIVE_VALUE = 1.0;
     public static double DISABLED_VALUE = 0.0;
-    public static double REVERSING_VALUE = 1.00;
+    public static double REVERSING_VALUE = -1.00;
 
     // State
     final private CRServoImpl intakeServo1;
@@ -68,7 +68,7 @@ public class IntakeSubsystem extends SubsystemBase {
         g = colorSensor.green();
         b = colorSensor.blue();
         a = colorSensor.alpha();
-        if (a < 100) return ColorState.NONE;
+        if (a < 70) return ColorState.NONE;
 
         if(r > g && r > b){
             colorState = ColorState.RED;
@@ -128,16 +128,6 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeRotationServo.setPosition(intakeRotatorState.val);
     }
 
-    public void updateIntakeRotatorStateManual(double val) {
-        if (val < 0) {
-            intakeRotationServo.setPosition(0);
-        } else if (val > 1) {
-            intakeRotationServo.setPosition(1);
-        } else {
-            intakeRotationServo.setPosition(val);
-        }
-    }
-
     public TrapdoorState getTrapdoorState() {
         return trapdoorState;
     }
@@ -155,8 +145,8 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeRotationServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_ROTATOR);
         intakeServo1 = hardwareMap.get(CRServoImpl.class, HardwareMapNames.INTAKE_SERVO_1);
         colorSensor = hardwareMap.get(ColorSensor.class, HardwareMapNames.INTAKE_COLOR_SENSOR);
-        intakeRotationServo.setDirection(Servo.Direction.REVERSE);
-        intakeServo1.setDirection(DcMotorSimple.Direction.FORWARD); // subject to change
+        intakeRotationServo.setDirection(Servo.Direction.FORWARD);
+        intakeServo1.setDirection(DcMotorSimple.Direction.REVERSE); // subject to change
         this.updateIntakeRotatorState(IntakeRotatorState.TRANSFERRING);
         this.updateIntakingState(IntakingState.DISABLED);
     }

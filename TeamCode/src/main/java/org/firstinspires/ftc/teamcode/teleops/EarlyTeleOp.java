@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleops;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
@@ -179,6 +181,7 @@ public class EarlyTeleOp extends CommandOpMode {
                             new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
                             new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING),
                             new WaitCommand(1000),
+                            new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
                             new LiftSetPosition(robot.lift, robot.lift.HIGH_BASKET),
                             new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.READY_TO_DEPOSIT),
                             new InstantCommand(() -> {
@@ -200,6 +203,17 @@ public class EarlyTeleOp extends CommandOpMode {
         drive.robotCentricDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
 
         telemetry.addData("Detected Color:", detectedColor);
+        telemetry.addData("INTAKE STATE", robot.intake.getIntakeRotatorState());
+        telemetry.addData("EXTENSIOn", robot.extension.getState());
+        telemetry.addData("Desposit", robot.deposit.getTransferRotatorState());
         telemetry.update();
+
+        TelemetryPacket packet = new TelemetryPacket();
+
+        packet.put("power", robot.lift.powerTELE);
+
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        dashboard.sendTelemetryPacket(packet);
+
     }
 }

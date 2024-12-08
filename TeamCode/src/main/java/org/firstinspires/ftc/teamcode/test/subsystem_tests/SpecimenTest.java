@@ -27,7 +27,7 @@ public class SpecimenTest extends CommandOpMode {
         CommandScheduler.getInstance().reset();
         robot = new Robot(hardwareMap, subsystems);
         super.schedule(
-                new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.REST),
+                new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.CHAMBER),
                 new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.CLOSED),
                 new WaitCommand(1000),
                 new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.WALL),
