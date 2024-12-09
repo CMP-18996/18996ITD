@@ -62,13 +62,17 @@ public class IntakeSubsystem extends SubsystemBase {
         RED,
         BLUE
     }
+
+    public void slightlyIncrementRotator(double increment) {
+        intakeRotationServo.setPosition(intakeRotatorState.val + increment);
+    }
     public ColorState updateColorState(){
         int r, g, b, a;
         r = colorSensor.red();
         g = colorSensor.green();
         b = colorSensor.blue();
         a = colorSensor.alpha();
-        if (a < 70) return ColorState.NONE;
+        if (a < 100) return ColorState.NONE;
 
         if(r > g && r > b){
             colorState = ColorState.RED;
@@ -88,11 +92,15 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public Team updateColorState2(){
-        int r, g, b;
+        int r, g, b, a;
         r = colorSensor.red();
         g = colorSensor.green();
         b = colorSensor.blue();
+        a = colorSensor.alpha();
         Team returnedColorState;
+
+        if (a < 100) return Team.NONE;
+
         if(r > g && r > b){
             colorState = ColorState.RED;
             returnedColorState = Team.RED;

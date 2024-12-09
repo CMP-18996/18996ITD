@@ -46,6 +46,7 @@ public class EarlyTeleOp extends CommandOpMode {
     private boolean alreadyTrans = false;
     private Drive drive;
     private OdometryHardware odometryHardware;
+    private final double pickingUpVal  = IntakeSubsystem.IntakeRotatorState.PICKING_UP.val;
 
     @Override
     public void initialize() {
@@ -151,6 +152,11 @@ public class EarlyTeleOp extends CommandOpMode {
         if (robot.extension.getState().equals(ExtensionSubsystem.ExtensionState.CUSTOM)){
             double rawExtensionPower = gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
             robot.extension.setPower(Math.pow(rawExtensionPower, 3));
+        }
+
+        if (robot.intake.getIntakeRotatorState().equals(IntakeSubsystem.IntakeRotatorState.PICKING_UP)) {
+            double adjustment = gamepad.getRightY() * .055;
+            robot.intake.slightlyIncrementRotator(adjustment);
         }
 
 
