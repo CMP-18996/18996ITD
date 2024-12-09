@@ -171,23 +171,22 @@ public class EarlyTeleOp extends CommandOpMode {
                             new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
                             new WaitCommand(300),
                             new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CONTRACTED),
-                            new WaitCommand(300),
                             new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
+                            new WaitCommand(500),
                             new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING),
                             new WaitCommand(1000),
                             new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
                             new LiftSetPosition(robot.lift, robot.lift.HIGH_BASKET),
                             new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.READY_TO_DEPOSIT),
-                            new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM),
-                            new InstantCommand(() -> alreadyTrans = false)
-                    )
+                            new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
+                    ).whenFinished(() -> alreadyTrans = false)
             );
         }
 
-        else if (detectedColor.equals(oppositeTeam)) {
+        else if (detectedColor.equals(oppositeTeam) && !alreadyTrans) {
             schedule(
                     new SequentialCommandGroup(
-                            new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.EJECTING),
+                            new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
                             new WaitCommand(200),
                             new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.CLOSED)
                     )

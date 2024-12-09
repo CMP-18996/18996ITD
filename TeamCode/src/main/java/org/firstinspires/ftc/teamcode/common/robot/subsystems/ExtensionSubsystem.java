@@ -89,7 +89,7 @@ public class ExtensionSubsystem extends SubsystemBase {
 
     public ExtensionSubsystem(HardwareMap hardwareMap) {
         extensionMotor = hardwareMap.get(DcMotorImpl.class, HardwareMapNames.EXTENSION_MOTOR);
-        extensionMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        extensionMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         extensionMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         extensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         extensionMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
