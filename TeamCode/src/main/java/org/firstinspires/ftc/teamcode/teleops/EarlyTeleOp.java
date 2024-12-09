@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleops;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
@@ -48,6 +49,8 @@ public class EarlyTeleOp extends CommandOpMode {
 
     @Override
     public void initialize() {
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
         drive = new Drive(hardwareMap);
         drive.setBreakMode(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -136,7 +139,7 @@ public class EarlyTeleOp extends CommandOpMode {
                         new ScheduleCommand(
                                 new HangCommand(robot.hang, HangSubsystem.HangPosition.DOWN)
                         ),
-                        () -> robot.hang.getCurrTarget().equals(HangSubsystem.HangPosition.DOWN)
+                        () -> robot.hang.getState().equals(HangSubsystem.HangPosition.DOWN)
                 )
         );
     }
@@ -187,7 +190,7 @@ public class EarlyTeleOp extends CommandOpMode {
 
         if (gamepad1.options) {
             odometryHardware.pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
-            telemetry.addData("HIUEGHUIAEHGUIEAHG", "HAEGHIJEAGJAE");
+            telemetry.addLine("Reset Angle!");
         }
 
         //odometryHardware.pinpoint.update(GoBildaPinpointDriver.readData.ONLY_UPDATE_HEADING);
@@ -195,12 +198,50 @@ public class EarlyTeleOp extends CommandOpMode {
 
         drive.robotCentricDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
 
+        telemetry.addData("Intake Rotator State:", robot.intake.getIntakeRotatorState());
+        telemetry.addData("Intake Roller State:", robot.intake.getIntakingState());
+        telemetry.addData("Trapdoor State:", robot.intake.getTrapdoorState());
         telemetry.addData("Detected Color:", detectedColor);
-        telemetry.addData("Intake State:", robot.intake.getIntakeRotatorState());
-        telemetry.addData("Extension State:", robot.extension.getState());
-        telemetry.addData("Deposit Rotator State:", robot.deposit.getTransferRotatorState());
         telemetry.addData("alreadyTrans Value:", alreadyTrans);
+
+        telemetry.addLine("");
+        telemetry.addData("Extension State:", robot.extension.getState());
+        telemetry.addData("Extension Target:", robot.extension.getTargetPosition());
+        telemetry.addData("Extension Position:", robot.extension.getPosition());
+        telemetry.addData("Extension Error:", robot.extension.getAbsError());
+        telemetry.addData("Extension Power", robot.extension.telemetryPower);
+
+        telemetry.addLine("");
+        telemetry.addData("Deposit Rotator State:", robot.deposit.getTransferRotatorState());
+
+        telemetry.addLine("");
+        //telemetry.addData("Lift State:", ); Lift has no states?
+        telemetry.addData("Lift Target:", robot.lift.getCurrTarget());
+        telemetry.addData("Lift Position", robot.lift.getCurrentPosition());
+        telemetry.addData("Lift Error:", robot.lift.getAbsError());
+        telemetry.addData("Lift Power", robot.lift.telemetryPower);
+
+        telemetry.addLine("");
+        telemetry.addData("Arm State:", robot.specimen.getSpecimenState());
+        telemetry.addData("Arm Target:", robot.specimen.getSpecimenState().armPosition);
+        telemetry.addData("Arm Position:", robot.specimen.armMotor.getCurrentPosition());
+        telemetry.addData("Arm Error:", robot.specimen.getAbsError());
+
+        telemetry.addLine("");
+        telemetry.addData("Wrist State:", robot.specimen.getSpecimenState());
+        telemetry.addData("Wrist Position:", robot.specimen.getSpecimenState().wristPosition);
+
+        telemetry.addLine("");
+        telemetry.addData("Gripper State:", robot.specimen.getGripperPosition());
+
+        telemetry.addLine("");
+        telemetry.addData("Hang State:", robot.hang.getState());
+        telemetry.addData("Hang Target:", robot.hang.getTargetPosition());
+        telemetry.addData("Hang Position", robot.hang.getCurrentPosition());
+
         telemetry.update();
+
+        /*
 
         TelemetryPacket packet = new TelemetryPacket();
 
@@ -208,6 +249,8 @@ public class EarlyTeleOp extends CommandOpMode {
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
         dashboard.sendTelemetryPacket(packet);
+
+         */
 
     }
 }

@@ -26,8 +26,16 @@ public class HangSubsystem extends SubsystemBase {
         this.updatePosition(HangPosition.DOWN);
     }
 
-    public HangPosition getCurrTarget() {
+    public HangPosition getState() {
         return target;
+    }
+
+    public int getCurrentPosition() {
+        return hangMotor.getCurrentPosition();
+    }
+
+    public int getTargetPosition() {
+        return target.position;
     }
 
     public void updatePosition(HangPosition position) {

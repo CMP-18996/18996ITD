@@ -23,6 +23,8 @@ public class ExtensionSubsystem extends SubsystemBase {
     public static double F = .07;
     private int targetPosition = 0;
 
+    public double telemetryPower;
+
     public enum ExtensionState {
         CONTRACTED(CONTRACTED_POS),
         FULLY_EXTENDED(FULL_EXTENSION_POS), 
@@ -80,6 +82,7 @@ public class ExtensionSubsystem extends SubsystemBase {
             */
 
             power = Range.clip(P * error, -1.0, 1.0);
+            telemetryPower = power;
             extensionMotor.setPower(power);
         }
     }

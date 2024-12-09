@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 @Config
 public class SpecimenSubsystem extends SubsystemBase {
     private Servo wristServo, gripperServo;
-    private DcMotorImpl armMotor;
+    public DcMotorImpl armMotor;
 
     // (motor encoder values)
     public static int ARM_CHAMBER_POSITION = 550;

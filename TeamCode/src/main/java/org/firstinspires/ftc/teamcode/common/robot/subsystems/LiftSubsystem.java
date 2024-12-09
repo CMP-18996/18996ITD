@@ -25,7 +25,7 @@ public class LiftSubsystem extends SubsystemBase {
     private final DcMotorImpl liftMotor;
     private int currTarget = 30;
 
-    public double powerTELE;
+    public double telemetryPower;
 
     public void setTargetPosition(int targetPosition) {
         currTarget = targetPosition;
@@ -50,7 +50,7 @@ public class LiftSubsystem extends SubsystemBase {
         else power = 0;
         */
         power = Range.clip(P * error + F, -0.6, 1.0);
-        powerTELE = power;
+        telemetryPower = power;
 
         liftMotor.setPower(power);
     }
