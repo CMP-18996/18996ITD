@@ -87,7 +87,6 @@ public class IntakeSubsystem extends SubsystemBase {
         return colorState;
     }
 
-
     public Team updateColorState2(){
         int r, g, b;
         r = colorSensor.red();

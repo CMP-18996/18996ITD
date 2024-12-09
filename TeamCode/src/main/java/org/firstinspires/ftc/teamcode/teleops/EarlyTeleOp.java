@@ -152,24 +152,9 @@ public class EarlyTeleOp extends CommandOpMode {
 
 
         //Team detectedColor = robot.intake.updateColorState2();
-        IntakeSubsystem.ColorState detectedColor = robot.intake.updateColorState();
+        Team detectedColor = robot.intake.updateColorState2();
 
-
-        /*
-        if (detectedColor.equals(IntakeSubsystem.ColorState.BLUE)) {
-            schedule(
-                    new SequentialCommandGroup(
-                            new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.EJECTING),
-                            new WaitCommand(200),
-                            new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.CLOSED)
-                    )
-            );
-        }
-
-         */
-
-
-        if (detectedColor.equals(IntakeSubsystem.ColorState.RED) && !alreadyTrans) {
+        if (detectedColor.equals(team) && !alreadyTrans) {
             alreadyTrans = true;
 
             schedule(
@@ -184,10 +169,18 @@ public class EarlyTeleOp extends CommandOpMode {
                             new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
                             new LiftSetPosition(robot.lift, robot.lift.HIGH_BASKET),
                             new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.READY_TO_DEPOSIT),
-                            new InstantCommand(() -> {
-                                alreadyTrans = false;
-                                robot.extension.setState(ExtensionSubsystem.ExtensionState.CUSTOM);
-                            })
+                            new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM),
+                            new InstantCommand(() -> alreadyTrans = false)
+                    )
+            );
+        }
+
+        else if (detectedColor.equals(oppositeTeam)) {
+            schedule(
+                    new SequentialCommandGroup(
+                            new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.EJECTING),
+                            new WaitCommand(200),
+                            new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.CLOSED)
                     )
             );
         }
@@ -203,9 +196,10 @@ public class EarlyTeleOp extends CommandOpMode {
         drive.robotCentricDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
 
         telemetry.addData("Detected Color:", detectedColor);
-        telemetry.addData("INTAKE STATE", robot.intake.getIntakeRotatorState());
-        telemetry.addData("EXTENSIOn", robot.extension.getState());
-        telemetry.addData("Desposit", robot.deposit.getTransferRotatorState());
+        telemetry.addData("Intake State:", robot.intake.getIntakeRotatorState());
+        telemetry.addData("Extension State:", robot.extension.getState());
+        telemetry.addData("Deposit Rotator State:", robot.deposit.getTransferRotatorState());
+        telemetry.addData("alreadyTrans Value:", alreadyTrans);
         telemetry.update();
 
         TelemetryPacket packet = new TelemetryPacket();
