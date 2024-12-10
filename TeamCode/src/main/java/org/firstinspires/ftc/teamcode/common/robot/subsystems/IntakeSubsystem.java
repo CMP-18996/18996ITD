@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 import org.firstinspires.ftc.teamcode.common.robot.Team;
@@ -17,7 +18,7 @@ import org.firstinspires.ftc.teamcode.common.robot.Team;
 public class IntakeSubsystem extends SubsystemBase {
     // Constants
     public static double INTAKE_ROTATION_TRANSFER = 0.35; // max and min rotation used as what arm is actually being rotated to, subject to change
-    public static double INTAKE_ROTATION_PICK_UP = 0.975;
+    public static double INTAKE_ROTATION_PICK_UP = 0.965;
     public static double INTAKE_ROTATION_MOVING = 0.6;
 
     public static double CLOSED_VALUE = .5;
@@ -107,7 +108,7 @@ public class IntakeSubsystem extends SubsystemBase {
         }
         else if(g > r && g > b){
             colorState = ColorState.YELLOW;
-            returnedColorState = Team.NONE;
+            returnedColorState = Team.YELLOW;
         }
         else if(b > r && b > g){
             colorState = ColorState.BLUE;

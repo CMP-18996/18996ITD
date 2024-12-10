@@ -153,7 +153,7 @@ public class EarlyTeleOp extends CommandOpMode {
         }
 
         if (robot.intake.getIntakeRotatorState().equals(IntakeSubsystem.IntakeRotatorState.PICKING_UP)) {
-            double adjustment = gamepad.getRightY() * .055;
+            double adjustment = -gamepad.getRightY() * .08;
             robot.intake.slightlyIncrementRotator(adjustment);
         }
 
@@ -161,7 +161,7 @@ public class EarlyTeleOp extends CommandOpMode {
         //Team detectedColor = robot.intake.updateColorState2();
         Team detectedColor = robot.intake.updateColorState2();
 
-        if (detectedColor.equals(team) && !alreadyTrans) {
+        if ((detectedColor.equals(team) || detectedColor.equals(Team.YELLOW)) && !alreadyTrans) {
             alreadyTrans = true;
 
             schedule(
@@ -205,6 +205,11 @@ public class EarlyTeleOp extends CommandOpMode {
         telemetry.addData("Intake Roller State:", robot.intake.getIntakingState());
         telemetry.addData("Trapdoor State:", robot.intake.getTrapdoorState());
         telemetry.addData("Detected Color:", detectedColor);
+        telemetry.addData("Color RED:", robot.intake.colorSensor.red());
+        telemetry.addData("Color GREEN:", robot.intake.colorSensor.green());
+        telemetry.addData("Color BLUE:", robot.intake.colorSensor.blue());
+        telemetry.addData("Color ALPHA:", robot.intake.colorSensor.alpha());
+
         telemetry.addData("alreadyTrans Value:", alreadyTrans);
 
         telemetry.addLine("");
@@ -213,6 +218,7 @@ public class EarlyTeleOp extends CommandOpMode {
         telemetry.addData("Extension Position:", robot.extension.getPosition());
         telemetry.addData("Extension Error:", robot.extension.getAbsError());
         telemetry.addData("Extension Power", robot.extension.telemetryPower);
+        //telemetry.addData("Extension Encoder", robot.extension.get)
 
         telemetry.addLine("");
         telemetry.addData("Deposit Rotator State:", robot.deposit.getTransferRotatorState());
