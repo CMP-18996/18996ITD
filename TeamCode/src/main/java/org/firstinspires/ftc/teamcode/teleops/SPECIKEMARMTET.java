@@ -23,19 +23,35 @@ public class SPECIKEMARMTET extends LinearOpMode {
 
     private DcMotorEx arm1;
     private Servo arm2;
+    private Servo claw;
 
     private int arm1_position = 0;
 
+    private double arm2_position = 0;
+
+    public static double WRIST_WALL = 0.2;
+    public static double WRIST_REST = 0.4;
+    public static double WRIST_DEPOSIT = 0.6;
+
+    public static double ARM_WALL = 70;
+    public static double ARM_REST = 0;
+    public static double ARM_DEPOSIT = 600;
+
+    public static double CLAW_CLOSED = 0.8;
+    public static double CLAW_OPEN = 0.55;
+
     public static double Kp = 0.008;
     public static double Kd = -0.0007;
-    public static double Ki = 0.02;
+    public static double Ki = 0.001;
 
     public static double Kg = 0.2;
 
     public static double MAX_EXTENSION_SPEED = 1.0;
     public static double MAX_RETURN_SPEED = 1.0;
 
-    public static double SERVO = 0.6;
+    private boolean clawOpen = false;
+
+   // public static double SERVO = 0.6;
 
     Drive drive;
 
@@ -46,6 +62,7 @@ public class SPECIKEMARMTET extends LinearOpMode {
 
         arm1 = hardwareMap.get(DcMotorEx.class, HardwareMapNames.ARM_MOTOR);
         arm2 = hardwareMap.get(Servo.class, HardwareMapNames.WRIST_SERVO);
+        claw = hardwareMap.get(Servo.class, HardwareMapNames.GRIPPER_SERVO);
 
         arm1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         arm1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -74,12 +91,29 @@ public class SPECIKEMARMTET extends LinearOpMode {
 
             if (currentGamepad1.circle && !previousGamepad1.circle) {
                 arm1_position = 550;
+                integralSum = 0;
+                arm2_position = WRIST_DEPOSIT;
+
             }
             else if (currentGamepad1.square && !previousGamepad1.square) {
                 arm1_position = 50;
+                integralSum = 0;
+                arm2_position = WRIST_WALL;
             }
             else if (currentGamepad1.triangle && !previousGamepad1.triangle) {
                 arm1_position = 100;
+                integralSum = 0;
+                arm2_position = WRIST_REST;
+            }
+
+            if (currentGamepad1.cross && !previousGamepad1.cross) {
+                clawOpen = !clawOpen;
+                if (clawOpen) {
+                    claw.setPosition(CLAW_OPEN);
+                }
+                else {
+                    claw.setPosition(CLAW_CLOSED);
+                }
             }
 
             arm1_position += (int) ((currentGamepad1.right_trigger - currentGamepad1.left_trigger) * 10);
@@ -95,9 +129,12 @@ public class SPECIKEMARMTET extends LinearOpMode {
             integralSum = integralSum + (error * timer.seconds());
             double I = Ki * -integralSum;
 
+            /*
             if (angleFromTicks > 90) {
                 I = 0;
             }
+
+             */
 
 
             lastError = error;
@@ -105,13 +142,13 @@ public class SPECIKEMARMTET extends LinearOpMode {
 
             double power = Range.clip(P + D + I + G, -MAX_EXTENSION_SPEED, MAX_RETURN_SPEED);
             arm1.setPower(power);
-
-            arm2.setPosition(SERVO);
+            arm2.setPosition(arm2_position);
 
             telemetry.addData("SETPOINT", arm1_position);
             telemetry.addData("POSITION", arm1.getCurrentPosition());
             telemetry.addData("ERROR", error);
             telemetry.addData("ANGLE FROM TICKS", angleFromTicks);
+            telemetry.addData("wrist", arm2_position);
 
             TelemetryPacket packet = new TelemetryPacket();
 

@@ -15,6 +15,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -43,6 +44,7 @@ public class EarlyTeleOp extends CommandOpMode {
 
     private Robot robot;
     private GamepadEx gamepad;
+    private GamepadEx subsystem_gamepad;
     private boolean alreadyTrans = false;
     private Drive drive;
     private OdometryHardware odometryHardware;
@@ -61,6 +63,7 @@ public class EarlyTeleOp extends CommandOpMode {
 
         robot = new Robot(hardwareMap, Subsystems.ALL);
         gamepad = new GamepadEx(gamepad1);
+        subsystem_gamepad = new GamepadEx(gamepad2);
 
         if (team.equals(Team.RED)) oppositeTeam = Team.BLUE;
         else oppositeTeam = Team.RED;
@@ -148,6 +151,8 @@ public class EarlyTeleOp extends CommandOpMode {
     @Override
     public void run() {
         CommandScheduler.getInstance().run();
+
+        robot.hang.hangMotor.setPower(subsystem_gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - subsystem_gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
 
         if (robot.extension.getState().equals(ExtensionSubsystem.ExtensionState.CUSTOM)){
             double rawExtensionPower = gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);

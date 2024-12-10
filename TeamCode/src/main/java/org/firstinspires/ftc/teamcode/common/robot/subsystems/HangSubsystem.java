@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 public class HangSubsystem extends SubsystemBase {
-    private DcMotorEx hangMotor;
+    public DcMotorEx hangMotor;
     public static int L3_POSITION = 2000; // 9517 or 1000 - thanks Arjun!
     public static int L2_POSITION = 0;
     public static int L3_HANGED_POSITION = 0;
