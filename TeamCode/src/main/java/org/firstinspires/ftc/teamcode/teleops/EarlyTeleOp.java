@@ -2,11 +2,9 @@ package org.firstinspires.ftc.teamcode.teleops;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
-import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ScheduleCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
@@ -241,7 +239,7 @@ public class EarlyTeleOp extends CommandOpMode {
         telemetry.addData("Arm State:", robot.specimen.getSpecimenState());
         telemetry.addData("Arm Target:", robot.specimen.getSpecimenState().armPosition);
         telemetry.addData("Arm Position:", robot.specimen.armMotor.getCurrentPosition());
-        telemetry.addData("Arm Error:", robot.specimen.getAbsError());
+        telemetry.addData("Arm Error:", robot.specimen.getError());
 
         telemetry.addLine("");
         telemetry.addData("Wrist State:", robot.specimen.getSpecimenState());
