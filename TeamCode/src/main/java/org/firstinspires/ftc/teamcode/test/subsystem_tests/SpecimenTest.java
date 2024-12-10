@@ -26,7 +26,7 @@ public class SpecimenTest extends CommandOpMode {
     public void initialize() {
         CommandScheduler.getInstance().reset();
         robot = new Robot(hardwareMap, subsystems);
-        super.schedule(
+        CommandScheduler.getInstance().schedule(
                 new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.CHAMBER),
                 new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.CLOSED),
                 new WaitCommand(1000),
@@ -49,8 +49,8 @@ public class SpecimenTest extends CommandOpMode {
         CommandScheduler.getInstance().run();
         telemetry.addData("POWER", robot.specimen.power);
         telemetry.addData("ERR", robot.specimen.error);
-        telemetry.addData("POSITIIN", robot.specimen.specimenPosition);
-        telemetry.addData("GRI", robot.specimen.gripperPosition);
+        telemetry.addData("POSITION", robot.specimen.getSpecimenState());
+        telemetry.addData("GRI", robot.specimen.getGripperPosition());
         telemetry.update();
     }
 }

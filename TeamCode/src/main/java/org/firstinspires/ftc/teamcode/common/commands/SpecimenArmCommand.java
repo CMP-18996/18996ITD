@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.common.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
-import com.arcrobotics.ftclib.command.InstantCommand;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
 
@@ -21,6 +19,6 @@ public class SpecimenArmCommand extends CommandBase {
 
 
     public boolean isFinished() {
-        return specimenSubsystem.getAbsError() < 5 || specimenSubsystem.getSpecimenState() != specimenPosition;
+        return Math.abs(specimenSubsystem.getError()) < 5 || specimenSubsystem.getSpecimenState() != specimenPosition;
     }
 }

@@ -77,7 +77,7 @@ public class SpecimenSubsystem extends SubsystemBase {
     }
 
     public void setSpecimenPosition(SpecimenPosition position) {
-        specimenPosition = position;
+        this.specimenPosition = position;
         integralSum = 0;
         lastError = 0;
         timer.reset();
@@ -88,7 +88,7 @@ public class SpecimenSubsystem extends SubsystemBase {
     }
 
     public void setGripperState(GripperPosition position) {
-        gripperPosition = position;
+        this.gripperPosition = position;
         gripperServo.setPosition(position.val);
     }
 
@@ -108,7 +108,7 @@ public class SpecimenSubsystem extends SubsystemBase {
         timer.reset();
     }
 
-    public int getAbsError() {
+    public int getError() {
         return armMotor.getCurrentPosition() - armTarget;
     }
 
@@ -154,8 +154,8 @@ public class SpecimenSubsystem extends SubsystemBase {
         WALL(ARM_WALL_POSITION, WRIST_WALL_POSITION),
         REST(ARM_REST_POSITION, WRIST_REST_POSITION),
         MANUAL(0, 0.0);
-        public int armPosition;
-        public double wristPosition;
+        public final int armPosition;
+        public final double wristPosition;
         SpecimenPosition(int arm, double wrist) {
             this.armPosition = arm;
             this.wristPosition = wrist;
