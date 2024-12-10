@@ -142,6 +142,7 @@ public class SpecimenSubsystem extends SubsystemBase {
         timer.reset();
 
         power = Range.clip(P + D + I + G, -MAX_EXTENSION_SPEED, MAX_RETURN_SPEED);
+//        power = 0;
         armMotor.setPower(power);
         wristServo.setPosition(wristTarget);
         /*armMotor.setPower(Arm_P * (armTarget - armMotor.getCurrentPosition()));

@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -16,7 +17,7 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 import org.firstinspires.ftc.teamcode.teleops.SPECIKEMARMTET;
 
-@TeleOp(name =  "MLK Jr")
+@TeleOp(name =  "Specimen Stuff v1")
 @Config
 public class SpecimenTest extends CommandOpMode {
     Subsystems subsystems = Subsystems.SPECIMEN;
@@ -27,20 +28,22 @@ public class SpecimenTest extends CommandOpMode {
         CommandScheduler.getInstance().reset();
         robot = new Robot(hardwareMap, subsystems);
         CommandScheduler.getInstance().schedule(
-                new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.CHAMBER),
-                new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.CLOSED),
-                new WaitCommand(1000),
-                new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.WALL),
-                new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.OPEN),
-                new WaitCommand(1000),
-                new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.CLOSED),
-                new WaitCommand(100),
-                new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.CHAMBER),
-                new WaitCommand(1000),
-                new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.OPEN),
-                new WaitCommand(50),
-                new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.REST),
-                new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.CLOSED)
+//                new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.CHAMBER),
+//                new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.CLOSED),
+//                new WaitCommand(1000),
+                new SequentialCommandGroup(
+                    new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.WALL),
+                    new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.OPEN),
+                    new WaitCommand(5000),
+                    new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.CLOSED),
+                    new WaitCommand(5000),
+                    new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.CHAMBER),
+                    new WaitCommand(5000),
+                    new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.OPEN),
+                    new WaitCommand(5000),
+                    new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.REST),
+                    new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.CLOSED)
+                )
         );
     }
 
