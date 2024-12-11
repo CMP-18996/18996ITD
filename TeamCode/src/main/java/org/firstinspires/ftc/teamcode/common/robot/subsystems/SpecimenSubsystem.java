@@ -18,8 +18,8 @@ public class SpecimenSubsystem extends SubsystemBase {
     public DcMotorImpl armMotor;
 
     // (motor encoder values)
-    public static int ARM_CHAMBER_POSITION = 550;
-    public static int ARM_WALL_POSITION = 100;
+    public static int ARM_CHAMBER_POSITION = 600;
+    public static int ARM_WALL_POSITION = 50;
     public static int ARM_REST_POSITION = 50;
 
     // (servo values)

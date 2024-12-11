@@ -14,6 +14,11 @@ public class SpecimenArmCommand extends CommandBase {
 
     @Override
     public void initialize() {
+//        specimenSubsystem.setSpecimenPosition(specimenPosition);
+    }
+
+    @Override
+    public void execute() {
         specimenSubsystem.setSpecimenPosition(specimenPosition);
     }
 
