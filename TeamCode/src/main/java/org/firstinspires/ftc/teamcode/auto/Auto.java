@@ -42,20 +42,32 @@ public class Auto extends CommandOpMode {
         robot = new Robot(hardwareMap, Team.BLUE, Subsystems.EXTENSION, Subsystems.INTAKE, Subsystems.LIFT, Subsystems.DEPOSIT);
 
         super.schedule(
+                new InstantCommand(() -> robot.extension.setMaxPower(0.65)),
                 new SequentialCommandGroup(
-                        //get first block
+                        //deposit preloaded block in basket bc specimen arm is broken
                         new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
                         new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
                                 .setReversed(true)
                                 .splineTo(new Vector2d(64,64), Math.toRadians(45))
                         .       build())),
+                        new ParallelDeadlineGroup(
+                                new WaitCommand(800),
+                                new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET),
+                                new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING)
+                        ),
+                        new ParallelDeadlineGroup(
+                                new WaitCommand(700),
+                                new LiftSetPosition(robot.lift, LiftSubsystem.GROUND),
+                                new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY)
+                        ),
 
+                        //get first block
+                        new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
                         new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
                                 .setReversed(false)
-                                .splineTo(new Vector2d(51,53), Math.toRadians(-90))
+                                .splineTo(new Vector2d(54,54), Math.toRadians(-90))
                                 .build())),
                         new ExtendAndBeginIntakeCommand(robot.extension, robot.intake, robot.lift),
-                        new WaitCommand(500),
                         new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit),
 
                         //high basket first block
@@ -66,7 +78,10 @@ public class Auto extends CommandOpMode {
                         new ParallelDeadlineGroup(
                                 new WaitCommand(800),
                                 new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET),
-                                new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING)
+                                new SequentialCommandGroup(
+                                        new WaitCommand(200),
+                                        new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING)
+                                )
                         ),
                         new ParallelDeadlineGroup(
                                 new WaitCommand(700),
@@ -75,12 +90,12 @@ public class Auto extends CommandOpMode {
                         ),
 
                         //get second block
+                        new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
                         new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
                                 .setReversed(false)
-                                .splineTo(new Vector2d(61,53), Math.toRadians(-90))
+                                .splineTo(new Vector2d(63,54), Math.toRadians(-90))
                                 .build())),
                         new ExtendAndBeginIntakeCommand(robot.extension, robot.intake, robot.lift),
-                        new WaitCommand(500),
                         new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit),
 
                         //high basket second block
@@ -91,7 +106,10 @@ public class Auto extends CommandOpMode {
                         new ParallelDeadlineGroup(
                                 new WaitCommand(800),
                                 new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET),
-                                new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING)
+                                new SequentialCommandGroup(
+                                        new WaitCommand(200),
+                                        new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING)
+                                )
                         ),
                         new ParallelDeadlineGroup(
                                 new WaitCommand(700),
@@ -100,16 +118,12 @@ public class Auto extends CommandOpMode {
                         ),
 
                         //get third block
+                        new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
                         new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
                                 .setReversed(false)
-                                .splineTo(new Vector2d(61,50), Math.toRadians(-65))
+                                .splineTo(new Vector2d(64,54), Math.toRadians(-65))
                                 .build())),
-                        //unique to this repeat - may implement to others dep. on testing
-                        new ParallelDeadlineGroup(
-                                new WaitCommand(800),
-                                new ExtendAndBeginIntakeCommand(robot.extension, robot.intake, robot.lift)
-                        ),
-                        new WaitCommand(500),
+                        new ExtendAndBeginIntakeCommand(robot.extension, robot.intake, robot.lift),
                         new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit),
 
                         //high basket third block
@@ -120,19 +134,22 @@ public class Auto extends CommandOpMode {
                         new ParallelDeadlineGroup(
                                 new WaitCommand(800),
                                 new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET),
-                                new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING)
+                                new SequentialCommandGroup(
+                                        new WaitCommand(200),
+                                        new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING)
+                                )
                         ),
                         new ParallelDeadlineGroup(
                                 new WaitCommand(700),
                                 new LiftSetPosition(robot.lift, LiftSubsystem.GROUND),
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY)
-                        ),
+                        )
 
-                        //park
-                        new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
+                        //skedaddle
+                        /*new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
                                 .setReversed(false)
                                 .splineTo(new Vector2d(28,16), Math.toRadians(180))
-                                .build()))
+                                .build()))*/
                 )
         );
     }

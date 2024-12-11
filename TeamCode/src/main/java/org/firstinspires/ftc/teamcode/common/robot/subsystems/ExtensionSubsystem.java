@@ -22,6 +22,7 @@ public class ExtensionSubsystem extends SubsystemBase {
     public static double P = .01;
     public static double F = .07;
     private int targetPosition = 0;
+    public static double maxPower = 1.0;
 
     public double telemetryPower;
 
@@ -81,7 +82,7 @@ public class ExtensionSubsystem extends SubsystemBase {
             }
 
 
-            power = Range.clip(P * error + feedForwardPower, -1.0, 1.0);
+            power = Range.clip(P * error + feedForwardPower, -maxPower, maxPower);
             telemetryPower = power;
             extensionMotor.setPower(power);
         }
@@ -94,5 +95,8 @@ public class ExtensionSubsystem extends SubsystemBase {
         extensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         extensionMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.setState(ExtensionState.CUSTOM);
+    }
+    public void setMaxPower(double m) {
+        maxPower = m;
     }
 }

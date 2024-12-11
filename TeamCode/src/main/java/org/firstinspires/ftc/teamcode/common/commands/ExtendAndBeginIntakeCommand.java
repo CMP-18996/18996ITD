@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.common.commands;
 
+import com.arcrobotics.ftclib.command.ParallelDeadlineGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 
@@ -11,10 +12,12 @@ public class ExtendAndBeginIntakeCommand extends SequentialCommandGroup {
     public ExtendAndBeginIntakeCommand(ExtensionSubsystem extensionSubsystem, IntakeSubsystem intakeSubsystem, LiftSubsystem liftSubsystem) {
         addCommands(
                 new IntakeRotatorCommand(intakeSubsystem, IntakeSubsystem.IntakeRotatorState.PICKING_UP),
-                new LiftSetPosition(liftSubsystem, LiftSubsystem.GROUND),
-                //new IntakeRotatorCommand(intakeSubsystem, IntakeSubsystem.IntakeRotatorState.MOVING),
                 new IntakeCommand(intakeSubsystem, IntakeSubsystem.IntakingState.ACTIVE),
-                new ExtendCommand(extensionSubsystem, ExtensionSubsystem.ExtensionState.FULLY_EXTENDED)
+                new ParallelDeadlineGroup(
+                        new WaitCommand(800),
+                        new LiftSetPosition(liftSubsystem, LiftSubsystem.GROUND),
+                        new ExtendCommand(extensionSubsystem, ExtensionSubsystem.ExtensionState.FULLY_EXTENDED)
+                )
         );
     }
 }

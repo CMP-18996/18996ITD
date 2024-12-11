@@ -17,7 +17,7 @@ public class LiftSubsystem extends SubsystemBase {
     // Constants
     public static double P = 0.01;
     public static double F = 0.25;
-    public static int GROUND = 30;
+    public static int GROUND = 35;
     public static int LOW_BASKET = 420;
     public static int HIGH_BASKET = 860;
 

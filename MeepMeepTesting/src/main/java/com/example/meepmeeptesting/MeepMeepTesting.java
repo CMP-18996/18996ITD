@@ -18,7 +18,13 @@ public class MeepMeepTesting {
                         .splineTo(new Vector2d(-12, 36), Math.toRadians(-90))
                         .waitSeconds(1)
                         .setReversed(true)
-                        .splineToConstantHeading(new Vector2d(-48, 47), Math.toRadians(-90))
+                        .splineToLinearHeading(new Pose2d(-36, 48, Math.toRadians(240)), Math.toRadians(70))
+                        .turn(Math.toRadians(-90))
+                        .setReversed(false)
+                        .splineToLinearHeading(new Pose2d(-48, 48, Math.toRadians(240)), Math.toRadians(240))
+                        .turn(Math.toRadians(-100))
+                        .splineToLinearHeading(new Pose2d(-58, 48, Math.toRadians(240)), Math.toRadians(240))
+                        .turn(Math.toRadians(179))
                         .build());
 
 
