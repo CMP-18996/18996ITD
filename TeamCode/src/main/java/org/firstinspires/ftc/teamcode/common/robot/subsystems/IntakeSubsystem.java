@@ -17,8 +17,8 @@ import org.firstinspires.ftc.teamcode.common.robot.Team;
 @Config
 public class IntakeSubsystem extends SubsystemBase {
     // Constants
-    public static double INTAKE_ROTATION_TRANSFER = 0.3; // max and min rotation used as what arm is actually being rotated to, subject to change
-    public static double INTAKE_ROTATION_PICK_UP = 0.93;
+    public static double INTAKE_ROTATION_TRANSFER = 0.33; // max and min rotation used as what arm is actually being rotated to, subject to change
+    public static double INTAKE_ROTATION_PICK_UP = 0.92;
     public static double INTAKE_ROTATION_MOVING = 0.6;
 
     public static double CLOSED_VALUE = .5;
