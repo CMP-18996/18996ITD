@@ -21,6 +21,6 @@ public class LiftSetPosition extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return (liftSubsystem.getAbsError() < 10) || target != liftSubsystem.getCurrTarget();
+        return (liftSubsystem.getAbsError() < 5) || target != liftSubsystem.getCurrTarget();
     }
 }

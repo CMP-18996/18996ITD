@@ -33,6 +33,7 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.ExtensionSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.HangSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
 @TeleOp
@@ -69,28 +70,28 @@ public class EarlyTeleOp extends CommandOpMode {
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 new ConditionalCommand(
                         new ScheduleCommand(
-                                new LiftSetPosition(robot.lift, robot.lift.HIGH_BASKET),
+                                new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET),
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.READY_TO_DEPOSIT)
                         ),
                         new ScheduleCommand(
-                                new LiftSetPosition(robot.lift, robot.lift.GROUND),
+                                new LiftSetPosition(robot.lift, LiftSubsystem.GROUND),
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY)
                         ),
-                        () -> robot.lift.getCurrTarget() != robot.lift.HIGH_BASKET
+                        () -> robot.lift.getCurrTarget() != LiftSubsystem.HIGH_BASKET
                 )
         );
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
                 new ConditionalCommand(
                         new ScheduleCommand(
-                                new LiftSetPosition(robot.lift, robot.lift.LOW_BASKET),
+                                new LiftSetPosition(robot.lift, LiftSubsystem.LOW_BASKET),
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.READY_TO_DEPOSIT)
                         ),
                         new ScheduleCommand(
-                                new LiftSetPosition(robot.lift, robot.lift.GROUND),
+                                new LiftSetPosition(robot.lift, LiftSubsystem.GROUND),
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY)
                         ),
-                        () -> robot.lift.getCurrTarget() != robot.lift.LOW_BASKET
+                        () -> robot.lift.getCurrTarget() != LiftSubsystem.LOW_BASKET
                 )
         );
 
@@ -101,14 +102,14 @@ public class EarlyTeleOp extends CommandOpMode {
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
                                 new WaitCommand(800),
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY),
-                                new LiftSetPosition(robot.lift, robot.lift.GROUND)
+                                new LiftSetPosition(robot.lift, LiftSubsystem.GROUND)
                         ),
                         new SequentialCommandGroup(
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
                                 new WaitCommand(800),
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY)
                         ),
-                        () -> robot.lift.getCurrentPosition() != robot.lift.GROUND
+                        () -> robot.lift.getCurrTarget() != LiftSubsystem.GROUND
                 )
         );
 
@@ -179,7 +180,7 @@ public class EarlyTeleOp extends CommandOpMode {
                             new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING),
                             new WaitCommand(1000),
                             new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
-                            new LiftSetPosition(robot.lift, robot.lift.HIGH_BASKET),
+                            new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET),
                             new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.READY_TO_DEPOSIT),
                             new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
                     ).whenFinished(() -> alreadyTrans = false)
@@ -206,6 +207,7 @@ public class EarlyTeleOp extends CommandOpMode {
 
         drive.robotCentricDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
 
+        /*
         telemetry.addData("Intake Rotator State:", robot.intake.getIntakeRotatorState());
         telemetry.addData("Intake Roller State:", robot.intake.getIntakingState());
         telemetry.addData("Trapdoor State:", robot.intake.getTrapdoorState());
@@ -225,6 +227,8 @@ public class EarlyTeleOp extends CommandOpMode {
         telemetry.addData("Extension Power", robot.extension.telemetryPower);
         //telemetry.addData("Extension Encoder", robot.extension.get)
 
+         */
+
         telemetry.addLine("");
         telemetry.addData("Deposit Rotator State:", robot.deposit.getTransferRotatorState());
 
@@ -232,8 +236,14 @@ public class EarlyTeleOp extends CommandOpMode {
         //telemetry.addData("Lift State:", ); Lift has no states?
         telemetry.addData("Lift Target:", robot.lift.getCurrTarget());
         telemetry.addData("Lift Position", robot.lift.getCurrentPosition());
-        telemetry.addData("Lift Error:", robot.lift.getAbsError());
+        telemetry.addData("Lift Error:", robot.lift.getError());
         telemetry.addData("Lift Power", robot.lift.telemetryPower);
+        telemetry.addData("P", LiftSubsystem.Kp);
+        telemetry.addData("I", LiftSubsystem.Ki);
+        telemetry.addData("D", LiftSubsystem.Kd);
+        telemetry.addData("F", LiftSubsystem.Kf);
+        telemetry.addData("INtegral", robot.lift.integralSum);
+
 
         telemetry.addLine("");
         telemetry.addData("Arm State:", robot.specimen.getSpecimenState());

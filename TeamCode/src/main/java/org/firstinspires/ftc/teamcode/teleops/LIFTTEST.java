@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
-@TeleOp(name = "Intake Test")
+@TeleOp(name = "LIFTING Test")
 public class LIFTTEST extends LinearOpMode {
 
     @Override
