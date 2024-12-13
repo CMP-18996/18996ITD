@@ -75,7 +75,7 @@ public class LiftSubsystem extends SubsystemBase {
         lastError = error;
         timer.reset();
 
-        double power = Range.clip(P + I + D + F, -1.0, 1.0);
+        double power = Range.clip(P + I + D + F, -0.7, 1.0);
         telemetryPower = power;
 
         liftMotor.setPower(power);

@@ -6,8 +6,8 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.ExtensionSubsystem
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.ExtensionSubsystem.ExtensionState;
 
 public class ExtendCommand extends CommandBase {
-    private ExtensionState extensionState;
-    private ExtensionSubsystem extensionSubsystem;
+    private final ExtensionState extensionState;
+    private final ExtensionSubsystem extensionSubsystem;
 
     public ExtendCommand(ExtensionSubsystem subsystem, ExtensionState setExtensionState) {
         extensionSubsystem = subsystem;

@@ -157,5 +157,6 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeServo1.setDirection(DcMotorSimple.Direction.REVERSE); // subject to change
         this.updateIntakeRotatorState(IntakeRotatorState.TRANSFERRING);
         this.updateIntakingState(IntakingState.DISABLED);
+        updateTrapdoorState(TrapdoorState.CLOSED);
     }
 }

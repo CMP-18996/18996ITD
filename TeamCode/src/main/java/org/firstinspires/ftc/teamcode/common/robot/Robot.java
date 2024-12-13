@@ -18,6 +18,7 @@ public class Robot {
     public LiftSubsystem lift;
     public SpecimenSubsystem specimen;
     public HardwareMap hardwareMap;
+    public boolean alreadyTrans = false;
     private final Team team;
 
     @Deprecated

@@ -14,10 +14,9 @@ public class HardwareMapNames {
 
         Servo:
         0 - intake servo 1
-        1 - intake servo 2
+        1 - intake rotator
         2 - trapdoor
-        3 - intake rotator
-        4 - deposit rotator (bucket)
+        4 - bucket
 
         Motor:
 

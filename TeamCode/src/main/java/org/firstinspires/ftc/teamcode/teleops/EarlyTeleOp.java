@@ -13,7 +13,6 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -44,7 +43,6 @@ public class EarlyTeleOp extends CommandOpMode {
     private Robot robot;
     private GamepadEx gamepad;
     private GamepadEx subsystem_gamepad;
-    private boolean alreadyTrans = false;
     private Drive drive;
     private OdometryHardware odometryHardware;
     private final double pickingUpVal  = IntakeSubsystem.IntakeRotatorState.PICKING_UP.val;
@@ -167,9 +165,8 @@ public class EarlyTeleOp extends CommandOpMode {
         //Team detectedColor = robot.intake.updateColorState2();
         Team detectedColor = robot.intake.updateColorState2();
 
-        if ((detectedColor.equals(team) || detectedColor.equals(Team.YELLOW)) && !alreadyTrans) {
-            alreadyTrans = true;
-
+        if ((detectedColor.equals(team) || detectedColor.equals(Team.YELLOW)) && !robot.alreadyTrans) {
+            robot.alreadyTrans = true;
             schedule(
                     new SequentialCommandGroup(
                             new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
@@ -183,16 +180,16 @@ public class EarlyTeleOp extends CommandOpMode {
                             new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET),
                             new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.READY_TO_DEPOSIT),
                             new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
-                    ).whenFinished(() -> alreadyTrans = false)
+                    ).whenFinished(() -> robot.alreadyTrans = false)
             );
         }
 
-        else if (detectedColor.equals(oppositeTeam) && !alreadyTrans) {
+        else if (detectedColor.equals(oppositeTeam) && !robot.alreadyTrans) {
             schedule(
                     new SequentialCommandGroup(
-                            new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
-                            new WaitCommand(200),
-                            new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.CLOSED)
+                            new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING),
+                            new WaitCommand(400),
+                            new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.ACTIVE)
                     )
             );
         }
@@ -216,18 +213,18 @@ public class EarlyTeleOp extends CommandOpMode {
         telemetry.addData("Color GREEN:", robot.intake.colorSensor.green());
         telemetry.addData("Color BLUE:", robot.intake.colorSensor.blue());
         telemetry.addData("Color ALPHA:", robot.intake.colorSensor.alpha());
-
-        telemetry.addData("alreadyTrans Value:", alreadyTrans);
+        */
+        telemetry.addData("alreadyTrans Value:", robot.alreadyTrans);
 
         telemetry.addLine("");
         telemetry.addData("Extension State:", robot.extension.getState());
         telemetry.addData("Extension Target:", robot.extension.getTargetPosition());
         telemetry.addData("Extension Position:", robot.extension.getPosition());
-        telemetry.addData("Extension Error:", robot.extension.getAbsError());
+        telemetry.addData("Extension Error:", robot.extension.getError());
         telemetry.addData("Extension Power", robot.extension.telemetryPower);
         //telemetry.addData("Extension Encoder", robot.extension.get)
 
-         */
+
 
         telemetry.addLine("");
         telemetry.addData("Deposit Rotator State:", robot.deposit.getTransferRotatorState());
