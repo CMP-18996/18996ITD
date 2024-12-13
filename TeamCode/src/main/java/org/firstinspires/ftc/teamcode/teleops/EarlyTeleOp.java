@@ -220,7 +220,7 @@ public class EarlyTeleOp extends CommandOpMode {
         telemetry.addData("Extension State:", robot.extension.getState());
         telemetry.addData("Extension Target:", robot.extension.getTargetPosition());
         telemetry.addData("Extension Position:", robot.extension.getPosition());
-        telemetry.addData("Extension Error:", robot.extension.getError());
+        telemetry.addData("Extension Error:", robot.extension.getAbsError());
         telemetry.addData("Extension Power", robot.extension.telemetryPower);
         //telemetry.addData("Extension Encoder", robot.extension.get)
 

@@ -20,7 +20,7 @@ public class ExtensionSubsystem extends SubsystemBase {
     public static int FULL_EXTENSION_POS = 500;
     public static int HALF_EXTENDED_POS = 250;
     public static double P = .01;
-    public static double F = .07;
+    public static double F = .3;
     private int targetPosition = 0;
     public static double maxPower = 1.0;
 
