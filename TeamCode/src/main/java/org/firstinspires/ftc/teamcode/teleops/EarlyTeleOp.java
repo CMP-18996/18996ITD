@@ -205,7 +205,7 @@ public class EarlyTeleOp extends CommandOpMode {
             robot.specimen.manualAdjustArm((int) (Math.cbrt(gamepad_2.getLeftY())  * 10));
         }
         if (gamepad_2.getRightY() != 0) {
-            robot.specimen.manualAdjustWrist(Math.cbrt(gamepad_2.getRightY() /50));
+            robot.specimen.manualAdjustWrist(Math.cbrt(gamepad_2.getRightY() / 50));
         }
 
         robot.hang.hangMotor.setPower(gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
