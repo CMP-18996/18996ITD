@@ -18,6 +18,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.common.commands.ColorSensorStateCommand;
 import org.firstinspires.ftc.teamcode.common.commands.DepositRotationCommand;
 import org.firstinspires.ftc.teamcode.common.commands.ExtendCommand;
 import org.firstinspires.ftc.teamcode.common.commands.HangCommand;
@@ -205,6 +206,16 @@ public class EarlyTeleOp extends CommandOpMode {
         gamepad_2.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
                 new ScheduleCommand(
                         new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.WALL)
+                )
+        );
+
+        gamepad_2.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
+                new ScheduleCommand(
+                        new ConditionalCommand(
+                                new ColorSensorStateCommand(robot.intake, IntakeSubsystem.ColorSensorState.BROKEN),
+                                new ColorSensorStateCommand(robot.intake, IntakeSubsystem.ColorSensorState.WORKING),
+                                () -> robot.intake.getColorSensorState() == IntakeSubsystem.ColorSensorState.WORKING
+                        )
                 )
         );
     }

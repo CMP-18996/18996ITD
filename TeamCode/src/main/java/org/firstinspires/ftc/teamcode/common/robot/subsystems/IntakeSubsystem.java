@@ -36,6 +36,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private IntakingState intakingState = IntakingState.DISABLED;
     private IntakeRotatorState intakeRotatorState = IntakeRotatorState.TRANSFERRING;
     public ColorState colorState = ColorState.NONE;
+    public ColorSensorState colorSensorState = ColorSensorState.WORKING;
     public enum TrapdoorState {
         CLOSED(CLOSED_VALUE),
         EJECTING(EJECTING_VALUE);
@@ -63,6 +64,11 @@ public class IntakeSubsystem extends SubsystemBase {
         YELLOW,
         RED,
         BLUE
+    }
+
+    public enum ColorSensorState {
+        WORKING,
+        BROKEN
     }
 
     public void slightlyIncrementRotator(double increment) {
@@ -101,6 +107,12 @@ public class IntakeSubsystem extends SubsystemBase {
         a = colorSensor.alpha();
         Team returnedColorState;
 
+        if (colorSensorState == ColorSensorState.BROKEN) {
+            colorState = ColorState.NONE;
+
+            return Team.NONE;
+        }
+
         if (a < 100) {
             colorState = ColorState.NONE;
             return Team.NONE;
@@ -123,6 +135,14 @@ public class IntakeSubsystem extends SubsystemBase {
             returnedColorState = Team.NONE;
         }
         return returnedColorState;
+    }
+
+    public void updateColorSensorState(ColorSensorState colorSensorState) {
+        this.colorSensorState = colorSensorState;
+    }
+
+    public ColorSensorState getColorSensorState() {
+        return colorSensorState;
     }
 
     public void updateTrapdoorState(TrapdoorState setState) {
