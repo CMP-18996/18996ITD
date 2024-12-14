@@ -248,6 +248,7 @@ public class EarlyTeleOp extends CommandOpMode {
         Team detectedColor = robot.intake.updateColorState2();
 
         if ((detectedColor.equals(team) || detectedColor.equals(Team.YELLOW)) && !robot.isTransferring() && robot.intake.getIntakeRotatorState() == IntakeSubsystem.IntakeRotatorState.PICKING_UP) {
+        //if (detectedColor.equals(team) && !robot.isTransferring() && robot.intake.getIntakeRotatorState() == IntakeSubsystem.IntakeRotatorState.PICKING_UP) {
             robot.setTransferringState(true);
             schedule(
                     new SequentialCommandGroup(
@@ -271,6 +272,7 @@ public class EarlyTeleOp extends CommandOpMode {
         }
 
         else if (detectedColor.equals(oppositeTeam) && !robot.isTransferring()) {
+        //else if ((detectedColor.equals(oppositeTeam) || detectedColor.equals(Team.YELLOW)) && !robot.isTransferring()) {
             schedule(
                     new SequentialCommandGroup(
                             new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING),
@@ -299,6 +301,7 @@ public class EarlyTeleOp extends CommandOpMode {
         telemetry.addData("Color GREEN:", robot.intake.colorSensor.green());
         telemetry.addData("Color BLUE:", robot.intake.colorSensor.blue());
         telemetry.addData("Color ALPHA:", robot.intake.colorSensor.alpha());
+        telemetry.addData("Previous intaking state:", previousIntakingState);
 
         telemetry.addData("Transferring State:", robot.isTransferring());
 
