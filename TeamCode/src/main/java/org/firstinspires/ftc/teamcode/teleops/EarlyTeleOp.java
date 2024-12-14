@@ -323,7 +323,7 @@ public class EarlyTeleOp extends CommandOpMode {
         telemetry.addData("Hang Target:", robot.hang.getTargetPosition());
         telemetry.addData("Hang Position", robot.hang.getCurrentPosition());
 
-         //Method WRIET FOR COLOR SESNRO)
+        //Method WRIET FOR COLOR SESNRO)
 
         telemetry.update();
 
