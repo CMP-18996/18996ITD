@@ -50,6 +50,7 @@ public class IntakeSubsystem extends SubsystemBase {
         IntakingState(double inval) {val = inval;}
     }
 
+
     public enum IntakeRotatorState {
         TRANSFERRING(INTAKE_ROTATION_TRANSFER),
         MOVING(INTAKE_ROTATION_MOVING),
