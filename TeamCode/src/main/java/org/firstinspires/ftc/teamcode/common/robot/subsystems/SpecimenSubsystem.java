@@ -18,13 +18,13 @@ public class SpecimenSubsystem extends SubsystemBase {
     public DcMotorImpl armMotor;
 
     // (motor encoder values)
-    public static int ARM_CHAMBER_POSITION = 600;
-    public static int ARM_WALL_POSITION = 50;
+    public static int ARM_CHAMBER_POSITION = 550;
+    public static int ARM_WALL_POSITION = 70;
     public static int ARM_REST_POSITION = 50;
 
     // (servo values)
-    public static double WRIST_CHAMBER_POSITION = 0.73;
-    public static double WRIST_WALL_POSITION = 0.24;
+    public static double WRIST_CHAMBER_POSITION = 0.24;
+    public static double WRIST_WALL_POSITION = 0.73;
     public static double WRIST_REST_POSITION = 0.6;
 
     public static double GRIPPER_OPEN = 0.5;
@@ -32,14 +32,16 @@ public class SpecimenSubsystem extends SubsystemBase {
     private static int armTarget;
     private static double wristTarget;
 
-    public static double Kp = 0.008;
-    public static double Kd = -0.0007;
-    public static double Ki = 0.02;
+    public static double INTEGRAL_ENABLE_POINT = 10;
 
-    public static double Kg = 0.2;
+    public static double Kp = 0.004;
+    public static double Kd = -0.00022;
+    public static double Ki = 0.001;
 
-    public static double MAX_EXTENSION_SPEED = 1.0;
-    public static double MAX_RETURN_SPEED = 1.0;
+    public static double Kg = 0.20;
+
+    public static double MAX_EXTENSION_SPEED = 0.8;
+    public static double MAX_RETURN_SPEED = 0.6;
 
     int lastError = 0;
 
@@ -115,7 +117,6 @@ public class SpecimenSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
-//        armMotor.setPosition(specimenPosition.armPosition);
         if (specimenPosition != SpecimenPosition.MANUAL) {
             armTarget = specimenPosition.armPosition;
             wristTarget = specimenPosition.wristPosition;
@@ -129,25 +130,22 @@ public class SpecimenSubsystem extends SubsystemBase {
 
         double D = Kd * (error - lastError) / timer.seconds();
 
-        integralSum = integralSum + (error * timer.seconds());
-        double I = Ki * -integralSum;
-
-        /*
-        if (angleFromTicks > 90) {
-            I = 0;
+        if (Math.abs(error) > INTEGRAL_ENABLE_POINT) {
+            integralSum = 0;
         }
-        */
+        else {
+            integralSum = integralSum + (error * timer.seconds());
+        }
+
+        double I = Ki * -integralSum;
 
         lastError = error;
         timer.reset();
 
         power = Range.clip(P + D + I + G, -MAX_EXTENSION_SPEED, MAX_RETURN_SPEED);
-//        power = 0;
+
         armMotor.setPower(power);
         wristServo.setPosition(wristTarget);
-        /*armMotor.setPower(Arm_P * (armTarget - armMotor.getCurrentPosition()));
-        wristServo.setPosition(wristTarget);
-        gripperServo.setPosition(gripperPosition.gripper);*/
     }
 
     public enum SpecimenPosition {

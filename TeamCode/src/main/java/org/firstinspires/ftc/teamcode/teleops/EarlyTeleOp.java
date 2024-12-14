@@ -5,7 +5,6 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
-import com.arcrobotics.ftclib.command.ParallelDeadlineGroup;
 import com.arcrobotics.ftclib.command.ScheduleCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
@@ -49,6 +48,10 @@ public class EarlyTeleOp extends CommandOpMode {
     private GamepadEx subsystem_gamepad;
     private Drive drive;
     private OdometryHardware odometryHardware;
+    private final double pickingUpVal  = IntakeSubsystem.IntakeRotatorState.PICKING_UP.val;
+
+    public int colorSensorReads = 0;
+    public int colorSensorValue = 0;
 
     @Override
     public void initialize() {
@@ -155,15 +158,12 @@ public class EarlyTeleOp extends CommandOpMode {
         robot.hang.hangMotor.setPower(subsystem_gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - subsystem_gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
 
         if (robot.extension.getState().equals(ExtensionSubsystem.ExtensionState.CUSTOM)){
-            double rawExtensionPower = gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
+            double rawExtensionPower = gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) - gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
             robot.extension.setPower(Math.pow(rawExtensionPower, 3));
         }
 
-        if (
-                robot.intake.getIntakeRotatorState().equals(IntakeSubsystem.IntakeRotatorState.PICKING_UP)
-             || robot.intake.getIntakeRotatorState().equals(IntakeSubsystem.IntakeRotatorState.TRANSFERRING)
-        ) {
-            double adjustment = -gamepad.getRightY() * .08;
+        if (robot.intake.getIntakeRotatorState().equals(IntakeSubsystem.IntakeRotatorState.PICKING_UP)) {
+            double adjustment = -gamepad.getRightY() * .2;
             robot.intake.slightlyIncrementRotator(adjustment);
         }
 
@@ -215,6 +215,7 @@ public class EarlyTeleOp extends CommandOpMode {
         drive.robotCentricDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
 
 
+
         telemetry.addData("Intake Rotator State:", robot.intake.getIntakeRotatorState());
         telemetry.addData("Intake Roller State:", robot.intake.getIntakingState());
         telemetry.addData("Trapdoor State:", robot.intake.getTrapdoorState());
@@ -235,7 +236,7 @@ public class EarlyTeleOp extends CommandOpMode {
         //telemetry.addData("Extension Encoder", robot.extension.get)
 
 
-        /*
+
         telemetry.addLine("");
         telemetry.addData("Deposit Rotator State:", robot.deposit.getTransferRotatorState());
 
@@ -269,7 +270,9 @@ public class EarlyTeleOp extends CommandOpMode {
         telemetry.addData("Hang State:", robot.hang.getState());
         telemetry.addData("Hang Target:", robot.hang.getTargetPosition());
         telemetry.addData("Hang Position", robot.hang.getCurrentPosition());
-        */
+
+        /* Method WRIET FOR COLOR SESNRO)
+
         telemetry.update();
 
         /*

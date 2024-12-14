@@ -65,7 +65,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void slightlyIncrementRotator(double increment) {
-        intakeRotationServo.setPosition(intakeRotatorState.val + increment);
+        intakeRotationServo.setPosition(Range.clip(intakeRotatorState.val + increment, -1.0, 1.0));
     }
     public ColorState updateColorState(){
         int r, g, b, a;

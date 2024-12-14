@@ -16,16 +16,19 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 @Config
 public class LiftSubsystem extends SubsystemBase {
     // Constants
-    public static double Kp = 0.0175;
-    public static double Ki = 0.01;
-    public static double Kd = 0.001;
-    public static double Kf = 0.15;
+    public static double Kp = 0.012;
+    public static double Ki = 0.04;
+    public static double Kd = 0.0003;
+    public static double Kf = 0.19;
 
-    public static int INTEGRAL_ENABLE_POINT;
+    public static int INTEGRAL_ENABLE_POINT = 20;
 
     public static int GROUND = 40;
     public static int LOW_BASKET = 420;
     public static int HIGH_BASKET = 850;
+
+    public static double MAX_UP_SPEED = 1.0;
+    public static double MAX_DOWN_SPEED = 0.6;
 
     // State
     public final DcMotorImpl liftMotor;
@@ -75,12 +78,11 @@ public class LiftSubsystem extends SubsystemBase {
         lastError = error;
         timer.reset();
 
-        double power = Range.clip(P + I + D + F, -0.7, 1.0);
+        double power = Range.clip(P + I + D + F, -MAX_DOWN_SPEED, MAX_UP_SPEED);
         telemetryPower = power;
 
         liftMotor.setPower(power);
     }
-
 
     public boolean motorWorking() {
         return liftMotor.isBusy();
