@@ -25,6 +25,8 @@ import org.firstinspires.ftc.teamcode.common.commands.IntakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeRotatorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.LiftSetPosition;
 import org.firstinspires.ftc.teamcode.common.commands.SingleColorSensorCommand;
+import org.firstinspires.ftc.teamcode.common.commands.SpecimenArmCommand;
+import org.firstinspires.ftc.teamcode.common.commands.SpecimenGripperCommand;
 import org.firstinspires.ftc.teamcode.common.commands.TrapdoorCommand;
 import org.firstinspires.ftc.teamcode.common.robot.Drive;
 import org.firstinspires.ftc.teamcode.common.robot.OdometryHardware;
@@ -35,6 +37,7 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.ExtensionSubsystem
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.HangSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
+import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
 @TeleOp
@@ -43,9 +46,9 @@ public class EarlyTeleOp extends CommandOpMode {
     private Team oppositeTeam;
 
     private Robot robot;
-    private GamepadEx gamepad;
+    private GamepadEx gamepad_1;
 
-    private GamepadEx subsystem_gamepad;
+    private GamepadEx gamepad_2;
     private Drive drive;
     private OdometryHardware odometryHardware;
     private final double pickingUpVal  = IntakeSubsystem.IntakeRotatorState.PICKING_UP.val;
@@ -64,14 +67,18 @@ public class EarlyTeleOp extends CommandOpMode {
 
         CommandScheduler.getInstance().reset();
 
-        robot = new Robot(hardwareMap, Subsystems.ALL);
-        gamepad = new GamepadEx(gamepad1);
-        subsystem_gamepad = new GamepadEx(gamepad2);
+        robot = new Robot(hardwareMap, team, Subsystems.ALL);
+        gamepad_1 = new GamepadEx(gamepad1);
+        gamepad_2 = new GamepadEx(gamepad2);
 
+        // TODO CAHNGE HTIS TO GLOBAL
         if (team.equals(Team.RED)) oppositeTeam = Team.BLUE;
         else oppositeTeam = Team.RED;
 
-        gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
+        // MAIN DRIVER
+        // MAIN DRIVER
+        // MAIN DRIVER
+        gamepad_1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 new ConditionalCommand(
                         new ScheduleCommand(
                                 new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET),
@@ -85,7 +92,7 @@ public class EarlyTeleOp extends CommandOpMode {
                 )
         );
 
-        gamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
+        gamepad_1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
                 new ConditionalCommand(
                         new ScheduleCommand(
                                 new LiftSetPosition(robot.lift, LiftSubsystem.LOW_BASKET),
@@ -100,11 +107,11 @@ public class EarlyTeleOp extends CommandOpMode {
         );
 
         // A is Cross
-        gamepad.getGamepadButton(GamepadKeys.Button.A).whenPressed(
+        gamepad_1.getGamepadButton(GamepadKeys.Button.A).whenPressed(
                 new ConditionalCommand(
                         new SequentialCommandGroup(
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
-                                new WaitCommand(800),
+                                new WaitCommand(500),
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY),
                                 new LiftSetPosition(robot.lift, LiftSubsystem.GROUND)
                         ),
@@ -117,7 +124,7 @@ public class EarlyTeleOp extends CommandOpMode {
                 )
         );
 
-        gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
+        gamepad_1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 new ConditionalCommand(
                         new ScheduleCommand(
                                 new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.ACTIVE),
@@ -132,13 +139,13 @@ public class EarlyTeleOp extends CommandOpMode {
                 )
         );
 
-        gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+        gamepad_1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
                 new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)
         ).whenReleased(
                 new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED)
         );
 
-        gamepad.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
+        gamepad_1.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
                 new ConditionalCommand(
                         new ScheduleCommand(
                                 new HangCommand(robot.hang, HangSubsystem.HangPosition.L3)
@@ -149,21 +156,67 @@ public class EarlyTeleOp extends CommandOpMode {
                         () -> robot.hang.getState().equals(HangSubsystem.HangPosition.DOWN)
                 )
         );
+
+        gamepad_1.getGamepadButton(GamepadKeys.Button.X).whenPressed(
+                new ConditionalCommand(
+                        new ScheduleCommand(
+                                new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.CLOSED)
+                        ),
+                        new ScheduleCommand(
+                                new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.OPEN)
+                        ),
+                        () -> robot.specimen.getGripperPosition() != SpecimenSubsystem.GripperPosition.CLOSED
+                )
+        );
+
+        //  SECOND DRIVER
+        //  SECOND DRIVER
+        //  SECOND DRIVER
+        gamepad_2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
+                new ConditionalCommand(
+                        new ScheduleCommand(
+                                new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.CLOSED)
+                        ),
+                        new ScheduleCommand(
+                                new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.OPEN)
+                        ),
+                        () -> robot.specimen.getGripperPosition() != SpecimenSubsystem.GripperPosition.CLOSED
+                )
+        );
+
+        gamepad_2.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
+                new ScheduleCommand(
+                        new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.CHAMBER)
+                )
+        );
+
+        gamepad_2.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
+                new ScheduleCommand(
+                        new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.WALL)
+                )
+        );
     }
 
     @Override
     public void run() {
         CommandScheduler.getInstance().run();
 
-        robot.hang.hangMotor.setPower(subsystem_gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - subsystem_gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
+        if (gamepad_2.getLeftY() != 0) {
+            robot.specimen.manualAdjustArm((int) (Math.cbrt(gamepad_2.getLeftY())  * 10));
+        }
+        if (gamepad_2.getRightY() != 0) {
+            robot.specimen.manualAdjustWrist(Math.cbrt(gamepad_2.getRightY() /50));
+        }
+
+        robot.hang.hangMotor.setPower(gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
 
         if (robot.extension.getState().equals(ExtensionSubsystem.ExtensionState.CUSTOM)){
-            double rawExtensionPower = gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) - gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
+            double rawExtensionPower = gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) - gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
             robot.extension.setPower(Math.pow(rawExtensionPower, 3));
         }
 
         if (robot.intake.getIntakeRotatorState().equals(IntakeSubsystem.IntakeRotatorState.PICKING_UP)) {
-            double adjustment = -gamepad.getRightY() * .2;
+            double adjustment = -gamepad_1.getRightY() * .2;
             robot.intake.slightlyIncrementRotator(adjustment);
         }
 
@@ -171,7 +224,7 @@ public class EarlyTeleOp extends CommandOpMode {
         //Team detectedColor = robot.intake.updateColorState2();
         Team detectedColor = robot.intake.updateColorState2();
 
-        if ((detectedColor.equals(team) || detectedColor.equals(Team.YELLOW)) && !robot.isTransferring()) {
+        if ((detectedColor.equals(team) || detectedColor.equals(Team.YELLOW)) && !robot.isTransferring() && robot.intake.getIntakeRotatorState() == IntakeSubsystem.IntakeRotatorState.PICKING_UP) {
             robot.setTransferringState(true);
             schedule(
                     new SequentialCommandGroup(
@@ -187,7 +240,7 @@ public class EarlyTeleOp extends CommandOpMode {
                             new WaitCommand(200),
                             new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
                             new InstantLiftCommand(robot.lift, LiftSubsystem.HIGH_BASKET),
-                            new WaitCommand(700),
+                            new WaitCommand(100),
                             new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.READY_TO_DEPOSIT),
                             new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
                     ).whenFinished(() -> robot.setTransferringState(false))
@@ -213,7 +266,6 @@ public class EarlyTeleOp extends CommandOpMode {
         //double heading = odometryHardware.pinpoint.getHeading();
 
         drive.robotCentricDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
-
 
 
         telemetry.addData("Intake Rotator State:", robot.intake.getIntakeRotatorState());
@@ -271,12 +323,13 @@ public class EarlyTeleOp extends CommandOpMode {
         telemetry.addData("Hang Target:", robot.hang.getTargetPosition());
         telemetry.addData("Hang Position", robot.hang.getCurrentPosition());
 
-        /* Method WRIET FOR COLOR SESNRO)
+         //Method WRIET FOR COLOR SESNRO)
 
         telemetry.update();
 
-        /*
 
+
+        /*
         TelemetryPacket packet = new TelemetryPacket();
 
         packet.put("power", robot.lift.powerTELE);

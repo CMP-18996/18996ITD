@@ -18,25 +18,25 @@ public class SpecimenSubsystem extends SubsystemBase {
     public DcMotorImpl armMotor;
 
     // (motor encoder values)
-    public static int ARM_CHAMBER_POSITION = 550;
-    public static int ARM_WALL_POSITION = 70;
+    public static int ARM_CHAMBER_POSITION = 500;
+    public static int ARM_WALL_POSITION = 58;
     public static int ARM_REST_POSITION = 50;
 
     // (servo values)
-    public static double WRIST_CHAMBER_POSITION = 0.24;
-    public static double WRIST_WALL_POSITION = 0.73;
+    public static double WRIST_CHAMBER_POSITION = 0.6852;
+    public static double WRIST_WALL_POSITION = 0.05;
     public static double WRIST_REST_POSITION = 0.6;
 
     public static double GRIPPER_OPEN = 0.5;
     public static double GRIPPER_CLOSED = 0.82;
-    private static int armTarget;
-    private static double wristTarget;
+    public int armTarget;
+    public double wristTarget;
 
-    public static double INTEGRAL_ENABLE_POINT = 10;
+    public static double INTEGRAL_ENABLE_POINT = 15;
 
     public static double Kp = 0.004;
-    public static double Kd = -0.00022;
-    public static double Ki = 0.001;
+    public static double Kd = -0.00023;
+    public static double Ki = 0.02;
 
     public static double Kg = 0.20;
 
@@ -59,7 +59,7 @@ public class SpecimenSubsystem extends SubsystemBase {
         wristServo = hardwareMap.get(Servo.class, HardwareMapNames.WRIST_SERVO);
         gripperServo = hardwareMap.get(Servo.class, HardwareMapNames.GRIPPER_SERVO);
 
-        specimenPosition = SpecimenPosition.CHAMBER;
+        specimenPosition = SpecimenPosition.WALL;
         gripperPosition = GripperPosition.OPEN;
 
         armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
