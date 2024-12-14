@@ -18,7 +18,7 @@ public class Robot {
     public LiftSubsystem lift;
     public SpecimenSubsystem specimen;
     public HardwareMap hardwareMap;
-    public boolean alreadyTrans = false;
+    private boolean transferring = false;
     private final Team team;
 
     @Deprecated
@@ -86,6 +86,14 @@ public class Robot {
                 intake = new IntakeSubsystem(hardwareMap);
             }
         }
+    }
+
+    public void setTransferringState(boolean state) {
+        transferring = state;
+    }
+
+    public boolean isTransferring() {
+        return transferring;
     }
 
     public Team getTeam() {

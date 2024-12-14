@@ -19,10 +19,10 @@ public class ExtensionSubsystem extends SubsystemBase {
     public static int CONTRACTED_POS = 0;
     public static int FULL_EXTENSION_POS = 500;
     public static int HALF_EXTENDED_POS = 250;
-    public static double P = .01;
-    public static double F = .3;
+    public static double P = .007;
+    public static double F = .20;
     private int targetPosition = 0;
-    public static double maxPower = 1.0;
+    public static double maxPower = .8;
 
     public double telemetryPower;
 
@@ -81,8 +81,10 @@ public class ExtensionSubsystem extends SubsystemBase {
                 feedForwardPower = F * Math.signum(error);
             }
 
-
             power = Range.clip(P * error + feedForwardPower, -maxPower, maxPower);
+
+            if (getAbsError() <= 90) power *= .6;
+
             telemetryPower = power;
             extensionMotor.setPower(power);
         }

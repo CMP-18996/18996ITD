@@ -19,6 +19,6 @@ public class SingleColorSensorCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return (intakeSubsystem.updateColorState().equals(commandColorState));
+        return (intakeSubsystem.colorState.equals(commandColorState));
     }
 }

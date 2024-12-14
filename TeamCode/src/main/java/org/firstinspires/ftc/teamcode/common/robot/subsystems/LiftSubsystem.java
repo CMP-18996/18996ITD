@@ -23,7 +23,7 @@ public class LiftSubsystem extends SubsystemBase {
 
     public static int INTEGRAL_ENABLE_POINT;
 
-    public static int GROUND = 30;
+    public static int GROUND = 40;
     public static int LOW_BASKET = 420;
     public static int HIGH_BASKET = 850;
 
