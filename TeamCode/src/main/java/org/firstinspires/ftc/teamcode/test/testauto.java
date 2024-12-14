@@ -11,6 +11,7 @@ import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.common.autocmd.AutoExtendRetractTransfer;
 import org.firstinspires.ftc.teamcode.common.commands.DepositRotationCommand;
 import org.firstinspires.ftc.teamcode.common.commands.ExtendAndBeginIntakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeRotatorCommand;
@@ -38,10 +39,8 @@ public class testauto extends CommandOpMode {
 
         super.schedule(
                 new SequentialCommandGroup(
-                        //deposit preloaded block in basket bc specimen arm is broken
-                        new ExtendAndBeginIntakeCommand(robot.extension, robot.intake, robot.lift),
-                        new WaitCommand(500),
-                        new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit)
+                        new InstantCommand(() -> robot.extension.setMaxPower(0.65)),
+                        new AutoExtendRetractTransfer(robot.extension, robot.intake, robot.lift, robot.deposit)
                 )
         );
     }

@@ -25,7 +25,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public static double EJECTING_VALUE = 1.0;
     public static double ACTIVE_VALUE = 1.0;
     public static double DISABLED_VALUE = 0.0;
-    public static double REVERSING_VALUE = -1.0;
+    public static double REVERSING_VALUE = -0.8;
 
     // State
     final private CRServoImpl intakeServo1;

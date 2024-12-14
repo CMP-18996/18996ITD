@@ -17,10 +17,11 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 public class AutoExtendRetractTransfer extends SequentialCommandGroup {
     public AutoExtendRetractTransfer(ExtensionSubsystem extensionSubsystem, IntakeSubsystem intakeSubsystem, LiftSubsystem liftSubsystem, DepositSubsystem depositSubsystem) {
         addCommands(
+                new ExtendCommand(extensionSubsystem, ExtensionSubsystem.ExtensionState.CONTRACTED),
                 new IntakeRotatorCommand(intakeSubsystem, IntakeSubsystem.IntakeRotatorState.PICKING_UP),
                 new IntakeCommand(intakeSubsystem, IntakeSubsystem.IntakingState.ACTIVE),
                 new ParallelDeadlineGroup(
-                        new WaitCommand(800),
+                        new WaitCommand(1400),
                         new LiftSetPosition(liftSubsystem, LiftSubsystem.GROUND),
                         new ExtendCommand(extensionSubsystem, ExtensionSubsystem.ExtensionState.FULLY_EXTENDED)
                 ),
@@ -31,7 +32,7 @@ public class AutoExtendRetractTransfer extends SequentialCommandGroup {
                         new IntakeRotatorCommand(intakeSubsystem, IntakeSubsystem.IntakeRotatorState.TRANSFERRING)
                 ),
                 new IntakeCommand(intakeSubsystem, IntakeSubsystem.IntakingState.REVERSING),
-                new WaitCommand(600),
+                new WaitCommand(800),
                 new IntakeCommand(intakeSubsystem, IntakeSubsystem.IntakingState.DISABLED),
                 new IntakeRotatorCommand(intakeSubsystem, IntakeSubsystem.IntakeRotatorState.MOVING)
         );

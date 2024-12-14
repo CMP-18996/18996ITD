@@ -62,7 +62,7 @@ public class ExtensionSubsystem extends SubsystemBase {
     }
 
     public int getAbsError() {
-        return Math.abs(-extensionMotor.getCurrentPosition() - extensionState.position);
+        return Math.abs(extensionMotor.getCurrentPosition() - extensionState.position);
     }
 
     @Deprecated
@@ -73,7 +73,7 @@ public class ExtensionSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         if (!extensionState.equals(ExtensionState.CUSTOM)) {
-            double error = targetPosition + extensionMotor.getCurrentPosition();
+            double error = targetPosition - extensionMotor.getCurrentPosition();
             double power;
 
             double feedForwardPower = 0;
@@ -83,10 +83,10 @@ public class ExtensionSubsystem extends SubsystemBase {
 
             power = Range.clip(P * error + feedForwardPower, -maxPower, maxPower);
 
-            if (getAbsError() <= 90) power *= .6;
+            if (getAbsError() <= 125) power *= .1;
 
-            telemetryPower = power;
-            extensionMotor.setPower(power);
+            telemetryPower = -power;
+            extensionMotor.setPower(-power);
         }
     }
 

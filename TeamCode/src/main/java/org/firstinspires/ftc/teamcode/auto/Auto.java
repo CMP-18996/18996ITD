@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.common.autocmd.AutoDeposit;
 import org.firstinspires.ftc.teamcode.common.autocmd.AutoExtendRetractTransfer;
 import org.firstinspires.ftc.teamcode.common.commands.DepositRotationCommand;
 import org.firstinspires.ftc.teamcode.common.commands.ExtendAndBeginIntakeCommand;
@@ -43,7 +44,7 @@ public class Auto extends CommandOpMode {
         robot = new Robot(hardwareMap, Team.BLUE, Subsystems.EXTENSION, Subsystems.INTAKE, Subsystems.LIFT, Subsystems.DEPOSIT);
 
         super.schedule(
-                new InstantCommand(() -> robot.extension.setMaxPower(0.65)),
+                new InstantCommand(() -> robot.extension.setMaxPower(0.6)),
                 new SequentialCommandGroup(
                         //deposit preloaded block in basket bc specimen arm is broken
                         new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
@@ -51,22 +52,13 @@ public class Auto extends CommandOpMode {
                                 .setReversed(true)
                                 .splineTo(new Vector2d(64,64), Math.toRadians(45))
                         .       build())),
-                        new ParallelDeadlineGroup(
-                                new WaitCommand(800),
-                                new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET),
-                                new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING)
-                        ),
-                        new ParallelDeadlineGroup(
-                                new WaitCommand(700),
-                                new LiftSetPosition(robot.lift, LiftSubsystem.GROUND),
-                                new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY)
-                        ),
+                        new AutoDeposit(robot.lift, robot.deposit),
 
                         //get first block
                         new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
                         new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
                                 .setReversed(false)
-                                .splineTo(new Vector2d(54,50), Math.toRadians(-90))
+                                .splineTo(new Vector2d(59,49), Math.toRadians(-110))
                                 .build())),
                         new AutoExtendRetractTransfer(robot.extension, robot.intake, robot.lift, robot.deposit),
 
@@ -75,25 +67,13 @@ public class Auto extends CommandOpMode {
                                 .setReversed(true)
                                 .splineTo(new Vector2d(64,64), Math.toRadians(45))
                                 .build())),
-                        new ParallelDeadlineGroup(
-                                new WaitCommand(800),
-                                new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET),
-                                new SequentialCommandGroup(
-                                        new WaitCommand(200),
-                                        new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING)
-                                )
-                        ),
-                        new ParallelDeadlineGroup(
-                                new WaitCommand(800),
-                                new LiftSetPosition(robot.lift, LiftSubsystem.GROUND),
-                                new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY)
-                        ),
+                        new AutoDeposit(robot.lift, robot.deposit),
 
                         //get second block
                         new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
                         new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
                                 .setReversed(false)
-                                .splineTo(new Vector2d(63,50), Math.toRadians(-90))
+                                .splineTo(new Vector2d(57.75,47.5), Math.toRadians(-70))
                                 .build())),
                         new AutoExtendRetractTransfer(robot.extension, robot.intake, robot.lift, robot.deposit),
 
@@ -102,25 +82,13 @@ public class Auto extends CommandOpMode {
                                 .setReversed(true)
                                 .splineTo(new Vector2d(64,64), Math.toRadians(45))
                                 .build())),
-                        new ParallelDeadlineGroup(
-                                new WaitCommand(800),
-                                new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET),
-                                new SequentialCommandGroup(
-                                        new WaitCommand(200),
-                                        new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING)
-                                )
-                        ),
-                        new ParallelDeadlineGroup(
-                                new WaitCommand(800),
-                                new LiftSetPosition(robot.lift, LiftSubsystem.GROUND),
-                                new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY)
-                        ),
+                        new AutoDeposit(robot.lift, robot.deposit),
 
                         //get third block
                         new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
                         new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
                                 .setReversed(false)
-                                .splineTo(new Vector2d(65,47), Math.toRadians(-60))
+                                .splineTo(new Vector2d(66.5,50), Math.toRadians(-70))
                                 .build())),
                         new AutoExtendRetractTransfer(robot.extension, robot.intake, robot.lift, robot.deposit),
 
@@ -129,19 +97,7 @@ public class Auto extends CommandOpMode {
                                 .setReversed(true)
                                 .splineTo(new Vector2d(64,64), Math.toRadians(45))
                                 .build())),
-                        new ParallelDeadlineGroup(
-                                new WaitCommand(800),
-                                new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET),
-                                new SequentialCommandGroup(
-                                        new WaitCommand(200),
-                                        new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING)
-                                )
-                        ),
-                        new ParallelDeadlineGroup(
-                                new WaitCommand(800),
-                                new LiftSetPosition(robot.lift, LiftSubsystem.GROUND),
-                                new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY)
-                        )
+                        new AutoDeposit(robot.lift, robot.deposit)
 
                         //skedaddle
                         /*new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
