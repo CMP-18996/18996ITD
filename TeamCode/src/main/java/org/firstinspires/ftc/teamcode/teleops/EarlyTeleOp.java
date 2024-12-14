@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
+import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ScheduleCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
@@ -55,6 +56,8 @@ public class EarlyTeleOp extends CommandOpMode {
 
     public int colorSensorReads = 0;
     public int colorSensorValue = 0;
+
+    public IntakeSubsystem.IntakingState previousIntakingState = IntakeSubsystem.IntakingState.DISABLED;
 
     @Override
     public void initialize() {
@@ -140,9 +143,18 @@ public class EarlyTeleOp extends CommandOpMode {
         );
 
         gamepad_1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
-                new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)
+                new SequentialCommandGroup(
+                        new InstantCommand() {
+                            public void initialize() {
+                                previousIntakingState = robot.intake.getIntakingState();
+                            }
+                        },
+                        new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)
+                )
         ).whenReleased(
-                new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED)
+                new SequentialCommandGroup(
+                        new IntakeCommand(robot.intake, previousIntakingState)
+                )
         );
 
         gamepad_1.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
