@@ -150,10 +150,12 @@ public class EarlyTeleOp extends CommandOpMode {
         );
 
         gamepad_1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
-                new SequentialCommandGroup(
-                        new InstantCommand(() -> previousIntakingState = robot.intake.getIntakingState()),
-                        new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)
-                )
+                () -> {
+                    previousIntakingState = robot.intake.getIntakingState();
+                    schedule(
+                            new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)
+                    );
+                }
         ).whenReleased(
                 new IntakeCommand(robot.intake, previousIntakingState)
         );
@@ -281,6 +283,8 @@ public class EarlyTeleOp extends CommandOpMode {
                             new WaitCommand(200),
                             new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
                             new WaitCommand(100),
+                            new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.INTERMEDIATE),
+                            new WaitCommand(200),
                             new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.READY_TO_DEPOSIT),
                             new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
                     ).whenFinished(() -> robot.setTransferringState(false))
