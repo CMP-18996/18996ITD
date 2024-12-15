@@ -84,7 +84,6 @@ public class EarlyTeleOp extends CommandOpMode {
         CommandScheduler.getInstance().schedule(
                 new ZeroMotorCommand(robot.extension, robot.lift)
         );
-        waitForStart();
 
         // MAIN DRIVER
         // MAIN DRIVER

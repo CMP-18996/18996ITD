@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 public class ZeroMotorCommand extends CommandBase {
     public ExtensionSubsystem extensionSubsystem;
     public LiftSubsystem liftSubsystem;
+    private boolean executed = false;
     ElapsedTime timer = new ElapsedTime();
 
     public ZeroMotorCommand(ExtensionSubsystem extensionSubsystem, LiftSubsystem liftSubsystem) {
@@ -20,11 +21,14 @@ public class ZeroMotorCommand extends CommandBase {
     }
 
     @Override
-    public void initialize() {
-        timer.startTime();
+    public void execute() {
+        if (!executed) {
+            timer.startTime();
 
-        extensionSubsystem.setExtensionMotorPower(-1);
-        liftSubsystem.liftMotor.setPower(-1);
+            extensionSubsystem.setExtensionMotorPower(-1);
+            liftSubsystem.liftMotor.setPower(-1);
+            executed = true;
+        }
     }
 
     @Override
