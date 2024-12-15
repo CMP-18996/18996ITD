@@ -47,6 +47,7 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 @TeleOp
 public class EarlyTeleOp extends CommandOpMode {
     private Team team = Team.RED;
+    private final boolean liftEnabled = true;
     private Team oppositeTeam;
 
     private Robot robot;
@@ -81,9 +82,9 @@ public class EarlyTeleOp extends CommandOpMode {
         if (team.equals(Team.RED)) oppositeTeam = Team.BLUE;
         else oppositeTeam = Team.RED;
 
-        CommandScheduler.getInstance().schedule(
-                new ZeroMotorCommand(robot.extension, robot.lift)
-        );
+        //CommandScheduler.getInstance().schedule(
+         //       new ZeroMotorCommand(robot.extension, robot.lift)
+        //);
 
         // MAIN DRIVER
         // MAIN DRIVER
@@ -132,6 +133,11 @@ public class EarlyTeleOp extends CommandOpMode {
                                     new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
                                     new WaitCommand(200),
                                     new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
+                                    new ConditionalCommand(
+                                            new InstantLiftCommand(robot.lift, LiftSubsystem.HIGH_BASKET),
+                                            new WaitCommand(0),
+                                            () -> liftEnabled
+                                    ),
                                     new WaitCommand(100),
                                     new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.INTERMEDIATE),
                                     new WaitCommand(200),
@@ -149,7 +155,7 @@ public class EarlyTeleOp extends CommandOpMode {
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
                                 new WaitCommand(500),
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY),
-                                new LiftSetPosition(robot.lift, LiftSubsystem.GROUND)
+                                new InstantLiftCommand(robot.lift, LiftSubsystem.GROUND)
                         ),
                         new SequentialCommandGroup(
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
@@ -308,6 +314,11 @@ public class EarlyTeleOp extends CommandOpMode {
                             new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
                             new WaitCommand(200),
                             new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
+                            new ConditionalCommand(
+                                    new InstantLiftCommand(robot.lift, LiftSubsystem.HIGH_BASKET),
+                                    new WaitCommand(0),
+                                    () -> liftEnabled
+                            ),
                             new WaitCommand(100),
                             new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.INTERMEDIATE),
                             new WaitCommand(200),
