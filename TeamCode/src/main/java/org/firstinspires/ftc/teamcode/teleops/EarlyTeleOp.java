@@ -145,11 +145,7 @@ public class EarlyTeleOp extends CommandOpMode {
 
         gamepad_1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
                 new SequentialCommandGroup(
-                        new InstantCommand() {
-                            public void initialize() {
-                                previousIntakingState = robot.intake.getIntakingState();
-                            }
-                        },
+                        new InstantCommand(() -> previousIntakingState = robot.intake.getIntakingState()),
                         new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)
                 )
         ).whenReleased(
