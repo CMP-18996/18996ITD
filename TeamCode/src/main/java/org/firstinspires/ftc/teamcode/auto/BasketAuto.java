@@ -6,7 +6,9 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelDeadlineGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.common.autocmd.AutoDeposit;
@@ -84,7 +86,7 @@ public class BasketAuto extends CommandOpMode {
                                 .setReversed(true)
                                 .splineTo(new Vector2d(64,64), Math.toRadians(45))
                                 .build())),
-                        new AutoDeposit(robot.lift, robot.deposit)
+                        new AutoDeposit(robot.lift, robot.deposit),
 
                         //skedaddle
                         /*new InstantCommand(() -> robot.hang.hangMotor.setPower(1)),
@@ -93,6 +95,15 @@ public class BasketAuto extends CommandOpMode {
                                 .splineTo(new Vector2d(28,16), Math.toRadians(-90))
                                 .build())),
                         new InstantCommand(() -> robot.hang.hangMotor.setPower(0))*/
+
+                        //zero stuff
+                        new ParallelDeadlineGroup(
+                                new WaitCommand(500),
+                                new InstantCommand(() -> robot.extension.setPower(-0.5)),
+                                new InstantCommand(() -> robot.lift.liftMotor.setPower(-0.5))
+                        ),
+                        new InstantCommand(() -> robot.extension.setPower(0)),
+                        new InstantCommand(() -> robot.lift.liftMotor.setPower(0))
                 )
         );
     }
