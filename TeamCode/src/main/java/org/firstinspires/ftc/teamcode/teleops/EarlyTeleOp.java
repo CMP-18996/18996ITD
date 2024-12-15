@@ -259,7 +259,6 @@ public class EarlyTeleOp extends CommandOpMode {
                             new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
                             new WaitCommand(200),
                             new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
-                            new InstantLiftCommand(robot.lift, LiftSubsystem.HIGH_BASKET),
                             new WaitCommand(100),
                             new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.READY_TO_DEPOSIT),
                             new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
