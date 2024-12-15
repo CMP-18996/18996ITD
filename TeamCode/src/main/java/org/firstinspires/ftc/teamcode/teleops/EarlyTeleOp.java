@@ -116,6 +116,32 @@ public class EarlyTeleOp extends CommandOpMode {
                 )
         );
 
+        gamepad_2.getGamepadButton(GamepadKeys.Button.A).whenPressed(
+                () -> {
+                    robot.setTransferringState(true);
+                    schedule(
+                            new SequentialCommandGroup(
+                                    new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
+                                    new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
+                                    new WaitCommand(300),
+                                    new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
+                                    new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CONTRACTED),
+                                    new WaitCommand(500),
+                                    new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING),
+                                    new SingleColorSensorCommand(robot.intake, IntakeSubsystem.ColorState.NONE),
+                                    new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
+                                    new WaitCommand(200),
+                                    new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
+                                    new WaitCommand(100),
+                                    new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.INTERMEDIATE),
+                                    new WaitCommand(200),
+                                    new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.READY_TO_DEPOSIT),
+                                    new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
+                            ).whenFinished(() -> robot.setTransferringState(false))
+                    );
+                }
+        );
+
         // A is Cross
         gamepad_1.getGamepadButton(GamepadKeys.Button.A).whenPressed(
                 new ConditionalCommand(
