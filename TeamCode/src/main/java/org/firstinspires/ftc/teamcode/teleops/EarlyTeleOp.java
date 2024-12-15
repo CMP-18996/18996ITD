@@ -247,16 +247,43 @@ public class EarlyTeleOp extends CommandOpMode {
                 )
         );
 
-        /*
         gamepad_2.getGamepadButton(GamepadKeys.Button.X).whenPressed(
-                ; // LIFT GOES UP WHEN HELD
+                new ScheduleCommand(
+                        new InstantCommand() {
+                            public void initialize() {
+                                robot.hang.hangMotor.setPower(1);
+                            }
+                        }
+                )
         );
+        gamepad_2.getGamepadButton(GamepadKeys.Button.X).whenReleased(
+                new ScheduleCommand(
+                        new InstantCommand() {
+                            public void initialize() {
+                                robot.hang.hangMotor.setPower(0);
+                            }
+                        }
+                )
+        )
 
         gamepad_2.getGamepadButton(GamepadKeys.Button.B).whenPressed(
-                ; // LIFT GOES DOWN WHEN HELD
+                new ScheduleCommand(
+                        new InstantCommand() {
+                            public void initialize() {
+                                robot.hang.hangMotor.setPower(-1);
+                            }
+                        }
+                )
         );
-        
-         */
+        gamepad_2.getGamepadButton(GamepadKeys.Button.B).whenReleased(
+                new ScheduleCommand(
+                        new InstantCommand() {
+                            public void initialize() {
+                                robot.hang.hangMotor.setPower(0);
+                            }
+                        }
+                )
+        );
     }
 
     @Override
@@ -282,7 +309,9 @@ public class EarlyTeleOp extends CommandOpMode {
 
         // options and share
         if (gamepad2.options) {
-            CommandScheduler.getInstance().schedule();
+            CommandScheduler.getInstance().schedule(
+                    new
+            );
         }
         if (gamepad2.share) {
 
