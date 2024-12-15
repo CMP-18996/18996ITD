@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.teleops;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
@@ -30,6 +31,7 @@ import org.firstinspires.ftc.teamcode.common.commands.SingleColorSensorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.SpecimenArmCommand;
 import org.firstinspires.ftc.teamcode.common.commands.SpecimenGripperCommand;
 import org.firstinspires.ftc.teamcode.common.commands.TrapdoorCommand;
+import org.firstinspires.ftc.teamcode.common.commands.ZeroMotorCommand;
 import org.firstinspires.ftc.teamcode.common.robot.Drive;
 import org.firstinspires.ftc.teamcode.common.robot.OdometryHardware;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
@@ -78,6 +80,11 @@ public class EarlyTeleOp extends CommandOpMode {
         // TODO CAHNGE HTIS TO GLOBAL
         if (team.equals(Team.RED)) oppositeTeam = Team.BLUE;
         else oppositeTeam = Team.RED;
+
+        CommandScheduler.getInstance().schedule(
+                new ZeroMotorCommand(robot.extension, robot.lift)
+        );
+        waitForStart();
 
         // MAIN DRIVER
         // MAIN DRIVER
@@ -241,6 +248,14 @@ public class EarlyTeleOp extends CommandOpMode {
         if (robot.intake.getIntakeRotatorState().equals(IntakeSubsystem.IntakeRotatorState.PICKING_UP)) {
             double adjustment = -gamepad_1.getRightY() * .2;
             robot.intake.slightlyIncrementRotator(adjustment);
+        }
+
+        // options and share
+        if (gamepad2.options) {
+            CommandScheduler.getInstance().schedule();
+        }
+        if (gamepad2.share) {
+
         }
 
 

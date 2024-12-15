@@ -30,6 +30,7 @@ public class ExtensionSubsystem extends SubsystemBase {
         CONTRACTED(CONTRACTED_POS),
         FULLY_EXTENDED(FULL_EXTENSION_POS), 
         HALF_EXTENDED(HALF_EXTENDED_POS),
+        ENCODER_ZERO(0),
         CUSTOM(100);
         public int position;
         ExtensionState(int value) { position = value; }
@@ -65,7 +66,7 @@ public class ExtensionSubsystem extends SubsystemBase {
         return Math.abs(extensionMotor.getCurrentPosition() - extensionState.position);
     }
 
-    @Deprecated
+//    @Deprecated
     public void setExtensionMotorPower(double power) {
         extensionMotor.setPower(power);
     }

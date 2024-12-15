@@ -23,12 +23,14 @@ public class LiftSubsystem extends SubsystemBase {
 
     public static int INTEGRAL_ENABLE_POINT = 20;
 
+    public static int ENCODER_ZERO = 0;
     public static int GROUND = 50;
     public static int LOW_BASKET = 420;
     public static int HIGH_BASKET = 850;
 
     public static double MAX_UP_SPEED = 1.0;
     public static double MAX_DOWN_SPEED = 0.6;
+    private boolean toggleLift = true;
 
     // State
     public final DcMotorImpl liftMotor;
@@ -58,30 +60,32 @@ public class LiftSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        int error = currTarget - liftMotor.getCurrentPosition();
+        if (toggleLift) {
+            int error = currTarget - liftMotor.getCurrentPosition();
 
-        double P = Kp * error;
+            double P = Kp * error;
 
-        if (Math.abs(error) > INTEGRAL_ENABLE_POINT) {
-            integralSum = 0;
+            if (Math.abs(error) > INTEGRAL_ENABLE_POINT) {
+                integralSum = 0;
+            }
+            else {
+                integralSum = integralSum + (error * timer.seconds());
+            }
+
+            double I = Ki * integralSum;
+
+            double D = Kd * (error - lastError) / timer.seconds();
+
+            double F = Kf;
+
+            lastError = error;
+            timer.reset();
+
+            double power = Range.clip(P + I + D + F, -MAX_DOWN_SPEED, MAX_UP_SPEED);
+            telemetryPower = power;
+
+            liftMotor.setPower(power);
         }
-        else {
-            integralSum = integralSum + (error * timer.seconds());
-        }
-
-        double I = Ki * integralSum;
-
-        double D = Kd * (error - lastError) / timer.seconds();
-
-        double F = Kf;
-
-        lastError = error;
-        timer.reset();
-
-        double power = Range.clip(P + I + D + F, -MAX_DOWN_SPEED, MAX_UP_SPEED);
-        telemetryPower = power;
-
-        liftMotor.setPower(power);
     }
 
     public boolean motorWorking() {
@@ -95,6 +99,10 @@ public class LiftSubsystem extends SubsystemBase {
 
     public int getError() {
         return currTarget - liftMotor.getCurrentPosition();
+    }
+
+    public void toggleLift() {
+        toggleLift = !toggleLift;
     }
 
     public LiftSubsystem(HardwareMap hardwareMap) {
