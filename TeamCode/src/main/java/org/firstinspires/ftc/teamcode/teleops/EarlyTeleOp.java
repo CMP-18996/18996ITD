@@ -69,7 +69,7 @@ public class EarlyTeleOp extends CommandOpMode {
 
     @Override
     public void initialize() {
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        //telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         hangMotor = hardwareMap.get(DcMotorEx.class, HardwareMapNames.HANG_MOTOR_1);
         hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -343,7 +343,7 @@ public class EarlyTeleOp extends CommandOpMode {
 
         if (gamepad1.options) {
             odometryHardware.pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
-            telemetry.addLine("Reset Angle!");
+            //telemetry.addLine("Reset Angle!");
         }
 
         //odometryHardware.pinpoint.update(GoBildaPinpointDriver.readData.ONLY_UPDATE_HEADING);
@@ -352,7 +352,7 @@ public class EarlyTeleOp extends CommandOpMode {
         drive.robotCentricDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
 
 
-        telemetry.addData("Intake Rotator State:", robot.intake.getIntakeRotatorState());
+       /* telemetry.addData("Intake Rotator State:", robot.intake.getIntakeRotatorState());
         telemetry.addData("Intake Roller State:", robot.intake.getIntakingState());
         telemetry.addData("Trapdoor State:", robot.intake.getTrapdoorState());
         telemetry.addData("Detected Color:", detectedColor);

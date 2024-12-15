@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.teleops;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -18,6 +19,7 @@ import org.firstinspires.ftc.teamcode.common.robot.Drive;
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 import org.firstinspires.ftc.teamcode.common.robot.OdometryHardware;
 
+@Disabled
 @TeleOp(name = "Specimen Arm Test")
 @Config
 public class SpecimenTest extends LinearOpMode {
