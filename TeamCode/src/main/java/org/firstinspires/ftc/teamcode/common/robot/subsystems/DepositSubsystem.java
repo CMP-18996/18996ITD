@@ -13,6 +13,7 @@ public class DepositSubsystem extends SubsystemBase {
     public static double TRANSFER_ROTATOR_TRANSFER = 0.025;
     public static double TRANSFER_ROTATOR_DEPOSIT = 1.0;
     public static double TRANSFER_ROTATOR_READY = 0.5;
+    public static double TRANSFER_ROTATOR_INTERMEDIATE = .35;
 
     // State
     private final Servo transferRotatorServo;
@@ -20,6 +21,7 @@ public class DepositSubsystem extends SubsystemBase {
     public enum TransferRotatorState {
         TRANSFER_READY(TRANSFER_ROTATOR_TRANSFER),
         READY_TO_DEPOSIT(TRANSFER_ROTATOR_READY),
+        INTERMEDIATE(TRANSFER_ROTATOR_INTERMEDIATE),
         DEPOSITING(TRANSFER_ROTATOR_DEPOSIT);
 
         public double val;
