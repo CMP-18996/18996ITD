@@ -14,6 +14,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.common.autocmd.AutoDeposit;
 import org.firstinspires.ftc.teamcode.common.autocmd.AutoExtendRetractTransfer;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeRotatorCommand;
+import org.firstinspires.ftc.teamcode.common.commands.ZeroExtensionCommand;
+import org.firstinspires.ftc.teamcode.common.commands.ZeroMotorCommand;
 import org.firstinspires.ftc.teamcode.common.drive.SparkFunOTOSDrive;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.Team;
@@ -98,12 +100,9 @@ public class BasketAuto extends CommandOpMode {
 
                         //zero stuff
                         new ParallelDeadlineGroup(
-                                new WaitCommand(500),
-                                new InstantCommand(() -> robot.extension.setPower(-0.5)),
-                                new InstantCommand(() -> robot.lift.liftMotor.setPower(-0.5))
-                        ),
-                        new InstantCommand(() -> robot.extension.setPower(0)),
-                        new InstantCommand(() -> robot.lift.liftMotor.setPower(0))
+                                new WaitCommand(1000),
+                                new ZeroMotorCommand(robot.extension, robot.lift)
+                        )
                 )
         );
     }
