@@ -19,6 +19,7 @@ import com.acmerobotics.roadrunner.ftc.ManualFeedforwardTuner;
 import com.acmerobotics.roadrunner.ftc.MecanumMotorDirectionDebugger;
 import com.acmerobotics.roadrunner.ftc.OtosEncoder;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegistrar;
@@ -30,6 +31,7 @@ import org.firstinspires.ftc.teamcode.common.drive.SparkFunOTOSDrive;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+@Disabled
 
 public final class TuningOpModes {
     public static final Class<?> DRIVE_CLASS = SparkFunOTOSDrive.class;
