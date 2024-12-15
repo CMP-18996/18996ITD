@@ -27,16 +27,16 @@ public class Robot {
         this.team = null;
         for (Subsystems subsystem : subsystems) {
             if (subsystem == Subsystems.ALL) {
-                hang = new HangSubsystem(hardwareMap);
+                //hang = new HangSubsystem(hardwareMap);
                 extension = new ExtensionSubsystem(hardwareMap);
                 deposit = new DepositSubsystem(hardwareMap);
                 lift = new LiftSubsystem(hardwareMap);
                 intake = new IntakeSubsystem(hardwareMap);
                 specimen = new SpecimenSubsystem(hardwareMap);
             }
-            else if (subsystem == Subsystems.HANG) {
-                hang = new HangSubsystem(hardwareMap);
-            }
+            //else if (subsystem == Subsystems.HANG) {
+            //    hang = new HangSubsystem(hardwareMap);
+            //}
             else if (subsystem == Subsystems.EXTENSION) {
                 extension = new ExtensionSubsystem(hardwareMap);
             }
@@ -60,7 +60,7 @@ public class Robot {
         this.team = team;
         for (Subsystems subsystem : subsystems) {
             if (subsystem == Subsystems.ALL) {
-                hang = new HangSubsystem(hardwareMap);
+                //hang = new HangSubsystem(hardwareMap);
                 extension = new ExtensionSubsystem(hardwareMap);
                 deposit = new DepositSubsystem(hardwareMap);
                 lift = new LiftSubsystem(hardwareMap);
@@ -68,7 +68,7 @@ public class Robot {
                 specimen = new SpecimenSubsystem(hardwareMap);
             }
             else if (subsystem == Subsystems.HANG) {
-                hang = new HangSubsystem(hardwareMap);
+                //hang = new HangSubsystem(hardwareMap);
             }
             else if (subsystem == Subsystems.EXTENSION) {
                 extension = new ExtensionSubsystem(hardwareMap);

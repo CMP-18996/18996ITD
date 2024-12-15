@@ -15,6 +15,8 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -33,6 +35,7 @@ import org.firstinspires.ftc.teamcode.common.commands.SpecimenGripperCommand;
 import org.firstinspires.ftc.teamcode.common.commands.TrapdoorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.ZeroMotorCommand;
 import org.firstinspires.ftc.teamcode.common.robot.Drive;
+import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 import org.firstinspires.ftc.teamcode.common.robot.OdometryHardware;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.Team;
@@ -52,6 +55,7 @@ public class EarlyTeleOp extends CommandOpMode {
 
     private Robot robot;
     private GamepadEx gamepad_1;
+    private DcMotorEx hangMotor;
 
     private GamepadEx gamepad_2;
     private Drive drive;
@@ -66,6 +70,12 @@ public class EarlyTeleOp extends CommandOpMode {
     @Override
     public void initialize() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
+        hangMotor = hardwareMap.get(DcMotorEx.class, HardwareMapNames.HANG_MOTOR_1);
+        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hangMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        hangMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hangMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         drive = new Drive(hardwareMap);
         drive.setBreakMode(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -138,9 +148,12 @@ public class EarlyTeleOp extends CommandOpMode {
                                             new WaitCommand(0),
                                             () -> liftEnabled
                                     ),
+                                    /*
                                     new WaitCommand(100),
                                     new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.INTERMEDIATE),
                                     new WaitCommand(200),
+
+                                     */
                                     new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.READY_TO_DEPOSIT),
                                     new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
                             ).whenFinished(() -> robot.setTransferringState(false))
@@ -191,7 +204,7 @@ public class EarlyTeleOp extends CommandOpMode {
         ).whenReleased(
                 new IntakeCommand(robot.intake, previousIntakingState)
         );
-
+        /*
         gamepad_1.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
                 new ConditionalCommand(
                         new ScheduleCommand(
@@ -202,7 +215,7 @@ public class EarlyTeleOp extends CommandOpMode {
                         ),
                         () -> robot.hang.getState().equals(HangSubsystem.HangPosition.DOWN)
                 )
-        );
+        ); */
 
         gamepad_1.getGamepadButton(GamepadKeys.Button.X).whenPressed(
                 new ConditionalCommand(
@@ -253,43 +266,6 @@ public class EarlyTeleOp extends CommandOpMode {
                 )
         );
 
-        gamepad_2.getGamepadButton(GamepadKeys.Button.X).whenPressed(
-                new ScheduleCommand(
-                        new InstantCommand() {
-                            public void initialize() {
-                                robot.hang.hangMotor.setPower(1);
-                            }
-                        }
-                )
-        );
-        gamepad_2.getGamepadButton(GamepadKeys.Button.X).whenReleased(
-                new ScheduleCommand(
-                        new InstantCommand() {
-                            public void initialize() {
-                                robot.hang.hangMotor.setPower(0);
-                            }
-                        }
-                )
-        )
-
-        gamepad_2.getGamepadButton(GamepadKeys.Button.B).whenPressed(
-                new ScheduleCommand(
-                        new InstantCommand() {
-                            public void initialize() {
-                                robot.hang.hangMotor.setPower(-1);
-                            }
-                        }
-                )
-        );
-        gamepad_2.getGamepadButton(GamepadKeys.Button.B).whenReleased(
-                new ScheduleCommand(
-                        new InstantCommand() {
-                            public void initialize() {
-                                robot.hang.hangMotor.setPower(0);
-                            }
-                        }
-                )
-        );
     }
 
     @Override
@@ -313,17 +289,11 @@ public class EarlyTeleOp extends CommandOpMode {
             robot.intake.slightlyIncrementRotator(adjustment);
         }
 
-        // options and share
-        if (gamepad2.options) {
-            CommandScheduler.getInstance().schedule(
-                    new
-            );
-        }
-        if (gamepad2.share) {
 
-        }
-
-
+        if (gamepad2.circle) hangMotor.setPower(-1);
+        else if (gamepad2.square) hangMotor.setPower(1);
+        else hangMotor.setPower(0);
+        
         //Team detectedColor = robot.intake.updateColorState2();
         Team detectedColor = robot.intake.updateColorState2();
 
@@ -348,9 +318,12 @@ public class EarlyTeleOp extends CommandOpMode {
                                     new WaitCommand(0),
                                     () -> liftEnabled
                             ),
+                            /*
                             new WaitCommand(100),
                             new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.INTERMEDIATE),
                             new WaitCommand(200),
+
+                             */
                             new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.READY_TO_DEPOSIT),
                             new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
                     ).whenFinished(() -> robot.setTransferringState(false))
@@ -430,10 +403,6 @@ public class EarlyTeleOp extends CommandOpMode {
         telemetry.addLine("");
         telemetry.addData("Gripper State:", robot.specimen.getGripperPosition());
 
-        telemetry.addLine("");
-        telemetry.addData("Hang State:", robot.hang.getState());
-        telemetry.addData("Hang Target:", robot.hang.getTargetPosition());
-        telemetry.addData("Hang Position", robot.hang.getCurrentPosition());
 
         //Method WRIET FOR COLOR SESNRO)
 

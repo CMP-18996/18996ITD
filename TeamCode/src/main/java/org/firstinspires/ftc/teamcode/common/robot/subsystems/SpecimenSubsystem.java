@@ -20,12 +20,12 @@ public class SpecimenSubsystem extends SubsystemBase {
     // (motor encoder values)
     public static int ARM_CHAMBER_POSITION = 500;
     public static int ARM_WALL_POSITION = 58;
-    public static int ARM_REST_POSITION = 50;
+    public static int ARM_REST_POSITION = 58;
 
     // (servo values)
     public static double WRIST_CHAMBER_POSITION = 0.6852;
     public static double WRIST_WALL_POSITION = 0.05;
-    public static double WRIST_REST_POSITION = 0.6;
+    public static double WRIST_REST_POSITION = 0.05;
 
     public static double GRIPPER_OPEN = 0.5;
     public static double GRIPPER_CLOSED = 0.82;
