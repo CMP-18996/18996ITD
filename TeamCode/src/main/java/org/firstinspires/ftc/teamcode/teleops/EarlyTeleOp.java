@@ -247,7 +247,7 @@ public class EarlyTeleOp extends CommandOpMode {
         //Team detectedColor = robot.intake.updateColorState2();
         Team detectedColor = robot.intake.updateColorState2();
 
-        if ((detectedColor.equals(team) || detectedColor.equals(Team.YELLOW)) && !robot.isTransferring() && robot.intake.getIntakeRotatorState() == IntakeSubsystem.IntakeRotatorState.PICKING_UP) {
+        if (((detectedColor.equals(team) || detectedColor.equals(Team.YELLOW)) && !robot.isTransferring() && robot.intake.getIntakeRotatorState() == IntakeSubsystem.IntakeRotatorState.PICKING_UP) || gamepad2.x) {
         //if (detectedColor.equals(team) && !robot.isTransferring() && robot.intake.getIntakeRotatorState() == IntakeSubsystem.IntakeRotatorState.PICKING_UP) {
             robot.setTransferringState(true);
             schedule(
