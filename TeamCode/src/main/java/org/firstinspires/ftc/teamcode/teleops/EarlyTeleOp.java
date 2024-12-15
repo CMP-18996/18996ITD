@@ -214,6 +214,17 @@ public class EarlyTeleOp extends CommandOpMode {
                         )
                 )
         );
+
+        /*
+        gamepad_2.getGamepadButton(GamepadKeys.Button.X).whenPressed(
+                ; // LIFT GOES UP WHEN HELD
+        );
+
+        gamepad_2.getGamepadButton(GamepadKeys.Button.B).whenPressed(
+                ; // LIFT GOES DOWN WHEN HELD
+        );
+        
+         */
     }
 
     @Override
@@ -226,8 +237,6 @@ public class EarlyTeleOp extends CommandOpMode {
         if (gamepad_2.getRightY() != 0) {
             robot.specimen.manualAdjustWrist(Math.cbrt(gamepad_2.getRightY() / 50));
         }
-
-        robot.hang.hangMotor.setPower(gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
 
         if (robot.extension.getState().equals(ExtensionSubsystem.ExtensionState.CUSTOM)){
             double rawExtensionPower = gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) - gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
@@ -243,7 +252,7 @@ public class EarlyTeleOp extends CommandOpMode {
         //Team detectedColor = robot.intake.updateColorState2();
         Team detectedColor = robot.intake.updateColorState2();
 
-        if (((detectedColor.equals(team) || detectedColor.equals(Team.YELLOW)) && !robot.isTransferring() && robot.intake.getIntakeRotatorState() == IntakeSubsystem.IntakeRotatorState.PICKING_UP) || gamepad2.x) {
+        if (((detectedColor.equals(team) || detectedColor.equals(Team.YELLOW)) && !robot.isTransferring() && robot.intake.getIntakeRotatorState() == IntakeSubsystem.IntakeRotatorState.PICKING_UP)) {
         //if (detectedColor.equals(team) && !robot.isTransferring() && robot.intake.getIntakeRotatorState() == IntakeSubsystem.IntakeRotatorState.PICKING_UP) {
             robot.setTransferringState(true);
             schedule(
