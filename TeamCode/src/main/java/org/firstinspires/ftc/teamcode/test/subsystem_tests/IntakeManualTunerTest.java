@@ -9,12 +9,15 @@ import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeRotatorManualCommand;
+
+@Disabled
 @TeleOp(name = "Intake manual tuner")
 public class IntakeManualTunerTest extends CommandOpMode {
     Subsystems subsystems = Subsystems.INTAKE;

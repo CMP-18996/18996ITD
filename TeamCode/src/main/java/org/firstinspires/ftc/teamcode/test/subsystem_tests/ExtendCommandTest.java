@@ -4,6 +4,7 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.common.commands.DepositRotationCommand;
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
 import java.security.cert.Extension;
 
+@Disabled
 @TeleOp(name = "Extend Command Test")
 public class ExtendCommandTest extends CommandOpMode {
     Subsystems subsystems = Subsystems.EXTENSION;

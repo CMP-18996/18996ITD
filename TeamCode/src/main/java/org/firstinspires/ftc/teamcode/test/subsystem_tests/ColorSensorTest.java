@@ -5,6 +5,7 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 
@@ -14,6 +15,7 @@ import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
+@Disabled
 @Config
 @TeleOp(name = "Color Sensor")
 public class ColorSensorTest extends CommandOpMode {

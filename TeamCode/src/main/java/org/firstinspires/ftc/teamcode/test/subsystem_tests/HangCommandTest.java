@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.test.subsystem_tests;
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.common.commands.HangCommand;
@@ -9,6 +10,7 @@ import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.HangSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
+@Disabled
 @TeleOp(name="Hang Test")
 public class HangCommandTest extends CommandOpMode {
     Subsystems subsystems = Subsystems.HANG;
