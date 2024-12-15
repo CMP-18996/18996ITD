@@ -10,6 +10,7 @@ import com.arcrobotics.ftclib.command.ParallelDeadlineGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.common.autocmd.AutoExtendRetractTransfer;
 import org.firstinspires.ftc.teamcode.common.commands.DepositRotationCommand;
@@ -25,6 +26,7 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
+@Disabled
 @Autonomous(name="auto testing")
 public class testauto extends CommandOpMode {
     Pose2d beginPose;
