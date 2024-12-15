@@ -28,7 +28,9 @@ public class BucketIntakeTest extends CommandOpMode {
                 new WaitCommand(3000),
                 new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
                 new WaitCommand(3000),
-                new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.ACTIVE)
+                new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.ACTIVE),
+                new WaitCommand(3000),
+                new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED)
             )
         );
     }

@@ -42,6 +42,7 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
+@Disabled
 @TeleOp(name = "HAGGGGG")
 @Disabled
 public class HangTestTeleOp extends LinearOpMode {
