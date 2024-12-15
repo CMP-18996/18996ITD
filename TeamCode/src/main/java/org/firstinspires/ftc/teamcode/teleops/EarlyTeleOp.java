@@ -152,11 +152,7 @@ public class EarlyTeleOp extends CommandOpMode {
 
         gamepad_1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
                 new SequentialCommandGroup(
-                        new InstantCommand() {
-                            public void initialize() {
-                                previousIntakingState = robot.intake.getIntakingState();
-                            }
-                        },
+                        new InstantCommand(() -> previousIntakingState = robot.intake.getIntakingState()),
                         new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)
                 )
         ).whenReleased(
@@ -225,6 +221,17 @@ public class EarlyTeleOp extends CommandOpMode {
                         )
                 )
         );
+
+        /*
+        gamepad_2.getGamepadButton(GamepadKeys.Button.X).whenPressed(
+                ; // LIFT GOES UP WHEN HELD
+        );
+
+        gamepad_2.getGamepadButton(GamepadKeys.Button.B).whenPressed(
+                ; // LIFT GOES DOWN WHEN HELD
+        );
+        
+         */
     }
 
     @Override
@@ -237,8 +244,6 @@ public class EarlyTeleOp extends CommandOpMode {
         if (gamepad_2.getRightY() != 0) {
             robot.specimen.manualAdjustWrist(Math.cbrt(gamepad_2.getRightY() / 50));
         }
-
-        robot.hang.hangMotor.setPower(gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
 
         if (robot.extension.getState().equals(ExtensionSubsystem.ExtensionState.CUSTOM)){
             double rawExtensionPower = gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) - gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
@@ -262,7 +267,7 @@ public class EarlyTeleOp extends CommandOpMode {
         //Team detectedColor = robot.intake.updateColorState2();
         Team detectedColor = robot.intake.updateColorState2();
 
-        if ((detectedColor.equals(team) || detectedColor.equals(Team.YELLOW)) && !robot.isTransferring() && robot.intake.getIntakeRotatorState() == IntakeSubsystem.IntakeRotatorState.PICKING_UP) {
+        if (((detectedColor.equals(team) || detectedColor.equals(Team.YELLOW)) && !robot.isTransferring() && robot.intake.getIntakeRotatorState() == IntakeSubsystem.IntakeRotatorState.PICKING_UP)) {
         //if (detectedColor.equals(team) && !robot.isTransferring() && robot.intake.getIntakeRotatorState() == IntakeSubsystem.IntakeRotatorState.PICKING_UP) {
             robot.setTransferringState(true);
             schedule(
@@ -270,15 +275,14 @@ public class EarlyTeleOp extends CommandOpMode {
                             new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
                             new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
                             new WaitCommand(300),
-                            new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CONTRACTED),
                             new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
+                            new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CONTRACTED),
                             new WaitCommand(500),
                             new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING),
                             new SingleColorSensorCommand(robot.intake, IntakeSubsystem.ColorState.NONE),
                             new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
                             new WaitCommand(200),
                             new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
-                            new InstantLiftCommand(robot.lift, LiftSubsystem.HIGH_BASKET),
                             new WaitCommand(100),
                             new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.READY_TO_DEPOSIT),
                             new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)

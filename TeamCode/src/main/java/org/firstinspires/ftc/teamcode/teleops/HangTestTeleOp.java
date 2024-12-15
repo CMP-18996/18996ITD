@@ -14,6 +14,7 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -40,9 +41,8 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
+@TeleOp(name = "HAGGGGG")
 public class HangTestTeleOp extends LinearOpMode {
-    private Robot robot;
-    private Drive drive;
     @Override
     public void runOpMode() {
 
