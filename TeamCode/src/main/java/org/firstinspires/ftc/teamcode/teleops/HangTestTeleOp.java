@@ -41,8 +41,6 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
 public class HangTestTeleOp extends LinearOpMode {
-    private Robot robot;
-    private Drive drive;
     @Override
     public void runOpMode() {
 

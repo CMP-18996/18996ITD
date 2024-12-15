@@ -59,8 +59,8 @@ public class SpecimenSubsystem extends SubsystemBase {
         wristServo = hardwareMap.get(Servo.class, HardwareMapNames.WRIST_SERVO);
         gripperServo = hardwareMap.get(Servo.class, HardwareMapNames.GRIPPER_SERVO);
 
-        specimenPosition = SpecimenPosition.WALL;
-        gripperPosition = GripperPosition.OPEN;
+        specimenPosition = SpecimenPosition.REST;
+        gripperPosition = GripperPosition.CLOSED;
 
         armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -143,6 +143,10 @@ public class SpecimenSubsystem extends SubsystemBase {
         timer.reset();
 
         power = Range.clip(P + D + I + G, -MAX_EXTENSION_SPEED, MAX_RETURN_SPEED);
+
+        if (specimenPosition.equals(SpecimenPosition.REST)) {
+            power = 0;
+        }
 
         armMotor.setPower(power);
         wristServo.setPosition(wristTarget);
