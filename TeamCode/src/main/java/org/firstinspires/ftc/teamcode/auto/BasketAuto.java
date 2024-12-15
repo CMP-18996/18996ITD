@@ -6,33 +6,20 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
-import com.arcrobotics.ftclib.command.ParallelCommandGroup;
-import com.arcrobotics.ftclib.command.ParallelDeadlineGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
-import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.common.autocmd.AutoDeposit;
 import org.firstinspires.ftc.teamcode.common.autocmd.AutoExtendRetractTransfer;
-import org.firstinspires.ftc.teamcode.common.commands.DepositRotationCommand;
-import org.firstinspires.ftc.teamcode.common.commands.ExtendAndBeginIntakeCommand;
-import org.firstinspires.ftc.teamcode.common.commands.ExtensionMotorPowerCommand;
-import org.firstinspires.ftc.teamcode.common.commands.ExtensionPositionCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeRotatorCommand;
-import org.firstinspires.ftc.teamcode.common.commands.LiftSetPosition;
-import org.firstinspires.ftc.teamcode.common.commands.RetractAndTransferCommand;
 import org.firstinspires.ftc.teamcode.common.drive.SparkFunOTOSDrive;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.Team;
-import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
 @Autonomous(name="basket auto")
-public class Auto extends CommandOpMode {
+public class BasketAuto extends CommandOpMode {
     Pose2d beginPose;
     SparkFunOTOSDrive drive;
     Robot robot;
@@ -58,7 +45,7 @@ public class Auto extends CommandOpMode {
                         new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
                         new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
                                 .setReversed(false)
-                                .splineTo(new Vector2d(59,49), Math.toRadians(-110))
+                                .splineTo(new Vector2d(58.75,49), Math.toRadians(-110))
                                 .build())),
                         new AutoExtendRetractTransfer(robot.extension, robot.intake, robot.lift, robot.deposit),
 
@@ -73,7 +60,7 @@ public class Auto extends CommandOpMode {
                         new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
                         new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
                                 .setReversed(false)
-                                .splineTo(new Vector2d(57.75,47.5), Math.toRadians(-70))
+                                .splineTo(new Vector2d(57.5,47.5), Math.toRadians(-70))
                                 .build())),
                         new AutoExtendRetractTransfer(robot.extension, robot.intake, robot.lift, robot.deposit),
 
@@ -100,10 +87,12 @@ public class Auto extends CommandOpMode {
                         new AutoDeposit(robot.lift, robot.deposit)
 
                         //skedaddle
-                        /*new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
+                        /*new InstantCommand(() -> robot.hang.hangMotor.setPower(1)),
+                        new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
                                 .setReversed(false)
-                                .splineTo(new Vector2d(28,16), Math.toRadians(180))
-                                .build()))*/
+                                .splineTo(new Vector2d(28,16), Math.toRadians(-90))
+                                .build())),
+                        new InstantCommand(() -> robot.hang.hangMotor.setPower(0))*/
                 )
         );
     }
