@@ -128,7 +128,7 @@ public class EarlyTeleOp extends CommandOpMode {
                                     new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CONTRACTED),
                                     new WaitCommand(500),
                                     new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING),
-                                    new SingleColorSensorCommand(robot.intake, IntakeSubsystem.ColorState.NONE),
+                                    new WaitCommand(500),
                                     new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
                                     new WaitCommand(200),
                                     new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
