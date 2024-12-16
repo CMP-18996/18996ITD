@@ -37,7 +37,7 @@ public class testauto extends CommandOpMode {
         CommandScheduler.getInstance().reset();
         beginPose = new Pose2d(43, 68, Math.toRadians(-180));
         drive = new SparkFunOTOSDrive(hardwareMap, beginPose);
-        robot = new Robot(hardwareMap, Team.BLUE, Subsystems.EXTENSION, Subsystems.INTAKE, Subsystems.LIFT, Subsystems.DEPOSIT);
+        robot = new Robot(hardwareMap, Team.BLUE, true, Subsystems.EXTENSION, Subsystems.INTAKE, Subsystems.LIFT, Subsystems.DEPOSIT);
 
         super.schedule(
                 new SequentialCommandGroup(

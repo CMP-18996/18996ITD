@@ -116,4 +116,16 @@ public class LiftSubsystem extends SubsystemBase {
 
         currTarget = LiftSubsystem.GROUND;
     }
+
+    public LiftSubsystem(HardwareMap hardwareMap, boolean TeleOp) {
+        liftMotor = hardwareMap.get(DcMotorImpl.class, HardwareMapNames.LIFT_MOTOR);
+
+        liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        currTarget = LiftSubsystem.GROUND;
+    }
 }

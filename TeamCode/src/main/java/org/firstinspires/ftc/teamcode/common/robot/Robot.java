@@ -88,6 +88,39 @@ public class Robot {
         }
     }
 
+    public Robot(HardwareMap hardwareMap, Team team, boolean TeleOp, Subsystems... subsystems) {
+        this.hardwareMap = hardwareMap;
+        this.team = team;
+        for (Subsystems subsystem : subsystems) {
+            if (subsystem == Subsystems.ALL) {
+                //hang = new HangSubsystem(hardwareMap);
+                extension = new ExtensionSubsystem(hardwareMap, TeleOp);
+                deposit = new DepositSubsystem(hardwareMap);
+                lift = new LiftSubsystem(hardwareMap, TeleOp);
+                intake = new IntakeSubsystem(hardwareMap);
+                specimen = new SpecimenSubsystem(hardwareMap);
+            }
+            else if (subsystem == Subsystems.HANG) {
+                //hang = new HangSubsystem(hardwareMap);
+            }
+            else if (subsystem == Subsystems.EXTENSION) {
+                extension = new ExtensionSubsystem(hardwareMap, TeleOp);
+            }
+            else if (subsystem == Subsystems.DEPOSIT) {
+                deposit = new DepositSubsystem(hardwareMap);
+            }
+            else if (subsystem == Subsystems.LIFT) {
+                lift = new LiftSubsystem(hardwareMap, TeleOp);
+            }
+            else if (subsystem == Subsystems.SPECIMEN) {
+                specimen = new SpecimenSubsystem(hardwareMap);
+            }
+            else if (subsystem == Subsystems.INTAKE) {
+                intake = new IntakeSubsystem(hardwareMap);
+            }
+        }
+    }
+
     public void setTransferringState(boolean state) {
         transferring = state;
     }

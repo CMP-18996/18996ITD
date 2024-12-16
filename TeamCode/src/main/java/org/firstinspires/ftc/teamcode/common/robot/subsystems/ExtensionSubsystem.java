@@ -20,7 +20,7 @@ public class ExtensionSubsystem extends SubsystemBase {
     public static int FULL_EXTENSION_POS = 500;
     public static int HALF_EXTENDED_POS = 250;
     public static double P = .007;
-    public static double F = .20;
+    public static double F = .35;
     private int targetPosition = 0;
     public static double maxPower = .8;
 
@@ -99,6 +99,16 @@ public class ExtensionSubsystem extends SubsystemBase {
         extensionMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.setState(ExtensionState.CUSTOM);
     }
+
+    public ExtensionSubsystem(HardwareMap hardwareMap, boolean TeleOp) {
+        extensionMotor = hardwareMap.get(DcMotorImpl.class, HardwareMapNames.EXTENSION_MOTOR);
+        extensionMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        extensionMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        extensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        extensionMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.setState(ExtensionState.CUSTOM);
+    }
+
     public void setMaxPower(double m) {
         maxPower = m;
     }

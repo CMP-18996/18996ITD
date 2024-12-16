@@ -10,6 +10,7 @@ import com.arcrobotics.ftclib.command.ParallelDeadlineGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.common.autocmd.AutoExtend;
 import org.firstinspires.ftc.teamcode.common.commands.DepositRotationCommand;
@@ -28,6 +29,7 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
+@Disabled
 @Autonomous(name="specimen auto")
 public class SpecimenAuto extends CommandOpMode {
     Pose2d beginPose;
@@ -38,7 +40,7 @@ public class SpecimenAuto extends CommandOpMode {
         CommandScheduler.getInstance().reset();
         beginPose = new Pose2d(-12, 66, Math.toRadians(-90));
         drive = new SparkFunOTOSDrive(hardwareMap, beginPose);
-        robot = new Robot(hardwareMap, Team.BLUE, Subsystems.EXTENSION, Subsystems.INTAKE, Subsystems.SPECIMEN, Subsystems.LIFT);
+        robot = new Robot(hardwareMap, Team.BLUE, true, Subsystems.EXTENSION, Subsystems.INTAKE, Subsystems.SPECIMEN, Subsystems.LIFT);
 
         super.schedule(
                 new SequentialCommandGroup(
