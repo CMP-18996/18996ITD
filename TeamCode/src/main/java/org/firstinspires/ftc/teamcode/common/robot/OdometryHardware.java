@@ -29,10 +29,8 @@ import org.firstinspires.ftc.teamcode.common.odo.GoBildaPinpointDriver;
  */
 @Config
 public class OdometryHardware {
-
     public final SparkFunOTOS otos;
     public final GoBildaPinpointDriver pinpoint;
-    public Limelight3A limelight;
 
     private static double OTOS_LINEAR_SCALAR = 1.0;
     private static double OTOS_ANGULAR_SCALAR = 1.0;
@@ -44,16 +42,9 @@ public class OdometryHardware {
     private static double PINPOINT_OFFSET_X = 0;
     private static double PINPOINT_OFFSET_Y = 0;
 
-    private static int LIMELIGHT_POLL_RATE = 100;
-
-    private static double START_POS_X = 0;
-    private static double START_POS_Y = 0;
-    private static double START_POS_H = 0;
-
-    /* This Pose represents 3 different estimated poses:
+    /* This Pose represents 2 different estimated poses:
         SparkFun Optical Pose
         goBilda Pinpoint Pose
-        Limelight Pose
 
         All are estimated by (and onboard) their respective external devices.
         Ideally, we do no actual localization work ourselves, only optimize
@@ -62,15 +53,13 @@ public class OdometryHardware {
     public static class MultiPose2D {
         public Pose2D otosPos;
         public Pose2D pinpointPos;
-        public Pose2D limelightPos;
 
         public MultiPose2D() {
         }
 
-        public MultiPose2D(Pose2D otosPos, Pose2D pinpointPos, Pose2D limelightPos) {
+        public MultiPose2D(Pose2D otosPos, Pose2D pinpointPos) {
             this.otosPos = otosPos;
             this.pinpointPos = pinpointPos;
-            this.limelightPos = limelightPos;
         }
 
         /*
@@ -88,19 +77,11 @@ public class OdometryHardware {
 
         this.pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,HardwareMapNames.PINPOINT);
 
-        this.limelight = hardwareMap.get(Limelight3A.class, HardwareMapNames.LIMELIGHT);
-
         configureOtos();
 
         configurePinpoint();
 
-        configureLimelight();
-
         calibrateAll();
-
-        limelight.start();
-
-        setPosition(START_POS_X, START_POS_Y, START_POS_H);
     }
 
     public void setPosition(Pose2D pos) {
@@ -132,38 +113,14 @@ public class OdometryHardware {
     }
 
     // TODO: add config options for only getting some data, null otherwise
-    public MultiPose2D getPosData(boolean getOtos, boolean getPinpoint, boolean getLimelight) {
+    public MultiPose2D getPosData(boolean getOtos, boolean getPinpoint) {
 
         Pose2D otosPos = (getOtos) ? SparkFunPoseToNormalPose(otos.getPosition()) : null;
 
         pinpoint.update();
         Pose2D pinpointPos = pinpoint.getPosition();
 
-        /* TODO: This works, but should be changed in the future
-        *   The problem is that determining the limelight orientation data
-        *   needs to be done in OdometryFusion, but getAllPosData doesn't have access */
-        limelight.updateRobotOrientation(pinpointPos.getHeading(AngleUnit.DEGREES)); // This may need to be radians, not sure
-        LLResult llResult = limelight.getLatestResult();
-
-        Pose3D limelightPos3D;
-        Pose2D limelightPos = null;
-        if (llResult != null) {
-            if (llResult.isValid()) {
-                limelightPos3D = llResult.getBotpose_MT2();
-                limelightPos = new Pose2D(
-                        DistanceUnit.INCH,
-                        limelightPos3D.getPosition().x,
-                        limelightPos3D.getPosition().y,
-                        AngleUnit.DEGREES,
-                        limelightPos3D.getOrientation().getYaw());
-            }
-        }
-
-        return new MultiPose2D(otosPos, pinpointPos, limelightPos);
-    }
-
-    private double getLimelightOrientation() {
-        return 0;
+        return new MultiPose2D(otosPos, pinpointPos);
     }
 
     public MultiPose2D getAllVelData() {
@@ -172,7 +129,7 @@ public class OdometryHardware {
         pinpoint.update();
         Pose2D pinpointPos = pinpoint.getVelocity();
 
-        return new MultiPose2D(otosPos, pinpointPos, null);
+        return new MultiPose2D(otosPos, pinpointPos);
     }
 
     public MultiPose2D getAllAccData() {
@@ -184,7 +141,7 @@ public class OdometryHardware {
         Pose2D pinpointPos = pinpoint.get();
         */
 
-        return new MultiPose2D(otosPos, null, null);
+        return new MultiPose2D(otosPos, null);
     }
 
     private void configureOtos()
@@ -254,12 +211,6 @@ public class OdometryHardware {
         you move the robot to the left.
          */
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
-    }
-
-    private void configureLimelight() {
-        limelight.pipelineSwitch(0);
-
-        limelight.setPollRateHz(LIMELIGHT_POLL_RATE);
     }
 
     public static Pose2D SparkFunPoseToNormalPose(SparkFunOTOS.Pose2D pos) {

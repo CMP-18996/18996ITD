@@ -44,7 +44,6 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
 @Disabled
 @TeleOp(name = "HAGGGGG")
-@Disabled
 public class HangTestTeleOp extends LinearOpMode {
     @Override
     public void runOpMode() {
