@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.common.autocmd.AutoExtend;
+import org.firstinspires.ftc.teamcode.common.autocmd.RRWrapper;
 import org.firstinspires.ftc.teamcode.common.commands.DepositRotationCommand;
 import org.firstinspires.ftc.teamcode.common.commands.ExtendAndBeginIntakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeCommand;
@@ -20,6 +21,7 @@ import org.firstinspires.ftc.teamcode.common.commands.IntakeRotatorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.LiftSetPosition;
 import org.firstinspires.ftc.teamcode.common.commands.SpecimenArmCommand;
 import org.firstinspires.ftc.teamcode.common.commands.SpecimenGripperCommand;
+import org.firstinspires.ftc.teamcode.common.commands.ZeroMotorCommand;
 import org.firstinspires.ftc.teamcode.common.drive.SparkFunOTOSDrive;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.Team;
@@ -29,7 +31,6 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
-@Disabled
 @Autonomous(name="specimen auto")
 public class SpecimenAuto extends CommandOpMode {
     Pose2d beginPose;
@@ -38,32 +39,36 @@ public class SpecimenAuto extends CommandOpMode {
     @Override
     public void initialize() {
         CommandScheduler.getInstance().reset();
-        beginPose = new Pose2d(-12, 66, Math.toRadians(-90));
+        beginPose = new Pose2d(-12, 64, Math.toRadians(-90));
         drive = new SparkFunOTOSDrive(hardwareMap, beginPose);
-        robot = new Robot(hardwareMap, Team.BLUE, true, Subsystems.EXTENSION, Subsystems.INTAKE, Subsystems.SPECIMEN, Subsystems.LIFT);
+        robot = new Robot(hardwareMap, Team.BLUE, false, Subsystems.EXTENSION, Subsystems.INTAKE, Subsystems.SPECIMEN, Subsystems.LIFT);
 
         super.schedule(
                 new SequentialCommandGroup(
                         //drop preloaded specimen
+                        new InstantCommand(() -> robot.extension.setMaxPower(0.6)),
+                        new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.CHAMBER),
+                        new LiftSetPosition(robot.lift, LiftSubsystem.GROUND),
                         new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.CLOSED),
                         new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
-                        new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.CHAMBER),
-                        new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
-                                .splineTo(new Vector2d(-12, 36), Math.toRadians(-90))
-                                .build())),
-                        new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.OPEN),
+                        new WaitCommand(50),
+                        new RRWrapper(drive, drive.actionBuilder(drive.pose)
+                                .splineTo(new Vector2d(-12, 38), Math.toRadians(-90))
+                                .setReversed(true)
+                                .afterDisp(2, () -> super.schedule(new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.OPEN), new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.WALL)))
+                                .splineToLinearHeading(new Pose2d(-40, 46, Math.toRadians(240)), Math.toRadians(70))
+                                .build()),
 
                         //move blocks over
-                        new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
-                                .setReversed(true)
-                                .splineToLinearHeading(new Pose2d(-36, 48, Math.toRadians(240)), Math.toRadians(70))
-                                .build())),
                         new AutoExtend(robot.extension, robot.intake, robot.lift),
-                        new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
-                                .turn(Math.toRadians(-90))
-                                .build())),
-                        new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING),
                         new WaitCommand(500),
+                        new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
+                        new RRWrapper(drive, drive.actionBuilder(drive.pose)
+                                .turn(Math.toRadians(-110))
+                                .build()),
+                        new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING),
+                        new WaitCommand(500)
+                        /*
                         new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
                                 .setReversed(false)
                                 .splineToLinearHeading(new Pose2d(-48, 48, Math.toRadians(240)), Math.toRadians(240))
@@ -88,6 +93,8 @@ public class SpecimenAuto extends CommandOpMode {
                         new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
                                 .turn(Math.toRadians(179))
                                 .build()))
+
+                         */
                 )
         );
     }

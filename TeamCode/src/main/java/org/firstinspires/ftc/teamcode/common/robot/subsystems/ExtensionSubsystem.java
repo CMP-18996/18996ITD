@@ -18,7 +18,7 @@ public class ExtensionSubsystem extends SubsystemBase {
     ExtensionState extensionState;
     public static int CONTRACTED_POS = 0;
     public static int FULL_EXTENSION_POS = 500;
-    public static int HALF_EXTENDED_POS = 250;
+    public static int HALF_EXTENDED_POS = 200;
     public static double P = .007;
     public static double F = .35;
     private int targetPosition = 0;
