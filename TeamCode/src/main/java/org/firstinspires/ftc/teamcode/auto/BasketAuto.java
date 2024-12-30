@@ -32,7 +32,7 @@ public class BasketAuto extends CommandOpMode {
         CommandScheduler.getInstance().reset();
         beginPose = new Pose2d(43, 68, Math.toRadians(-180));
         drive = new SparkFunOTOSDrive(hardwareMap, beginPose);
-        robot = new Robot(hardwareMap, Team.BLUE, Subsystems.EXTENSION, Subsystems.INTAKE, Subsystems.LIFT, Subsystems.DEPOSIT);
+        robot = new Robot(hardwareMap, Team.BLUE, false, Subsystems.EXTENSION, Subsystems.INTAKE, Subsystems.LIFT, Subsystems.DEPOSIT);
 
         super.schedule(
                 new InstantCommand(() -> robot.extension.setMaxPower(0.6)),
@@ -64,7 +64,7 @@ public class BasketAuto extends CommandOpMode {
                         new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
                         new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
                                 .setReversed(false)
-                                .splineTo(new Vector2d(57.5,47.5), Math.toRadians(-70))
+                                .splineTo(new Vector2d(57.5,48), Math.toRadians(-70))
                                 .build())),
                         new AutoExtendRetractTransfer(robot.extension, robot.intake, robot.lift, robot.deposit),
 
@@ -79,7 +79,7 @@ public class BasketAuto extends CommandOpMode {
                         new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
                         new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
                                 .setReversed(false)
-                                .splineTo(new Vector2d(66.5,50), Math.toRadians(-70))
+                                .splineTo(new Vector2d(65.5,49), Math.toRadians(-65))
                                 .build())),
                         new AutoExtendRetractTransfer(robot.extension, robot.intake, robot.lift, robot.deposit),
 
@@ -88,7 +88,7 @@ public class BasketAuto extends CommandOpMode {
                                 .setReversed(true)
                                 .splineTo(new Vector2d(64,64), Math.toRadians(45))
                                 .build())),
-                        new AutoDeposit(robot.lift, robot.deposit),
+                        new AutoDeposit(robot.lift, robot.deposit)
 
                         //skedaddle
                         /*new InstantCommand(() -> robot.hang.hangMotor.setPower(1)),
@@ -99,10 +99,6 @@ public class BasketAuto extends CommandOpMode {
                         new InstantCommand(() -> robot.hang.hangMotor.setPower(0))*/
 
                         //zero stuff
-                        new ParallelDeadlineGroup(
-                                new WaitCommand(1000),
-                                new ZeroMotorCommand(robot.extension, robot.lift)
-                        )
                 )
         );
     }
