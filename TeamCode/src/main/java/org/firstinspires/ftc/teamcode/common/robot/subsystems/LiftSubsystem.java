@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
@@ -115,5 +116,6 @@ public class LiftSubsystem extends SubsystemBase {
         liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         currTarget = LiftSubsystem.GROUND;
+
     }
 }
