@@ -55,7 +55,7 @@ public class DepositSubsystem extends SubsystemBase {
         transferRotatorServo = hardwareMap.get(Servo.class, HardwareMapNames.BUCKET_SERVO);
         transferRotatorServo.setDirection(Servo.Direction.FORWARD);
         this.updateTransferRotatorState(TransferRotatorState.TRANSFER_READY);
-        transferClawServo = hardwareMap.get(Servo.class, HardwareMapNames.TRANSFER_CLAW_SERVO);
+        transferClawServo = hardwareMap.get(Servo.class, HardwareMapNames.CLAW_SERVO);
         transferClawServo.setDirection(Servo.Direction.FORWARD);
         this.updateTransferRotatorState(TransferRotatorState.TRANSFER_READY);
     }

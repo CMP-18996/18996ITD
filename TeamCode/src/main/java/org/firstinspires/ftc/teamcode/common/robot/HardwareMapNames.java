@@ -50,6 +50,7 @@ public class HardwareMapNames {
 
     // Deposit
     public static String BUCKET_SERVO = "bucket";
+    public static String CLAW_SERVO = "claw";
 
     // Specimen
     public static String SPECIMEN_SERVO = "specimen";
