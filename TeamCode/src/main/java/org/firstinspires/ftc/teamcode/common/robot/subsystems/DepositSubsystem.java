@@ -30,7 +30,7 @@ public class DepositSubsystem extends SubsystemBase {
         public double val;
         TransferRotatorState(double inVal) { val = inVal; }
     }
-    public enum ClawState() {
+    public enum ClawState {
         REST(0.0),
         CLOSED(0.25),
         OPEN(0.50);
