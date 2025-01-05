@@ -23,15 +23,18 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.common.commands.ColorSensorStateCommand;
 import org.firstinspires.ftc.teamcode.common.commands.DepositRotationCommand;
+import org.firstinspires.ftc.teamcode.common.commands.ExtendAndBeginIntakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.ExtendCommand;
 import org.firstinspires.ftc.teamcode.common.commands.HangCommand;
 import org.firstinspires.ftc.teamcode.common.commands.InstantLiftCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeRotatorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.LiftSetPosition;
+import org.firstinspires.ftc.teamcode.common.commands.RetractAndTransferClawsCommand;
 import org.firstinspires.ftc.teamcode.common.commands.SingleColorSensorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.SpecimenArmCommand;
 import org.firstinspires.ftc.teamcode.common.commands.SpecimenGripperCommand;
+import org.firstinspires.ftc.teamcode.common.commands.TransferClawCommand;
 import org.firstinspires.ftc.teamcode.common.commands.TrapdoorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.ZeroMotorCommand;
 import org.firstinspires.ftc.teamcode.common.robot.Drive;
@@ -132,6 +135,7 @@ public class EarlyTeleOp extends CommandOpMode {
                     robot.setTransferringState(true);
                     schedule(
                             new SequentialCommandGroup(
+                                    /*
                                     new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
                                     new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
                                     new WaitCommand(300),
@@ -155,6 +159,10 @@ public class EarlyTeleOp extends CommandOpMode {
 
 
                                     new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
+                                     */
+                                    new RetractAndTransferClawsCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
+                                    new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM),
+                                    new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED)
                             ).whenFinished(() -> robot.setTransferringState(false))
                     );
                 }
@@ -166,6 +174,8 @@ public class EarlyTeleOp extends CommandOpMode {
                         new SequentialCommandGroup(
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
                                 new WaitCommand(500),
+                                new TransferClawCommand(robot.deposit, DepositSubsystem.ClawState.OPEN),
+                                new WaitCommand(1000),
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY),
                                 new InstantLiftCommand(robot.lift, LiftSubsystem.GROUND)
                         ),
@@ -328,10 +338,10 @@ public class EarlyTeleOp extends CommandOpMode {
         boolean acceptedYellow = (detectedColor.equals(Team.YELLOW) && liftEnabled);
 
         if ((detectedColor.equals(team) || acceptedYellow) && !robot.isTransferring() && robot.intake.getIntakeRotatorState() == IntakeSubsystem.IntakeRotatorState.PICKING_UP) {
-        //if (detectedColor.equals(team) && !robot.isTransferring() && robot.intake.getIntakeRotatorState() == IntakeSubsystem.IntakeRotatorState.PICKING_UP) {
             robot.setTransferringState(true);
             schedule(
                     new SequentialCommandGroup(
+                            /*
                             new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
                             new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
                             new WaitCommand(300),
@@ -354,6 +364,9 @@ public class EarlyTeleOp extends CommandOpMode {
                             new WaitCommand(200),
 
 
+                            new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
+                             */
+                            new RetractAndTransferClawsCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
                             new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
                     ).whenFinished(() -> robot.setTransferringState(false))
             );
@@ -393,7 +406,7 @@ public class EarlyTeleOp extends CommandOpMode {
 
         telemetry.addData("Transferring State:", robot.isTransferring());
 
-        /*
+
         telemetry.addLine("");
         telemetry.addData("Extension State:", robot.extension.getState());
         telemetry.addData("Extension Target:", robot.extension.getTargetPosition());
@@ -401,7 +414,7 @@ public class EarlyTeleOp extends CommandOpMode {
         telemetry.addData("Extension Error:", robot.extension.getAbsError());
         telemetry.addData("Extension Power", robot.extension.telemetryPower);
         //telemetry.addData("Extension Encoder", robot.extension.get)
-        */
+
 
 
         telemetry.addLine("");
@@ -421,7 +434,7 @@ public class EarlyTeleOp extends CommandOpMode {
         telemetry.addData("INtegral", robot.lift.integralSum);
 
 
-        /*
+
         telemetry.addLine("");
         telemetry.addData("Arm State:", robot.specimen.getSpecimenState());
         telemetry.addData("Arm Target:", robot.specimen.getSpecimenState().armPosition);
@@ -437,7 +450,7 @@ public class EarlyTeleOp extends CommandOpMode {
 
 
         //Method WRIET FOR COLOR SESNRO)
-        */
+
         telemetry.update();
 
 

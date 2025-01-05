@@ -18,14 +18,14 @@ import org.firstinspires.ftc.teamcode.common.robot.Team;
 public class IntakeSubsystem extends SubsystemBase {
     // Constants
     public static double INTAKE_ROTATION_TRANSFER = 0.37; // max and min rotation used as what arm is actually being rotated to, subject to change
-    public static double INTAKE_ROTATION_PICK_UP = 0.94;
+    public static double INTAKE_ROTATION_PICK_UP = 0.97;
     public static double INTAKE_ROTATION_MOVING = 0.6;
 
     public static double CLOSED_VALUE = .5;
     public static double EJECTING_VALUE = 1.0;
     public static double ACTIVE_VALUE = 1.0;
     public static double DISABLED_VALUE = 0.0;
-    public static double REVERSING_VALUE = -0.8;
+    public static double REVERSING_VALUE = -1.0;
 
     // State
     final private CRServoImpl intakeServo1;
@@ -113,7 +113,7 @@ public class IntakeSubsystem extends SubsystemBase {
             return Team.NONE;
         }
 
-        if (a < 100) {
+        if (a < 60) {
             colorState = ColorState.NONE;
             return Team.NONE;
         }
@@ -178,7 +178,7 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeServo1 = hardwareMap.get(CRServoImpl.class, HardwareMapNames.INTAKE_SERVO_1);
         colorSensor = hardwareMap.get(ColorSensor.class, HardwareMapNames.INTAKE_COLOR_SENSOR);
         intakeRotationServo.setDirection(Servo.Direction.FORWARD);
-        intakeServo1.setDirection(DcMotorSimple.Direction.REVERSE); // subject to change
+        intakeServo1.setDirection(DcMotorSimple.Direction.FORWARD); // subject to change
         this.updateIntakeRotatorState(IntakeRotatorState.TRANSFERRING);
         this.updateIntakingState(IntakingState.DISABLED);
         updateTrapdoorState(TrapdoorState.CLOSED);

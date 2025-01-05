@@ -21,7 +21,7 @@ public class ExtendCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return extensionSubsystem.getAbsError() < 60
+        return extensionSubsystem.getAbsError() < 20
             || extensionState.equals(ExtensionState.CUSTOM)
             || !extensionState.equals(extensionSubsystem.getState());
     }

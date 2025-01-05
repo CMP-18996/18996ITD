@@ -18,7 +18,7 @@ public class ExtensionSubsystem extends SubsystemBase {
     ExtensionState extensionState;
     public static int CONTRACTED_POS = 0;
     public static int FULL_EXTENSION_POS = 500;
-    public static int HALF_EXTENDED_POS = 200;
+    public static int TRANSFER_POS = 160;
     public static double P = .007;
     public static double F = .35;
     private int targetPosition = 0;
@@ -29,7 +29,7 @@ public class ExtensionSubsystem extends SubsystemBase {
     public enum ExtensionState {
         CONTRACTED(CONTRACTED_POS),
         FULLY_EXTENDED(FULL_EXTENSION_POS), 
-        HALF_EXTENDED(HALF_EXTENDED_POS),
+        TRANSFER(TRANSFER_POS),
         ENCODER_ZERO(0),
         CUSTOM(100);
         public int position;

@@ -32,7 +32,6 @@ public class ExtendCommandTest extends CommandOpMode {
                         new WaitCommand(3000),
                         new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CONTRACTED),
                         new WaitCommand(3000),
-                        new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.HALF_EXTENDED),
                         new WaitCommand(3000),
                         new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CONTRACTED)
                 )
