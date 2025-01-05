@@ -21,8 +21,12 @@ public class ExtendCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return extensionSubsystem.getAbsError() < 20
-            || extensionState.equals(ExtensionState.CUSTOM)
-            || !extensionState.equals(extensionSubsystem.getState());
+        if (extensionSubsystem.getAbsError() < 10
+                || extensionState.equals(ExtensionState.CUSTOM)
+                || !extensionState.equals(extensionSubsystem.getState())) {
+            extensionSubsystem.setExtensionMotorPower(0);
+            return true;
+        }
+        return false;
     }
 }

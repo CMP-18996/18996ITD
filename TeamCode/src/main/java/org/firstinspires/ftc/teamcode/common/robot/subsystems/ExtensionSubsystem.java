@@ -18,11 +18,13 @@ public class ExtensionSubsystem extends SubsystemBase {
     ExtensionState extensionState;
     public static int CONTRACTED_POS = 0;
     public static int FULL_EXTENSION_POS = 500;
-    public static int TRANSFER_POS = 160;
-    public static double P = .007;
-    public static double F = .35;
+    public static int TRANSFER_POS = 150;
+    public static double P = .008;
+    public static double F = .30;
     private int targetPosition = 0;
     public static double maxPower = .8;
+
+    public double error;
 
     public double telemetryPower;
 
@@ -74,7 +76,7 @@ public class ExtensionSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         if (!extensionState.equals(ExtensionState.CUSTOM)) {
-            double error = targetPosition - extensionMotor.getCurrentPosition();
+            error = targetPosition - extensionMotor.getCurrentPosition();
             double power;
 
             double feedForwardPower = 0;
@@ -84,7 +86,7 @@ public class ExtensionSubsystem extends SubsystemBase {
 
             power = Range.clip(P * error + feedForwardPower, -maxPower, maxPower);
 
-            if (getAbsError() <= 125) power *= .1;
+            if (getAbsError() <= 155) power *= .45;
 
             telemetryPower = -power;
             extensionMotor.setPower(-power);

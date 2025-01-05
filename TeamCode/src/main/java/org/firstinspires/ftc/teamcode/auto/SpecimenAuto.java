@@ -59,8 +59,9 @@ public class SpecimenAuto extends CommandOpMode {
                                 .setReversed(true)
                                 .afterDisp(2, () -> super.schedule(new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.OPEN), new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.WALL)))
                                 .splineToLinearHeading(new Pose2d(-40, 46, Math.toRadians(240)), Math.toRadians(60))
-                                .build()),
+                                .build())
 
+                        /*
                         //move blocks over
                         new AutoExtend(robot.extension, robot.intake, robot.lift),
                         new WaitCommand(500),
@@ -93,6 +94,8 @@ public class SpecimenAuto extends CommandOpMode {
                                 .afterTime(0.5, () -> super.schedule(new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)))
                                 .turn(Math.toRadians(179))
                                 .build())
+
+                         */
                 )
         );
     }

@@ -65,9 +65,6 @@ public class EarlyTeleOp extends CommandOpMode {
     private OdometryHardware odometryHardware;
     private final double pickingUpVal  = IntakeSubsystem.IntakeRotatorState.PICKING_UP.val;
 
-    public int colorSensorReads = 0;
-    public int colorSensorValue = 0;
-
     public IntakeSubsystem.IntakingState previousIntakingState = IntakeSubsystem.IntakingState.DISABLED;
 
     @Override
@@ -181,7 +178,9 @@ public class EarlyTeleOp extends CommandOpMode {
                         ),
                         new SequentialCommandGroup(
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
-                                new WaitCommand(800),
+                                new WaitCommand(500),
+                                new TransferClawCommand(robot.deposit, DepositSubsystem.ClawState.OPEN),
+                                new WaitCommand(1000),
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY)
                         ),
                         () -> robot.lift.getCurrTarget() != LiftSubsystem.GROUND
@@ -268,6 +267,10 @@ public class EarlyTeleOp extends CommandOpMode {
                         ),
                         () -> robot.specimen.getGripperPosition() != SpecimenSubsystem.GripperPosition.CLOSED
                 )
+        );
+
+        gamepad_2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+                () -> robot.setTransferringState(false)
         );
 
         gamepad_2.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
@@ -367,8 +370,9 @@ public class EarlyTeleOp extends CommandOpMode {
                             new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
                              */
                             new RetractAndTransferClawsCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
-                            new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
-                    ).whenFinished(() -> robot.setTransferringState(false))
+                            new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM),
+                            new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED)
+                    )//.whenFinished(() -> robot.setTransferringState(false))
             );
         }
         else if ((detectedColor.equals(oppositeTeam) || detectedColor.equals(Team.YELLOW)) && !robot.isTransferring()) {
@@ -411,7 +415,7 @@ public class EarlyTeleOp extends CommandOpMode {
         telemetry.addData("Extension State:", robot.extension.getState());
         telemetry.addData("Extension Target:", robot.extension.getTargetPosition());
         telemetry.addData("Extension Position:", robot.extension.getPosition());
-        telemetry.addData("Extension Error:", robot.extension.getAbsError());
+        telemetry.addData("Extension Error:", robot.extension.error);
         telemetry.addData("Extension Power", robot.extension.telemetryPower);
         //telemetry.addData("Extension Encoder", robot.extension.get)
 
