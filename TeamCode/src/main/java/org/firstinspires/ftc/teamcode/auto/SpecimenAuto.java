@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.common.autocmd.AutoExtend;
 import org.firstinspires.ftc.teamcode.common.autocmd.RRWrapper;
 import org.firstinspires.ftc.teamcode.common.commands.DepositRotationCommand;
 import org.firstinspires.ftc.teamcode.common.commands.ExtendAndBeginIntakeCommand;
+import org.firstinspires.ftc.teamcode.common.commands.ExtendCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeRotatorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.LiftSetPosition;
@@ -26,6 +27,7 @@ import org.firstinspires.ftc.teamcode.common.drive.SparkFunOTOSDrive;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.Team;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
+import org.firstinspires.ftc.teamcode.common.robot.subsystems.ExtensionSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
@@ -56,7 +58,7 @@ public class SpecimenAuto extends CommandOpMode {
                                 .splineTo(new Vector2d(-12, 38), Math.toRadians(-90))
                                 .setReversed(true)
                                 .afterDisp(2, () -> super.schedule(new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.OPEN), new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.WALL)))
-                                .splineToLinearHeading(new Pose2d(-40, 46, Math.toRadians(240)), Math.toRadians(70))
+                                .splineToLinearHeading(new Pose2d(-40, 46, Math.toRadians(240)), Math.toRadians(60))
                                 .build()),
 
                         //move blocks over
@@ -64,37 +66,33 @@ public class SpecimenAuto extends CommandOpMode {
                         new WaitCommand(500),
                         new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
                         new RRWrapper(drive, drive.actionBuilder(drive.pose)
+                                .afterTime(0.5, () -> super.schedule(new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)))
                                 .turn(Math.toRadians(-110))
                                 .build()),
-                        new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING),
-                        new WaitCommand(500)
-                        /*
-                        new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
-                                .setReversed(false)
+
+                        new RRWrapper(drive, drive.actionBuilder(drive.pose)
+                                .afterDisp(0.1, () -> super.schedule(new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CONTRACTED)))
                                 .splineToLinearHeading(new Pose2d(-48, 48, Math.toRadians(240)), Math.toRadians(240))
-                                .build())),
+                                .build()),
                         new AutoExtend(robot.extension, robot.intake, robot.lift),
-                        new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
+                        new WaitCommand(500),
+                        new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
+                        new RRWrapper(drive, drive.actionBuilder(drive.pose)
+                                .afterTime(0.5, () -> super.schedule(new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)))
                                 .turn(Math.toRadians(-100))
-                                .build())),
-                        new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING),
-                        new WaitCommand(500),
-                        new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
+                                .build()),
+
+                        new RRWrapper(drive, drive.actionBuilder(drive.pose)
+                                .afterDisp(0.1, () -> super.schedule(new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CONTRACTED)))
                                 .splineToLinearHeading(new Pose2d(-58, 48, Math.toRadians(240)), Math.toRadians(240))
-                                .build())),
+                                .build()),
                         new AutoExtend(robot.extension, robot.intake, robot.lift),
-                        new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
-                                .turn(Math.toRadians(179))
-                                .build())),
-                        new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING),
                         new WaitCommand(500),
-
-                        //yoink specimen
-                        new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
+                        new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
+                        new RRWrapper(drive, drive.actionBuilder(drive.pose)
+                                .afterTime(0.5, () -> super.schedule(new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)))
                                 .turn(Math.toRadians(179))
-                                .build()))
-
-                         */
+                                .build())
                 )
         );
     }

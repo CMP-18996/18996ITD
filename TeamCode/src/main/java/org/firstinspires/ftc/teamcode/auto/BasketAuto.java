@@ -14,7 +14,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.common.autocmd.AutoDeposit;
 import org.firstinspires.ftc.teamcode.common.autocmd.AutoExtendRetractTransfer;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeRotatorCommand;
-import org.firstinspires.ftc.teamcode.common.commands.ZeroExtensionCommand;
 import org.firstinspires.ftc.teamcode.common.commands.ZeroMotorCommand;
 import org.firstinspires.ftc.teamcode.common.drive.SparkFunOTOSDrive;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
