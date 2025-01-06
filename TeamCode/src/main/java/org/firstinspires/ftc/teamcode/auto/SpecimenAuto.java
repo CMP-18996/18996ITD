@@ -50,52 +50,70 @@ public class SpecimenAuto extends CommandOpMode {
                         //drop preloaded specimen
                         new InstantCommand(() -> robot.extension.setMaxPower(0.6)),
                         new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.CHAMBER),
-                        new LiftSetPosition(robot.lift, LiftSubsystem.GROUND),
                         new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.CLOSED),
-                        new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
-                        new WaitCommand(50),
+                        new LiftSetPosition(robot.lift, LiftSubsystem.GROUND),
+                        new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
+                        new WaitCommand(500),
                         new RRWrapper(drive, drive.actionBuilder(drive.pose)
-                                .splineTo(new Vector2d(-12, 38), Math.toRadians(-90))
+                                .splineTo(new Vector2d(-12, 39), Math.toRadians(-90))
                                 .setReversed(true)
-                                .afterDisp(2, () -> super.schedule(new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.OPEN), new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.WALL)))
-                                .splineToLinearHeading(new Pose2d(-40, 46, Math.toRadians(240)), Math.toRadians(60))
-                                .build())
+                                .afterDisp(1, () -> super.schedule(new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.OPEN), new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.WALL)))
+                                .afterDisp(35, () -> super.schedule(new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.PICKING_UP)))
+                                .splineToLinearHeading(new Pose2d(-39.5, 46, Math.toRadians(245)), Math.toRadians(65))
+                                .build()),
 
-                        /*
+
                         //move blocks over
                         new AutoExtend(robot.extension, robot.intake, robot.lift),
-                        new WaitCommand(500),
-                        new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
                         new RRWrapper(drive, drive.actionBuilder(drive.pose)
-                                .afterTime(0.5, () -> super.schedule(new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)))
-                                .turn(Math.toRadians(-110))
+                                .setReversed(false)
+                                .afterTime(1.5, () -> super.schedule(new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)))
+                                .splineToLinearHeading(new Pose2d(-38, 53, Math.toRadians(150)), Math.toRadians(150))
                                 .build()),
 
                         new RRWrapper(drive, drive.actionBuilder(drive.pose)
+                                .setReversed(true)
                                 .afterDisp(0.1, () -> super.schedule(new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CONTRACTED)))
-                                .splineToLinearHeading(new Pose2d(-48, 48, Math.toRadians(240)), Math.toRadians(240))
+                                .splineToLinearHeading(new Pose2d(-41, 51, Math.toRadians(235)), Math.toRadians(55))
                                 .build()),
                         new AutoExtend(robot.extension, robot.intake, robot.lift),
-                        new WaitCommand(500),
-                        new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
                         new RRWrapper(drive, drive.actionBuilder(drive.pose)
-                                .afterTime(0.5, () -> super.schedule(new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)))
-                                .turn(Math.toRadians(-100))
+                                .setReversed(false)
+                                .afterTime(2, () -> super.schedule(new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)))
+                                .splineToLinearHeading(new Pose2d(-38, 53, Math.toRadians(145)), Math.toRadians(145))
                                 .build()),
 
                         new RRWrapper(drive, drive.actionBuilder(drive.pose)
+                                .setReversed(true)
                                 .afterDisp(0.1, () -> super.schedule(new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CONTRACTED)))
-                                .splineToLinearHeading(new Pose2d(-58, 48, Math.toRadians(240)), Math.toRadians(240))
+                                .splineToLinearHeading(new Pose2d(-45, 51, Math.toRadians(225)), Math.toRadians(45))
                                 .build()),
                         new AutoExtend(robot.extension, robot.intake, robot.lift),
-                        new WaitCommand(500),
-                        new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
                         new RRWrapper(drive, drive.actionBuilder(drive.pose)
-                                .afterTime(0.5, () -> super.schedule(new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)))
-                                .turn(Math.toRadians(179))
+                                .setReversed(false)
+                                .afterTime(2.5, () -> super.schedule(new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)))
+                                .splineToLinearHeading(new Pose2d(-38, 53, Math.toRadians(145)), Math.toRadians(145))
+                                .build()),
+
+                        //hang specimens
+                        new RRWrapper(drive, drive.actionBuilder(drive.pose)
+                                .setReversed(true)
+                                .afterDisp(1, () -> super.schedule(new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED), new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CONTRACTED), new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING)))
+                                .splineToLinearHeading(new Pose2d(-48, 64, Math.toRadians(-90)), Math.toRadians(90))
+                                .build()),
+                        new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.CLOSED),
+                        new RRWrapper(drive, drive.actionBuilder(drive.pose)
+                                .setReversed(false)
+                                .afterDisp(1, () -> super.schedule(new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.CHAMBER)))
+                                .splineToConstantHeading(new Vector2d(-24, 56), Math.toRadians(-90))
+                                .splineToConstantHeading(new Vector2d(-12, 39), Math.toRadians(-90))
+                                .build()),
+
+                        new RRWrapper(drive, drive.actionBuilder(drive.pose)
+                                .setReversed(true)
+                                .afterDisp(1, () -> super.schedule(new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.WALL), new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.OPEN)))
+                                .splineToLinearHeading(new Pose2d(-48, 64, Math.toRadians(-90)), Math.toRadians(90))
                                 .build())
-
-                         */
                 )
         );
     }
