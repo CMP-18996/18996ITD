@@ -22,7 +22,7 @@ public class AutoExtend extends SequentialCommandGroup {
                 new IntakeCommand(intakeSubsystem, IntakeSubsystem.IntakingState.ACTIVE),
                 new ParallelDeadlineGroup(
                         new WaitCommand(1400),
-                        new LiftSetPosition(liftSubsystem, LiftSubsystem.GROUND),
+                        new LiftSetPosition(liftSubsystem, LiftSubsystem.LiftState.GROUND),
                         new ExtendCommand(extensionSubsystem, ExtensionSubsystem.ExtensionState.FULLY_EXTENDED)
                 )
         );

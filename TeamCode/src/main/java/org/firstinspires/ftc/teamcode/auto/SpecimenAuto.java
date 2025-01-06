@@ -50,7 +50,7 @@ public class SpecimenAuto extends CommandOpMode {
                         //drop preloaded specimen
                         new InstantCommand(() -> robot.extension.setMaxPower(0.6)),
                         new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.CHAMBER),
-                        new LiftSetPosition(robot.lift, LiftSubsystem.GROUND),
+                        new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.GROUND),
                         new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.CLOSED),
                         new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
                         new WaitCommand(50),

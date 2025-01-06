@@ -102,28 +102,28 @@ public class EarlyTeleOp extends CommandOpMode {
         gamepad_1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 new ConditionalCommand(
                         new ScheduleCommand(
-                                new LiftSetPosition(robot.lift, LiftSubsystem.HIGH_BASKET),
+                                new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.HIGH_BASKET),
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.READY_TO_DEPOSIT)
                         ),
                         new ScheduleCommand(
-                                new LiftSetPosition(robot.lift, LiftSubsystem.GROUND),
+                                new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.GROUND),
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY)
                         ),
-                        () -> robot.lift.getCurrTarget() != LiftSubsystem.HIGH_BASKET
+                        () -> robot.lift.getCurrTarget() != LiftSubsystem.LiftState.HIGH_BASKET.height
                 )
         );
 
         gamepad_1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
                 new ConditionalCommand(
                         new ScheduleCommand(
-                                new LiftSetPosition(robot.lift, LiftSubsystem.LOW_BASKET),
+                                new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.LOW_BASKET),
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.READY_TO_DEPOSIT)
                         ),
                         new ScheduleCommand(
-                                new LiftSetPosition(robot.lift, LiftSubsystem.GROUND),
+                                new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.GROUND),
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY)
                         ),
-                        () -> robot.lift.getCurrTarget() != LiftSubsystem.LOW_BASKET
+                        () -> robot.lift.getCurrTarget() != LiftSubsystem.LiftState.LOW_BASKET.height
                 )
         );
 
@@ -174,7 +174,7 @@ public class EarlyTeleOp extends CommandOpMode {
                                 new TransferClawCommand(robot.deposit, DepositSubsystem.ClawState.OPEN),
                                 new WaitCommand(1000),
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY),
-                                new InstantLiftCommand(robot.lift, LiftSubsystem.GROUND)
+                                new InstantLiftCommand(robot.lift, LiftSubsystem.LiftState.GROUND)
                         ),
                         new SequentialCommandGroup(
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
@@ -183,7 +183,7 @@ public class EarlyTeleOp extends CommandOpMode {
                                 new WaitCommand(1000),
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY)
                         ),
-                        () -> robot.lift.getCurrTarget() != LiftSubsystem.GROUND
+                        () -> robot.lift.getCurrTarget() != LiftSubsystem.LiftState.GROUND.height
                 )
         );
 
@@ -238,20 +238,20 @@ public class EarlyTeleOp extends CommandOpMode {
         );
 
         gamepad_1.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(() -> {
-            LiftSubsystem.GROUND += 10;
-            robot.lift.setTargetPosition(LiftSubsystem.GROUND);
+            LiftSubsystem.LiftState.GROUND.changeHeight(10);
+            robot.lift.setTargetPosition(LiftSubsystem.LiftState.GROUND);
         });
         gamepad_1.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(() -> {
-            LiftSubsystem.GROUND -= 10;
-            robot.lift.setTargetPosition(LiftSubsystem.GROUND);
+            LiftSubsystem.LiftState.GROUND.changeHeight(-10);
+            robot.lift.setTargetPosition(LiftSubsystem.LiftState.GROUND);
         });
         gamepad_2.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(() -> {
-            LiftSubsystem.GROUND += 10;
-            robot.lift.setTargetPosition(LiftSubsystem.GROUND);
+            LiftSubsystem.LiftState.GROUND.changeHeight(10);
+            robot.lift.setTargetPosition(LiftSubsystem.LiftState.GROUND);
         });
         gamepad_2.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(() -> {
-            LiftSubsystem.GROUND -= 10;
-            robot.lift.setTargetPosition(LiftSubsystem.GROUND);
+            LiftSubsystem.LiftState.GROUND.changeHeight(-10);
+            robot.lift.setTargetPosition(LiftSubsystem.LiftState.GROUND);
         });
 
         //  SECOND DRIVER
@@ -426,7 +426,7 @@ public class EarlyTeleOp extends CommandOpMode {
 
         telemetry.addLine("");
         //telemetry.addData("Lift State:", ); Lift has no states?
-        telemetry.addData("Ground", LiftSubsystem.GROUND);
+        telemetry.addData("Ground", LiftSubsystem.LiftState.GROUND.height);
         telemetry.addData("Lift Target:", robot.lift.getCurrTarget());
         telemetry.addData("Lift Position", robot.lift.getCurrentPosition());
         telemetry.addData("Lift Error:", robot.lift.getError());
