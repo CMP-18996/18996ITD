@@ -6,10 +6,10 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 
 public class LiftSetPosition extends CommandBase {
     LiftSubsystem liftSubsystem;
-    int target;
+    LiftSubsystem.LiftState target;
 
-    public LiftSetPosition(LiftSubsystem liftSubsystem, int targetPosition){
-        target = targetPosition;
+    public LiftSetPosition(LiftSubsystem liftSubsystem, LiftSubsystem.LiftState targetState){
+        target = targetState;
         this.liftSubsystem = liftSubsystem;
         addRequirements(liftSubsystem);
     }
@@ -21,6 +21,6 @@ public class LiftSetPosition extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return (liftSubsystem.getAbsError() < 5) || target != liftSubsystem.getCurrTarget();
+        return (liftSubsystem.getAbsError() < 5);
     }
 }

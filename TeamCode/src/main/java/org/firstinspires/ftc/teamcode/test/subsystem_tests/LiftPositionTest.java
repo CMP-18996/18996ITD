@@ -26,15 +26,15 @@ public class LiftPositionTest extends CommandOpMode {
         CommandScheduler.getInstance().registerSubsystem(robot.lift);
         CommandScheduler.getInstance().schedule(
             new SequentialCommandGroup(
-                new LiftSetPosition(robot.lift, robot.lift.GROUND),
+                new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.GROUND),
                     new WaitCommand(3000),
-                new LiftSetPosition(robot.lift, robot.lift.GROUND),
+                new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.GROUND),
                     new WaitCommand(3000),
-                new LiftSetPosition(robot.lift, robot.lift.LOW_BASKET),
+                new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.LOW_BASKET),
                     new WaitCommand(3000),
-                new LiftSetPosition(robot.lift, robot.lift.HIGH_BASKET),
+                new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.HIGH_BASKET),
                     new WaitCommand(3000),
-                new LiftSetPosition(robot.lift, robot.lift.GROUND),
+                new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.GROUND),
                     new WaitCommand(3000)
             )
         );

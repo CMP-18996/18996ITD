@@ -25,9 +25,9 @@ public class LiftSubsystem extends SubsystemBase {
     public static int INTEGRAL_ENABLE_POINT = 20;
 
     public static int ENCODER_ZERO = 0;
-    public static int GROUND = 90;
-    public static int LOW_BASKET = 420;
-    public static int HIGH_BASKET = 850;
+    public static int GROUND_HEIGHT = 90;
+    public static int LOW_BASKET_HEIGHT = 420;
+    public static int HIGH_BASKET_HEIGHT = 850;
 
     public static double MAX_UP_SPEED = 1.0;
     public static double MAX_DOWN_SPEED = 0.6;
@@ -49,6 +49,10 @@ public class LiftSubsystem extends SubsystemBase {
         integralSum = 0;
         lastError = 0;
         timer.reset();
+    }
+
+    public void setTargetPosition(LiftState targetState) {
+        setTargetPosition(targetState.height);
     }
 
     public int getCurrentPosition() {
@@ -106,6 +110,21 @@ public class LiftSubsystem extends SubsystemBase {
         toggleLift = !toggleLift;
     }
 
+    public enum LiftState {
+        GROUND(GROUND_HEIGHT),
+        LOW_BASKET(LOW_BASKET_HEIGHT),
+        HIGH_BASKET(HIGH_BASKET_HEIGHT);
+
+        public int height;
+        LiftState(int height) {
+            this.height = height;
+        }
+
+        public void changeHeight(int change) {
+            this.height += change;
+        }
+    }
+
     public LiftSubsystem(HardwareMap hardwareMap) {
         liftMotor = hardwareMap.get(DcMotorImpl.class, HardwareMapNames.LIFT_MOTOR);
 
@@ -115,7 +134,8 @@ public class LiftSubsystem extends SubsystemBase {
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        currTarget = LiftSubsystem.GROUND;
+//        currTarget = LiftSubsystem.GROUND;
+        setTargetPosition(LiftState.GROUND);
 
     }
 
@@ -128,6 +148,7 @@ public class LiftSubsystem extends SubsystemBase {
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        currTarget = LiftSubsystem.GROUND;
+//        currTarget = LiftSubsystem.GROUND;
+        setTargetPosition(LiftState.GROUND);
     }
 }
