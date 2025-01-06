@@ -24,7 +24,6 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.HangSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
-import org.firstinspires.ftc.teamcode.teleops.SPECIKEMARMTET;
 
 @Disabled
 @TeleOp(name =  "Specimen Stuff v1")
