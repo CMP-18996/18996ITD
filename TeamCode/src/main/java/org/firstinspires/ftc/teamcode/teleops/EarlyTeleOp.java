@@ -342,7 +342,7 @@ public class EarlyTeleOp extends CommandOpMode {
         }
 
         if (gamepad1.options) {
-            odometryHardware.pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
+            //odometryHardware.pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
             //telemetry.addLine("Reset Angle!");
         }
 
