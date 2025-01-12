@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.teleops;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
+@Disabled
 @Config
 @TeleOp(name = "TRANSFER")
 public class TransferTesting extends LinearOpMode{
@@ -31,25 +33,14 @@ public class TransferTesting extends LinearOpMode{
         Servo intakeRotator = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_ROTATOR);
         Servo bucketServo = hardwareMap.get(Servo.class, HardwareMapNames.BUCKET_SERVO);
         CRServo intake = hardwareMap.get(CRServo.class, HardwareMapNames.INTAKE_SERVO_1);
-        Servo clawServo = hardwareMap.get(Servo.class, "liftClaw");
-
-        intakeRotator.setPosition(transferServoValue);
-        bucketServo.setPosition(bucketTransfer);
-
-        clawServo.setPosition(clawOpen);
+        Servo clawServo = hardwareMap.get(Servo.class, "claw");
 
         waitForStart();
 
         while (opModeIsActive()) {
 
-            intake.setPower(-0.5);
-            sleep(300);
-            clawServo.setPosition(clawCLosed);
-            intake.setPower(0);
-            sleep(100);
-            bucketServo.setPosition(1);
-
-            //telemetry.update();
+            intake.setPower(1.0);
+            intakeRotator.setPosition(gamepad1.right_trigger);
         }
     }
 }

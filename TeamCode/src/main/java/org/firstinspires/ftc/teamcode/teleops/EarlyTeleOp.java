@@ -352,7 +352,7 @@ public class EarlyTeleOp extends CommandOpMode {
         drive.robotCentricDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
 
 
-       /* telemetry.addData("Intake Rotator State:", robot.intake.getIntakeRotatorState());
+        telemetry.addData("Intake Rotator State:", robot.intake.getIntakeRotatorState());
         telemetry.addData("Intake Roller State:", robot.intake.getIntakingState());
         telemetry.addData("Trapdoor State:", robot.intake.getTrapdoorState());
         telemetry.addData("Detected Color:", detectedColor);
@@ -402,9 +402,6 @@ public class EarlyTeleOp extends CommandOpMode {
 
         telemetry.addLine("");
         telemetry.addData("Gripper State:", robot.specimen.getGripperPosition());
-
-
-        //Method WRIET FOR COLOR SESNRO)
 
         telemetry.update();
 

@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.common.odo;
 
+import com.pedropathing.localization.Pose;
+
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.common.robot.OdometryHardware;
-import org.firstinspires.ftc.teamcode.pedroPathing.localization.Localizer;
-import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
 
 public class OdometryFusion
 {

@@ -84,7 +84,7 @@ public class LiftSubsystem extends SubsystemBase {
             double power = Range.clip(P + I + D + F, -MAX_DOWN_SPEED, MAX_UP_SPEED);
             telemetryPower = power;
 
-            liftMotor.setPower(power);
+            //liftMotor.setPower(power);
         }
     }
 
