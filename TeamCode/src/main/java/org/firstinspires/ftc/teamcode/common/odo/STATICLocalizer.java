@@ -39,17 +39,19 @@ public class STATICLocalizer extends Localizer {
         CHAMBER
     }
 
-    public STATICLocalizer(HardwareMap hardwareMap) {this(hardwareMap, new Pose(), LocalizationMode.OTOS);}
+    public STATICLocalizer(HardwareMap hardwareMap) {this(hardwareMap, LocalizationMode.OTOS, new Pose());}
 
-    public STATICLocalizer(HardwareMap hardwareMap, Pose startPose, LocalizationMode localizationMode) {
+    public STATICLocalizer(HardwareMap hardwareMap, LocalizationMode localizationMode) {this(hardwareMap, localizationMode, new Pose());}
+
+    public STATICLocalizer(HardwareMap hardwareMap, LocalizationMode localizationMode, Pose startPose) {
         this.hardwareMap = hardwareMap;
         this.localizationMode = localizationMode;
 
         // TODO: eliminate this
         if (OTOSConstants.useCorrectedOTOSClass) {
-            otos = (SparkFunOTOS)this.hardwareMap.get(SparkFunOTOSCorrected.class, OTOSConstants.hardwareMapName);
+            otos = this.hardwareMap.get(SparkFunOTOSCorrected.class, OTOSConstants.hardwareMapName);
         } else {
-            otos = (SparkFunOTOS)this.hardwareMap.get(SparkFunOTOS.class, OTOSConstants.hardwareMapName);
+            otos = this.hardwareMap.get(SparkFunOTOS.class, OTOSConstants.hardwareMapName);
         }
 
         configureOTOS();

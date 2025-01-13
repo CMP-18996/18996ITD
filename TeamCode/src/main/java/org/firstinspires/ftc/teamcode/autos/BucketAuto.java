@@ -229,7 +229,7 @@ public class BucketAuto extends OpMode {
     @Override
     public void init() {
         Constants.setConstants(FConstants.class, LConstants.class);
-        follower = new Follower(hardwareMap, new STATICLocalizer(hardwareMap, new Pose(), STATICLocalizer.LocalizationMode.OTOS));
+        follower = new Follower(hardwareMap, new STATICLocalizer(hardwareMap, STATICLocalizer.LocalizationMode.OTOS));
         follower.setStartingPose(startPose);
         buildPaths();
     }

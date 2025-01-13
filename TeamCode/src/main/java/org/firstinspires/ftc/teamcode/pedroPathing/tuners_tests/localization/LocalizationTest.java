@@ -28,6 +28,7 @@ import com.pedropathing.util.Drawing;
 import java.util.Arrays;
 import java.util.List;
 
+import org.firstinspires.ftc.teamcode.common.odo.STATICLocalizer;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
@@ -58,7 +59,7 @@ public class LocalizationTest extends OpMode {
     @Override
     public void init() {
         Constants.setConstants(FConstants.class, LConstants.class);
-        poseUpdater = new PoseUpdater(hardwareMap);
+        poseUpdater = new PoseUpdater(hardwareMap, new STATICLocalizer(hardwareMap, STATICLocalizer.LocalizationMode.OTOS));
 
         poseUpdater.setStartingPose(new Pose(-72 + 7.5, 0, 0));
 
