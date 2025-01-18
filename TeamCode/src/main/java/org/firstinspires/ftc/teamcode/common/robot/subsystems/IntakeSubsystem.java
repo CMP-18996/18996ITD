@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode.common.robot.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.arcrobotics.ftclib.hardware.ServoEx;
-import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.CRServoImpl;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -20,7 +18,9 @@ public class IntakeSubsystem extends SubsystemBase {
     public static double INTAKE_ROTATION_TRANSFER = 0.37; // max and min rotation used as what arm is actually being rotated to, subject to change
     public static double INTAKE_ROTATION_PICK_UP = 0.97;
     public static double INTAKE_ROTATION_MOVING = 0.6;
-
+    public static double INTAKE_PIVOT_PICK_UP = .4;
+    public static double INTAKE_PIVOT_MOVING = .3;
+    public static double INTAKE_PIVOT_DROPPING = .2;
     public static double CLOSED_VALUE = .5;
     public static double EJECTING_VALUE = 1.0;
     public static double ACTIVE_VALUE = 1.0;
@@ -30,11 +30,12 @@ public class IntakeSubsystem extends SubsystemBase {
     // State
     final private CRServoImpl intakeServo1;
 //     final private ServoEx trapdoorServo, intakeRotationServo;
-    final private Servo trapdoorServo, intakeRotationServo;
+    final private Servo trapdoorServo, intakeRotationServo, intakePivotServo;
     public ColorSensor colorSensor; //TODO: isn't this and the above INTERFACES? you can't instantiate interfaces...
     private TrapdoorState trapdoorState = TrapdoorState.CLOSED;
     private IntakingState intakingState = IntakingState.DISABLED;
     private IntakeRotatorState intakeRotatorState = IntakeRotatorState.TRANSFERRING;
+    private IntakeArmPivotState intakeArmPivotState;
     public ColorState colorState = ColorState.NONE;
     public ColorSensorState colorSensorState = ColorSensorState.WORKING;
     public enum TrapdoorState {
@@ -49,6 +50,13 @@ public class IntakeSubsystem extends SubsystemBase {
         REVERSING(REVERSING_VALUE);
         public double val;
         IntakingState(double inval) {val = inval;}
+    }
+    public enum IntakeArmPivotState {
+        PICK_UP(INTAKE_PIVOT_PICK_UP),
+        MOVING(INTAKE_PIVOT_MOVING),
+        DROPPING(INTAKE_PIVOT_DROPPING);
+        public double val;
+        IntakeArmPivotState(double inval) {val = inval; }
     }
 
 
@@ -150,6 +158,11 @@ public class IntakeSubsystem extends SubsystemBase {
         trapdoorServo.setPosition(trapdoorState.val);
     }
 
+    public void updateIntakeArmPivotState(IntakeArmPivotState intakeArmPivotState) {
+        this.intakeArmPivotState = intakeArmPivotState;
+        intakePivotServo.setPosition(intakeArmPivotState.val);
+    }
+
     public void updateIntakingState(IntakingState setState) {
         intakingState = setState;
         intakeServo1.setPower(intakingState.val);
@@ -168,6 +181,8 @@ public class IntakeSubsystem extends SubsystemBase {
         return intakingState;
     }
 
+    public IntakeArmPivotState getIntakeArmPivotState() { return intakeArmPivotState; }
+
     public IntakeRotatorState getIntakeRotatorState() {
         return intakeRotatorState;
     }
@@ -175,6 +190,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public IntakeSubsystem(HardwareMap hardwareMap) {
         trapdoorServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_TRAPDOOR);
         intakeRotationServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_ROTATOR);
+        intakePivotServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_ARM_PIVOT);
         intakeServo1 = hardwareMap.get(CRServoImpl.class, HardwareMapNames.INTAKE_SERVO_1);
         colorSensor = hardwareMap.get(ColorSensor.class, HardwareMapNames.INTAKE_COLOR_SENSOR);
         intakeRotationServo.setDirection(Servo.Direction.FORWARD);

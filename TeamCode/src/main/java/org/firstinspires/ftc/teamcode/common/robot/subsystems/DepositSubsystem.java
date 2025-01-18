@@ -46,6 +46,10 @@ public class DepositSubsystem extends SubsystemBase {
         transferClawServo.setPosition(clawState.val);
     }
 
+    public ClawState getClawState() {
+        return clawState;
+    }
+
     public TransferRotatorState getTransferRotatorState() {
         return transferRotatorState;
     }

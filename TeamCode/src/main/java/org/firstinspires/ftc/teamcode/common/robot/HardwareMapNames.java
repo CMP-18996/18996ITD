@@ -41,6 +41,7 @@ public class HardwareMapNames {
     public static String INTAKE_ROTATOR = "intakeRotator";
     public static String INTAKE_TRAPDOOR = "trapdoor";
     public static String INTAKE_COLOR_SENSOR = "colorSensor";
+    public static String INTAKE_ARM_PIVOT = "intakePivot";
 
     // Extension
     public static String EXTENSION_MOTOR = "extension";

@@ -34,7 +34,6 @@ import org.firstinspires.ftc.teamcode.common.commands.RetractAndTransferClawsCom
 import org.firstinspires.ftc.teamcode.common.commands.SingleColorSensorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.SpecimenArmCommand;
 import org.firstinspires.ftc.teamcode.common.commands.SpecimenGripperCommand;
-import org.firstinspires.ftc.teamcode.common.commands.TransferClawCommand;
 import org.firstinspires.ftc.teamcode.common.commands.TrapdoorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.ZeroMotorCommand;
 import org.firstinspires.ftc.teamcode.common.robot.Drive;
@@ -171,7 +170,6 @@ public class EarlyTeleOp extends CommandOpMode {
                         new SequentialCommandGroup(
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
                                 new WaitCommand(500),
-                                new TransferClawCommand(robot.deposit, DepositSubsystem.ClawState.OPEN),
                                 new WaitCommand(1000),
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY),
                                 new InstantLiftCommand(robot.lift, LiftSubsystem.LiftState.GROUND)
@@ -179,7 +177,6 @@ public class EarlyTeleOp extends CommandOpMode {
                         new SequentialCommandGroup(
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
                                 new WaitCommand(500),
-                                new TransferClawCommand(robot.deposit, DepositSubsystem.ClawState.OPEN),
                                 new WaitCommand(1000),
                                 new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY)
                         ),
