@@ -18,6 +18,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -44,6 +45,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 @TeleOp(group = "Teleop Test", name = "Localization Test")
 public class LocalizationTest extends OpMode {
     private PoseUpdater poseUpdater;
+    private STATICLocalizer staticLocalizer;
     private DashboardPoseTracker dashboardPoseTracker;
     private Telemetry telemetryA;
 
@@ -53,15 +55,19 @@ public class LocalizationTest extends OpMode {
     private DcMotorEx rightRear;
     private List<DcMotorEx> motors;
 
+    Gamepad currentGamepad1 = new Gamepad();
+    Gamepad previousGamepad1 = new Gamepad();
+
     /**
      * This initializes the PoseUpdater, the mecanum drive motors, and the FTC Dashboard telemetry.
      */
     @Override
     public void init() {
         Constants.setConstants(FConstants.class, LConstants.class);
-        poseUpdater = new PoseUpdater(hardwareMap, new STATICLocalizer(hardwareMap, STATICLocalizer.LocalizationMode.OTOS));
+        staticLocalizer = new STATICLocalizer(hardwareMap, STATICLocalizer.LocalizationMode.OTOS);
+        poseUpdater = new PoseUpdater(hardwareMap, staticLocalizer);
 
-        poseUpdater.setStartingPose(new Pose(-72 + 7.5, 0, 0));
+        poseUpdater.setStartingPose(new Pose(10.25, 72, 0));
 
         dashboardPoseTracker = new DashboardPoseTracker(poseUpdater);
 
@@ -104,6 +110,16 @@ public class LocalizationTest extends OpMode {
         poseUpdater.update();
         dashboardPoseTracker.update();
 
+        previousGamepad1.copy(currentGamepad1);
+        currentGamepad1.copy(gamepad1);
+
+        if (currentGamepad1.cross && !previousGamepad1.cross) {
+            staticLocalizer.setLocalizationMode(STATICLocalizer.LocalizationMode.OTOS);
+        }
+        else if (currentGamepad1.circle && !previousGamepad1.circle) {
+            //staticLocalizer.setLocalizationMode(STATICLocalizer.LocalizationMode.PINPOINT);
+        }
+
         double y = -gamepad1.left_stick_y; // Remember, this is reversed!
         double x = gamepad1.left_stick_x; // this is strafing
         double rx = gamepad1.right_stick_x;
@@ -126,6 +142,7 @@ public class LocalizationTest extends OpMode {
         telemetryA.addData("y", poseUpdater.getPose().getY());
         telemetryA.addData("heading", Math.toDegrees(poseUpdater.getPose().getHeading()));
         telemetryA.addData("total heading", poseUpdater.getTotalHeading());
+        telemetryA.addData("localizer mode", staticLocalizer.getLocalizationMode());
         telemetryA.update();
 
         Drawing.drawPoseHistory(dashboardPoseTracker, "#4CAF50");

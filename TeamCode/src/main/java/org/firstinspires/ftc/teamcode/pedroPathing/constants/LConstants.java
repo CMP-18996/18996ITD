@@ -18,6 +18,17 @@ public class LConstants {
         OTOSConstants.linearScalar = 1.0754;
         OTOSConstants.angularScalar = 0.974;
 
+        PinpointConstants.forwardY = 4;
+        PinpointConstants.strafeX = -162;
+        PinpointConstants.distanceUnit = DistanceUnit.MM;
+        PinpointConstants.hardwareMapName = HardwareMapNames.PINPOINT;
+        PinpointConstants.useYawScalar = false;
+        PinpointConstants.yawScalar = 1.0;
+        PinpointConstants.useCustomEncoderResolution = false;
+        PinpointConstants.encoderResolution = GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD;
+        PinpointConstants.customEncoderResolution = 13.26291192;
+        PinpointConstants.forwardEncoderDirection = GoBildaPinpointDriver.EncoderDirection.REVERSED;
+        PinpointConstants.strafeEncoderDirection = GoBildaPinpointDriver.EncoderDirection.FORWARD;
     }
 
     public final static double pinpointOffsetX = 8.0;

@@ -27,21 +27,21 @@ public class BucketAuto extends OpMode {
      * It is used by the pathUpdate method. */
     private int pathState;
 
-    private final Pose startPose = new Pose(9, 108, Math.toRadians(270));
+    private final Pose startPose = new Pose(9, 119-7.5, Math.toRadians(270));
 
-    private final Pose depositPose = new Pose(14, 130, Math.toRadians(315));
+    private final Pose depositPose = new Pose(17, 134, Math.toRadians(315));
 
-    private final Pose spikePickup1 = new Pose(24, 124, Math.toRadians(350));
+    private final Pose spikePickup1 = new Pose(24, 100, Math.toRadians(350));
 
-    private final Pose spikePickup2 = new Pose(24, 132, Math.toRadians(270));
+    private final Pose spikePickup2 = new Pose(24, 100, Math.toRadians(0));
 
-    private final Pose spikePickup3 = new Pose(24, 132, Math.toRadians(25));
+    private final Pose spikePickup3 = new Pose(24, 100, Math.toRadians(25));
 
-    private final Pose submersiblePickup = new Pose(60, 96, Math.toRadians(270));
+    private final Pose submersiblePickup = new Pose(70, 100, Math.toRadians(270));
     private final Pose submersibleControl1 = new Pose(41, 123, Math.toRadians(270));
-    private final Pose submersibleControl2 = new Pose(62, 115, Math.toRadians(270));
+    private final Pose submersibleControl2 = new Pose(70, 115, Math.toRadians(270));
 
-    private final Pose parkPose = new Pose(60, 95, Math.toRadians(270));
+    private final Pose parkPose = new Pose(70, 100, Math.toRadians(270));
 
     private PathChain scorePreload, spike1, deposit1, spike2, deposit2, spike3, deposit3, sub1, deposit4, sub2, deposit5, park;
 
