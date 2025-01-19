@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.constants;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.localization.Localizers;
 import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.util.CustomFilteredPIDFCoefficients;
@@ -8,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
+@Config
 public class FConstants {
     static {
         FollowerConstants.localizers = Localizers.OTOS;
@@ -22,7 +24,7 @@ public class FConstants {
         FollowerConstants.rightFrontMotorDirection = DcMotorSimple.Direction.FORWARD;
         FollowerConstants.rightRearMotorDirection = DcMotorSimple.Direction.FORWARD;
 
-        FollowerConstants.mass = 13;
+        FollowerConstants.mass = 14;
 
         FollowerConstants.xMovement = 70;
         FollowerConstants.yMovement = 50;
@@ -30,7 +32,7 @@ public class FConstants {
         FollowerConstants.forwardZeroPowerAcceleration = -30;
         FollowerConstants.lateralZeroPowerAcceleration = -70;
 
-        FollowerConstants.translationalPIDFCoefficients.setCoefficients(0.1,0,0.01,0);
+        FollowerConstants.translationalPIDFCoefficients.setCoefficients(0.6,0,0.01,0); //very very bad
         FollowerConstants.useSecondaryTranslationalPID = false;
         FollowerConstants.secondaryTranslationalPIDFCoefficients.setCoefficients(0.1,0,0.01,0); // Not being used, @see useSecondaryTranslationalPID
 

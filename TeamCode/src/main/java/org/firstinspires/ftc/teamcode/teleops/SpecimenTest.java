@@ -1,5 +1,5 @@
 package org.firstinspires.ftc.teamcode.teleops;
-
+/*
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -122,14 +122,14 @@ public class SpecimenTest extends LinearOpMode {
             //arm1_position += arm1Delta;
             arm2_position += arm2Delta;
 
-            /*
+
             if (arm1_position < 0.0) {
                 arm1_position = 0;
             }
             if (arm1_position > 1.0) {
                 arm1_position = 1.0;
             }
-            */
+
 
             if (arm2_position < 0.0) {
                 arm2_position = 0.0;
@@ -186,3 +186,4 @@ public class SpecimenTest extends LinearOpMode {
         }
     }
 }
+*/
