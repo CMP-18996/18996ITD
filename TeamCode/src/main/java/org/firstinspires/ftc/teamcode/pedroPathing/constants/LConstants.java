@@ -19,6 +19,9 @@ public class LConstants {
         OTOSConstants.angularScalar = 0.974;
 
     }
+
+    public final static double pinpointOffsetX = 8.0;
+    public final static double pinpointOffsetY = 8.0;
 }
 
 

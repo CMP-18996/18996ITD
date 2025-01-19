@@ -18,6 +18,12 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
+import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
+
 public class STATICLocalizer extends Localizer {
     private HardwareMap hardwareMap;
     private Limelight3A limelight;
@@ -25,6 +31,10 @@ public class STATICLocalizer extends Localizer {
     private SparkFunOTOS.Pose2D otosPose;
     private SparkFunOTOS.Pose2D otosVel;
     private SparkFunOTOS.Pose2D otosAcc;
+    private GoBildaPinpointDriver pinpointOdo;
+    private Pose2D pinpointPose;
+    private Pose2D pinpointVelocity;
+    private Pose2D pinpointAcceleration;
     private double previousHeading;
     private double totalHeading;
     private Pose startPose;
@@ -69,6 +79,13 @@ public class STATICLocalizer extends Localizer {
         previousHeading = startPose.getHeading();
 
         otos.resetTracking();
+
+        pinpointOdo = this.hardwareMap.get(GoBildaPinpointDriver.class, HardwareMapNames.PINPOINT);
+
+        configurePinpoint();
+
+        pinpointOdo.recalibrateIMU();
+        pinpointOdo.resetPosAndIMU();
     }
 
     @Override
@@ -80,7 +97,8 @@ public class STATICLocalizer extends Localizer {
                 vec.rotateVector(startPose.getHeading());
                 return MathFunctions.addPoses(startPose, new Pose(vec.getXComponent(), vec.getYComponent(), pose.getHeading()));
             case PINPOINT:
-
+                Pose2D pinpointPose = pinpointOdo.getPosition();
+                return MathFunctions.addPoses(startPose, new Pose(pinpointPose.getX(DistanceUnit.INCH), pinpointPose.getY(DistanceUnit.INCH), pinpointPose.getHeading(AngleUnit.RADIANS)));
             case BUCKET:
 
             case CHAMBER:
@@ -98,7 +116,7 @@ public class STATICLocalizer extends Localizer {
             case OTOS:
                 return new Pose(otosVel.x, otosVel.y, otosVel.h);
             case PINPOINT:
-
+                return new Pose(pinpointVelocity.getX(DistanceUnit.INCH), pinpointVelocity.getY(DistanceUnit.INCH), pinpointVelocity.getHeading(AngleUnit.RADIANS));
             case BUCKET:
 
             case CHAMBER:
@@ -135,6 +153,12 @@ public class STATICLocalizer extends Localizer {
             totalHeading += MathFunctions.getSmallestAngleDifference(otosPose.h, previousHeading);
             previousHeading = otosPose.h;
         }
+        if (localizationMode == LocalizationMode.PINPOINT) {
+            pinpointOdo.update();
+            pinpointPose = pinpointOdo.getPosition();
+            pinpointVelocity = pinpointOdo.getVelocity();
+            pinpointAcceleration = null;
+        }
     }
 
     @Override
@@ -148,6 +172,11 @@ public class STATICLocalizer extends Localizer {
         otos.setOffset(OTOSConstants.offset);
         otos.setLinearScalar(OTOSConstants.linearScalar);
         otos.setAngularScalar(OTOSConstants.angularScalar);
+    }
+
+    private void configurePinpoint() {
+        pinpointOdo.resetPosAndIMU();
+        pinpointOdo.setOffsets(LConstants.pinpointOffsetX, LConstants.pinpointOffsetY);
     }
 
     private void configureLimelight() {
