@@ -25,7 +25,7 @@ public class LiftSubsystem extends SubsystemBase {
     public static int INTEGRAL_ENABLE_POINT = 20;
 
     public static int ENCODER_ZERO = 0;
-    public static int GROUND_HEIGHT = 90;
+    public static int GROUND_HEIGHT = 0;
     public static int LOW_BASKET_HEIGHT = 420;
     public static int HIGH_BASKET_HEIGHT = 850;
 

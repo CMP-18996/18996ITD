@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.common.commands;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 
@@ -11,9 +10,12 @@ public class RetractAndTransferCommand extends SequentialCommandGroup {
     public RetractAndTransferCommand(ExtensionSubsystem extensionSubsystem, IntakeSubsystem intakeSubsystem, DepositSubsystem depositSubsystem) {
         addCommands(
                 //new IntakeCommand(intakeSubsystem, IntakeSubsystem.IntakingState.DISABLED),
-                new ExtendCommand(extensionSubsystem, ExtensionSubsystem.ExtensionState.CONTRACTED),
+                new IntakeDirectPivotCommand(intakeSubsystem, IntakeSubsystem.IntakeDirectPivotState.MOVING),
+                new IntakeArmPivotCommand(intakeSubsystem, IntakeSubsystem.IntakeArmPivotState.MOVING),
                 new DepositRotationCommand(depositSubsystem, DepositSubsystem.TransferRotatorState.TRANSFER_READY),
+                new ExtendCommand(extensionSubsystem, ExtensionSubsystem.ExtensionState.CONTRACTED),
                 new IntakeRotatorCommand(intakeSubsystem, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
+                new IntakeArmPivotCommand(intakeSubsystem, IntakeSubsystem.IntakeArmPivotState.TRANSFERRING),
                 new WaitCommand(700),
                 new IntakeCommand(intakeSubsystem, IntakeSubsystem.IntakingState.REVERSING),
                 new WaitCommand(700),
