@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorImpl;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
@@ -19,20 +20,24 @@ public class ExtensionSubsystem extends SubsystemBase {
     public static int CONTRACTED_POS = 0;
     public static int FULL_EXTENSION_POS = 500;
     public static int TRANSFER_POS = 150;
-    public static double P = .008;
-    public static double F = .30;
+    public static int INTEGRAL_ENABLE_POINT = 10;
+    public static double KP = .007;
+    public static double KI = .000001;
+    public static double KD = .00001;
+    public static double KF = .35;
+    private double error = 0;
+    private double lastError = 0;
+    private double integralSum = 0;
+
     private int targetPosition = 0;
     public static double maxPower = .8;
-
-    public double error;
+    ElapsedTime timer = new ElapsedTime();
 
     public double telemetryPower;
 
     public enum ExtensionState {
         CONTRACTED(CONTRACTED_POS),
-        FULLY_EXTENDED(FULL_EXTENSION_POS), 
-        TRANSFER(TRANSFER_POS),
-        ENCODER_ZERO(0),
+        FULLY_EXTENDED(FULL_EXTENSION_POS),
         CUSTOM(100);
         public int position;
         ExtensionState(int value) { position = value; }
@@ -64,10 +69,13 @@ public class ExtensionSubsystem extends SubsystemBase {
         return targetPosition;
     }
 
-    public int getAbsError() {
+    public double getAbsError() {
         return Math.abs(extensionMotor.getCurrentPosition() - extensionState.position);
     }
 
+    public double getError() {
+        return extensionMotor.getCurrentPosition() - extensionState.position;
+    }
 //    @Deprecated
     public void setExtensionMotorPower(double power) {
         extensionMotor.setPower(power);
@@ -76,17 +84,24 @@ public class ExtensionSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         if (!extensionState.equals(ExtensionState.CUSTOM)) {
+            double I, D, F, P, power;
             error = targetPosition - extensionMotor.getCurrentPosition();
-            double power;
-
             double feedForwardPower = 0;
-            if (getAbsError() > 10) {
-                feedForwardPower = F * Math.signum(error);
+            if (getAbsError() > INTEGRAL_ENABLE_POINT) {
+                integralSum = 0;
             }
-
+            else {
+                integralSum = integralSum + (error * timer.seconds());
+            }
+            P = KP * error;
+            I = KI * integralSum;
+            D = KD * (error - lastError)/timer.seconds();
+            F = KF;
+            lastError = error;
+            timer.reset();
             power = Range.clip(P * error + feedForwardPower, -maxPower, maxPower);
 
-            if (getAbsError() <= 155) power *= .45;
+//          if (getAbsError() <= 155) power *= .45;
 
             telemetryPower = -power;
             extensionMotor.setPower(-power);
