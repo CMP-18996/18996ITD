@@ -1,12 +1,8 @@
 package org.firstinspires.ftc.teamcode.teleops;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
-import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ScheduleCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
@@ -23,22 +19,17 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.common.commands.ColorSensorStateCommand;
 import org.firstinspires.ftc.teamcode.common.commands.DepositRotationCommand;
-import org.firstinspires.ftc.teamcode.common.commands.ExtendAndBeginIntakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.ExtendCommand;
-import org.firstinspires.ftc.teamcode.common.commands.HangCommand;
 import org.firstinspires.ftc.teamcode.common.commands.InstantLiftCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeArmPivotCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeDirectPivotCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeRotatorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.LiftSetPosition;
-import org.firstinspires.ftc.teamcode.common.commands.RetractAndTransferClawsCommand;
-import org.firstinspires.ftc.teamcode.common.commands.RetractAndTransferCommand;
-import org.firstinspires.ftc.teamcode.common.commands.SingleColorSensorCommand;
+import org.firstinspires.ftc.teamcode.common.bigcommands.RetractAndTransferCommand;
 import org.firstinspires.ftc.teamcode.common.commands.SpecimenArmCommand;
 import org.firstinspires.ftc.teamcode.common.commands.SpecimenGripperCommand;
 import org.firstinspires.ftc.teamcode.common.commands.TrapdoorCommand;
-import org.firstinspires.ftc.teamcode.common.commands.ZeroMotorCommand;
 import org.firstinspires.ftc.teamcode.common.robot.Drive;
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 import org.firstinspires.ftc.teamcode.common.robot.OdometryHardware;
@@ -46,7 +37,6 @@ import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.Team;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.ExtensionSubsystem;
-import org.firstinspires.ftc.teamcode.common.robot.subsystems.HangSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
@@ -159,7 +149,7 @@ public class EarlyTeleOp extends CommandOpMode {
 
                                     new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
                                      */
-                                    new RetractAndTransferClawsCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
+                                    new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit), //weird thing here LOOK AT LATER
                                     new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM),
                                     new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED)
                             ).whenFinished(() -> robot.setTransferringState(false))

@@ -4,12 +4,10 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.common.commands.ExtendAndBeginIntakeCommand;
-import org.firstinspires.ftc.teamcode.common.commands.RetractAndTransferClawsCommand;
-import org.firstinspires.ftc.teamcode.common.commands.RetractAndTransferCommand;
+import org.firstinspires.ftc.teamcode.common.bigcommands.ExtendAndBeginIntakeCommand;
+import org.firstinspires.ftc.teamcode.common.bigcommands.RetractAndTransferCommand;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 @TeleOp(name = "Extend and Begin Intake Command")
@@ -28,7 +26,7 @@ public class ExtendAndIntakeTest extends CommandOpMode {
                 new SequentialCommandGroup(
                         new ExtendAndBeginIntakeCommand(robot.extension, robot.intake, robot.lift),
                         new WaitCommand(1000),
-                        new RetractAndTransferClawsCommand(robot.extension, robot.intake, robot.deposit, robot.lift)
+                        new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit)// look at later
                 )
         );
     }
