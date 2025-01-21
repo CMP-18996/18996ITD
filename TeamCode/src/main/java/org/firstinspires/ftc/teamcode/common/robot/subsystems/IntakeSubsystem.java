@@ -15,15 +15,14 @@ import org.firstinspires.ftc.teamcode.common.robot.Team;
 @Config
 public class IntakeSubsystem extends SubsystemBase {
     // Constants
-    public static double INTAKE_ROTATION_TRANSFER = 0.37; // max and min rotation used as what arm is actually being rotated to, subject to change
-    public static double INTAKE_ROTATION_PICK_UP = 0.97;
-    public static double INTAKE_ROTATION_MOVING = 0.6;
-    public static double INTAKE_ARM_PIVOT_PICK_UP = .4;
-    public static double INTAKE_ARM_PIVOT_MOVING = .3;
-    public static double INTAKE_ARM_PIVOT_DROPPING = .2;
-    public static double INTAKE_DIRECT_PIVOT_PICK_UP = .4;
-    public static double INTAKE_DIRECT_PIVOT_MOVING = .3;
-    public static double INTAKE_DIRECT_PIVOT_DROPPING = .2;
+    public static Double INTAKE_ROTATION_TRANSFER = 0.0; // max and min rotation used as what arm is actually being rotated to, subject to change
+    public static Double INTAKE_ROTATION_PICK_UP = 0.30;
+    public static Double INTAKE_ROTATION_MOVING = 0.25;
+
+    public static Double INTAKE_PIVOT_TRANSFER = 0.15;
+    public static Double INTAKE_PIVOT_PICK_UP = 0.30;
+    public static Double INTAKE_PIVOT_MOVING = 0.25;
+
     public static double CLOSED_VALUE = .5;
     public static double EJECTING_VALUE = 1.0;
     public static double ACTIVE_VALUE = 1.0;
@@ -32,14 +31,12 @@ public class IntakeSubsystem extends SubsystemBase {
 
     // State
     final private CRServoImpl intakeServo1;
-//     final private ServoEx trapdoorServo, intakeRotationServo;
-    final private Servo trapdoorServo, intakeRotationServo, intakeArmPivotServo, intakeDirectPivotServo;
+    final private Servo trapdoorServo, intakeRotationServo, intakePivotServo;
     public ColorSensor colorSensor; //TODO: isn't this and the above INTERFACES? you can't instantiate interfaces...
     private TrapdoorState trapdoorState = TrapdoorState.CLOSED;
     private IntakingState intakingState = IntakingState.DISABLED;
     private IntakeRotatorState intakeRotatorState = IntakeRotatorState.TRANSFERRING;
-    private IntakeArmPivotState intakeArmPivotState = IntakeArmPivotState.MOVING;
-    private IntakeDirectPivotState intakeDirectPivotState = IntakeDirectPivotState.MOVING;
+    private IntakeArmPivotState intakeArmPivotState;
     public ColorState colorState = ColorState.NONE;
     public ColorSensorState colorSensorState = ColorSensorState.WORKING;
     public enum TrapdoorState {
@@ -56,28 +53,21 @@ public class IntakeSubsystem extends SubsystemBase {
         IntakingState(double inval) {val = inval;}
     }
     public enum IntakeArmPivotState {
-        PICK_UP(INTAKE_ARM_PIVOT_PICK_UP),
-        MOVING(INTAKE_ARM_PIVOT_MOVING),
-        TRANSFERRING(INTAKE_ARM_PIVOT_DROPPING);
-        public double val;
-        IntakeArmPivotState(double inval) {val = inval; }
-    }
-
-    public enum IntakeDirectPivotState {
-        PICK_UP(INTAKE_DIRECT_PIVOT_PICK_UP),
-        MOVING(INTAKE_DIRECT_PIVOT_MOVING),
-        DROPPING(INTAKE_DIRECT_PIVOT_DROPPING);
-        public double val;
-        IntakeDirectPivotState(double inval) {val = inval; }
+        PICK_UP(INTAKE_PIVOT_PICK_UP),
+        MOVING(INTAKE_PIVOT_MOVING),
+        TRANSFERRING(INTAKE_PIVOT_TRANSFER);
+        public Double val;
+        IntakeArmPivotState(Double inval) {val = inval; }
     }
 
     public enum IntakeRotatorState {
         TRANSFERRING(INTAKE_ROTATION_TRANSFER),
         MOVING(INTAKE_ROTATION_MOVING),
         PICKING_UP(INTAKE_ROTATION_PICK_UP);
-        public double val;
-        IntakeRotatorState(double inval) {val = inval;}
+        public Double val;
+        IntakeRotatorState(Double inval) {val = inval;}
     }
+
     public enum ColorState {
         NONE,
         YELLOW,
@@ -93,6 +83,8 @@ public class IntakeSubsystem extends SubsystemBase {
     public void slightlyIncrementRotator(double increment) {
         intakeRotationServo.setPosition(Range.clip(intakeRotatorState.val + increment, -1.0, 1.0));
     }
+
+    /*
     public ColorState updateColorState(){
         int r, g, b, a;
         r = colorSensor.red();
@@ -117,6 +109,8 @@ public class IntakeSubsystem extends SubsystemBase {
         }
         return colorState;
     }
+
+     */
 
     public Team updateColorState2(){
         int r, g, b, a;
@@ -160,10 +154,6 @@ public class IntakeSubsystem extends SubsystemBase {
         this.colorSensorState = colorSensorState;
     }
 
-    public void updateIntakeDirectPivotState(IntakeDirectPivotState intakeDirectPivotState) {
-        this.intakeDirectPivotState = intakeDirectPivotState;
-        intakeDirectPivotServo.setPosition(intakeDirectPivotState.val);
-    }
     public ColorSensorState getColorSensorState() {
         return colorSensorState;
     }
@@ -175,7 +165,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void updateIntakeArmPivotState(IntakeArmPivotState intakeArmPivotState) {
         this.intakeArmPivotState = intakeArmPivotState;
-        intakeArmPivotServo.setPosition(intakeArmPivotState.val);
+        intakePivotServo.setPosition(intakeArmPivotState.val);
     }
 
     public void updateIntakingState(IntakingState setState) {
@@ -204,14 +194,14 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public IntakeSubsystem(HardwareMap hardwareMap) {
         trapdoorServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_TRAPDOOR);
-        intakeRotationServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_ROTATOR);
-        intakeDirectPivotServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_DIRECT_PIVOT);
-        intakeArmPivotServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_ARM_PIVOT);
+        intakeRotationServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_BOTTOM_PIVOT);
+        intakePivotServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_TOP_PIVOT);
         intakeServo1 = hardwareMap.get(CRServoImpl.class, HardwareMapNames.INTAKE_SERVO_1);
         colorSensor = hardwareMap.get(ColorSensor.class, HardwareMapNames.INTAKE_COLOR_SENSOR);
         intakeRotationServo.setDirection(Servo.Direction.FORWARD);
         intakeServo1.setDirection(DcMotorSimple.Direction.FORWARD); // subject to change
         this.updateIntakeRotatorState(IntakeRotatorState.TRANSFERRING);
+        this.updateIntakeArmPivotState(IntakeArmPivotState.TRANSFERRING);
         this.updateIntakingState(IntakingState.DISABLED);
         updateTrapdoorState(TrapdoorState.CLOSED);
     }

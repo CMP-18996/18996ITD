@@ -36,13 +36,11 @@ public class HardwareMapNames {
 
 
     // Intake
-    public static String INTAKE_SERVO_1 = "intake1";
-    public static String INTAKE_SERVO_2 = "intake2";
-    public static String INTAKE_ROTATOR = "intakeRotator";
-    public static String INTAKE_TRAPDOOR = "trapdoor";
+    public static String INTAKE_SERVO_1 = "intakeRoller";
+    public static String INTAKE_BOTTOM_PIVOT = "intakeBottomPivot";
+    public static String INTAKE_TRAPDOOR = "intakeTrapdoor";
     public static String INTAKE_COLOR_SENSOR = "colorSensor";
-    public static String INTAKE_ARM_PIVOT = "intakeArmPivot";
-    public static String INTAKE_DIRECT_PIVOT = "intakeDirectPivot";
+    public static String INTAKE_TOP_PIVOT = "intakeTopPivot";
 
     // Extension
     public static String EXTENSION_MOTOR = "extension";

@@ -10,7 +10,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
@@ -31,7 +30,7 @@ public class LiftSubsystem extends SubsystemBase {
 
     public static double MAX_UP_SPEED = 1.0;
     public static double MAX_DOWN_SPEED = 0.6;
-    private boolean toggleLift = true;
+    private boolean liftEnabled = true;
 
     // State
     public final DcMotorImpl liftMotor;
@@ -65,7 +64,7 @@ public class LiftSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (toggleLift) {
+        if (liftEnabled) {
             int error = currTarget - liftMotor.getCurrentPosition();
 
             double P = Kp * error;
@@ -107,7 +106,7 @@ public class LiftSubsystem extends SubsystemBase {
     }
 
     public void toggleLift() {
-        toggleLift = !toggleLift;
+        liftEnabled = !liftEnabled;
     }
 
     public enum LiftState {

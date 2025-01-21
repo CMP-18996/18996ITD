@@ -23,7 +23,6 @@ import org.firstinspires.ftc.teamcode.common.commands.ExtendCommand;
 import org.firstinspires.ftc.teamcode.common.commands.InstantLiftCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeArmPivotCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeCommand;
-import org.firstinspires.ftc.teamcode.common.commands.IntakeDirectPivotCommand;
 import org.firstinspires.ftc.teamcode.common.commands.IntakeRotatorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.LiftSetPosition;
 import org.firstinspires.ftc.teamcode.common.bigcommands.RetractAndTransferCommand;
@@ -183,14 +182,14 @@ public class EarlyTeleOp extends CommandOpMode {
                                 new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.ACTIVE),
                                 new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.CLOSED),
                                 new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.PICKING_UP),
-                                new IntakeArmPivotCommand(robot.intake, IntakeSubsystem.IntakeArmPivotState.PICK_UP),
-                                new IntakeDirectPivotCommand(robot.intake, IntakeSubsystem.IntakeDirectPivotState.PICK_UP)
+                                new IntakeArmPivotCommand(robot.intake, IntakeSubsystem.IntakeArmPivotState.PICK_UP)
+                                //new IntakeDirectPivotCommand(robot.intake, IntakeSubsystem.IntakeDirectPivotState.PICK_UP)
                         ),
                         new ScheduleCommand(
                                 new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
                                 new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
-                                new IntakeArmPivotCommand(robot.intake, IntakeSubsystem.IntakeArmPivotState.MOVING),
-                                new IntakeDirectPivotCommand(robot.intake, IntakeSubsystem.IntakeDirectPivotState.MOVING)
+                                new IntakeArmPivotCommand(robot.intake, IntakeSubsystem.IntakeArmPivotState.MOVING)
+                                //new IntakeDirectPivotCommand(robot.intake, IntakeSubsystem.IntakeDirectPivotState.MOVING)
                         ),
                         () -> robot.intake.getIntakingState().equals(IntakeSubsystem.IntakingState.DISABLED)
                 )
