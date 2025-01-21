@@ -26,7 +26,7 @@ public class DepositSubsystem extends SubsystemBase {
 //        INTERMEDIATE(TRANSFER_ROTATOR_INTERMEDIATE),
         DEPOSITING(TRANSFER_ROTATOR_DEPOSIT);
 
-        public Double val;
+        public double val;
         TransferRotatorState(Double inVal) { val = inVal; }
     }
 
