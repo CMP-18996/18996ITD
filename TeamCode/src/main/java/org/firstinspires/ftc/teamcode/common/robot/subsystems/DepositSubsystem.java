@@ -18,7 +18,6 @@ public class DepositSubsystem extends SubsystemBase {
     // State
     private final Servo transferRotatorServo;
     final private Servo transferClawServo;
-    private ClawState clawState = ClawState.OPEN;
 
     private TransferRotatorState transferRotatorState = TransferRotatorState.TRANSFER_READY;
     public enum TransferRotatorState {
@@ -30,24 +29,10 @@ public class DepositSubsystem extends SubsystemBase {
         public double val;
         TransferRotatorState(double inVal) { val = inVal; }
     }
-    public enum ClawState {
-        CLOSED(0.3),
-        OPEN(0.75);
-        public double val;
-        ClawState(double inVal) { val = inVal; }
-    }
 
     public void updateTransferRotatorState(TransferRotatorState setState) {
         transferRotatorState = setState;
         transferRotatorServo.setPosition(transferRotatorState.val);
-    }
-    public void updateTransferClawState(ClawState setState) {
-        clawState = setState;
-        transferClawServo.setPosition(clawState.val);
-    }
-
-    public ClawState getClawState() {
-        return clawState;
     }
 
     public TransferRotatorState getTransferRotatorState() {
@@ -61,6 +46,5 @@ public class DepositSubsystem extends SubsystemBase {
 
         transferClawServo = hardwareMap.get(Servo.class, HardwareMapNames.CLAW_SERVO);
         transferClawServo.setDirection(Servo.Direction.FORWARD);
-        this.updateTransferClawState(ClawState.OPEN);
     }
 }
