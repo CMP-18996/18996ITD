@@ -9,42 +9,43 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 @Config
 public class DepositSubsystem extends SubsystemBase {
-    // Constants
-    public static Double TRANSFER_ROTATOR_TRANSFER = 0.00;
-    public static Double TRANSFER_ROTATOR_DEPOSIT = 1.0;
-    public static Double TRANSFER_ROTATOR_READY = 0.5;
-//    public static Double TRANSFER_ROTATOR_INTERMEDIATE = 0.5;
+    public static double BUCKET_TRANSFER = 0.00;
+    public static double BUCKET_READY = 0.5;
+    public static double BUCKET_DEPOSIT = 1.0;
 
-    // State
-    private final Servo transferRotatorServo;
-    final private Servo transferClawServo;
+    private final Servo bucketServo;
+    private BucketState bucketState;
 
-    private TransferRotatorState transferRotatorState = TransferRotatorState.TRANSFER_READY;
-    public enum TransferRotatorState {
-        TRANSFER_READY(TRANSFER_ROTATOR_TRANSFER),
-        READY_TO_DEPOSIT(TRANSFER_ROTATOR_READY),
-//        INTERMEDIATE(TRANSFER_ROTATOR_INTERMEDIATE),
-        DEPOSITING(TRANSFER_ROTATOR_DEPOSIT);
+    public enum BucketState {
+        TRANSFER,
+        READY,
+        DEPOSIT;
 
-        public double val;
-        TransferRotatorState(Double inVal) { val = inVal; }
-    }
-
-    public void updateTransferRotatorState(TransferRotatorState setState) {
-        transferRotatorState = setState;
-        transferRotatorServo.setPosition(transferRotatorState.val);
-    }
-
-    public TransferRotatorState getTransferRotatorState() {
-        return transferRotatorState;
+        public double getValue() {
+            switch (this) {
+                case TRANSFER:
+                    return BUCKET_TRANSFER;
+                case READY:
+                    return BUCKET_READY;
+                case DEPOSIT:
+                    return BUCKET_DEPOSIT;
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
     }
 
     public DepositSubsystem(HardwareMap hardwareMap) {
-        transferRotatorServo = hardwareMap.get(Servo.class, HardwareMapNames.BUCKET_SERVO);
-        transferRotatorServo.setDirection(Servo.Direction.FORWARD);
-        this.updateTransferRotatorState(TransferRotatorState.READY_TO_DEPOSIT);
+        bucketServo = hardwareMap.get(Servo.class, HardwareMapNames.BUCKET_SERVO);
+        bucketServo.setDirection(Servo.Direction.FORWARD);
+    }
 
-        transferClawServo = hardwareMap.get(Servo.class, HardwareMapNames.CLAW_SERVO);
-        transferClawServo.setDirection(Servo.Direction.FORWARD);
+    public void setBucketState(BucketState bucketState) {
+        this.bucketState = bucketState;
+        bucketServo.setPosition(bucketState.getValue());
+    }
+
+    public BucketState getBucketState() {
+        return bucketState;
     }
 }
