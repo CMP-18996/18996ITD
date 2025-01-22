@@ -5,7 +5,7 @@ import static java.lang.Math.abs;
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorImpl;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -15,139 +15,97 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 @Config
 public class LiftSubsystem extends SubsystemBase {
-    // Constants
     public static double Kp = 0.012;
     public static double Ki = 0.04;
     public static double Kd = 0.0003;
     public static double Kf = 0.19;
-
     public static int INTEGRAL_ENABLE_POINT = 20;
 
-    public static int ENCODER_ZERO = 0;
-    public static int GROUND_HEIGHT = 0;
-    public static int LOW_BASKET_HEIGHT = 420;
-    public static int HIGH_BASKET_HEIGHT = 850;
+    public static int TRANSFER_POS = 0;
+    public static int LOW_BASKET_POS = 420;
+    public static int HIGH_BASKET_POS = 850;
 
     public static double MAX_UP_SPEED = 1.0;
     public static double MAX_DOWN_SPEED = 0.6;
-    private boolean liftEnabled = true;
 
-    // State
-    public final DcMotorImpl liftMotor;
-    public int currTarget;
+    public final DcMotorEx liftMotor;
+
+    public LiftState liftState;
 
     private int lastError = 0;
     public double integralSum = 0;
-
     ElapsedTime timer = new ElapsedTime();
 
-    public double telemetryPower;
+    public enum LiftState {
+        TRANSFER,
+        LOW_BASKET,
+        HIGH_BASKET;
 
-    public void setTargetPosition(int targetPosition) {
-        currTarget = targetPosition;
+        public int getValue() {
+            switch (this) {
+                case TRANSFER:
+                    return TRANSFER_POS;
+                case LOW_BASKET:
+                    return LOW_BASKET_POS;
+                case HIGH_BASKET:
+                    return HIGH_BASKET_POS;
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
+    }
+
+    public LiftSubsystem(HardwareMap hardwareMap) {
+        liftMotor = hardwareMap.get(DcMotorEx.class, HardwareMapNames.LIFT_MOTOR);
+
+        liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        setLiftState(LiftState.TRANSFER);
+    }
+
+    public void setLiftState(LiftState liftState) {
+        this.liftState = liftState;
         integralSum = 0;
         lastError = 0;
         timer.reset();
     }
 
-    public void setTargetPosition(LiftState targetState) {
-        setTargetPosition(targetState.height);
+    public LiftState getLiftState() {
+        return liftState;
     }
 
-    public int getCurrentPosition() {
-        return liftMotor.getCurrentPosition();
-    }
-
-    public int getCurrTarget() {
-        return currTarget;
+    public int getError() {
+        return liftState.getValue() - liftMotor.getCurrentPosition();
     }
 
     @Override
     public void periodic() {
-        if (liftEnabled) {
-            int error = currTarget - liftMotor.getCurrentPosition();
+        int error = getError();
 
-            double P = Kp * error;
+        double P = Kp * error;
 
-            if (Math.abs(error) > INTEGRAL_ENABLE_POINT) {
-                integralSum = 0;
-            }
-            else {
-                integralSum = integralSum + (error * timer.seconds());
-            }
-
-            double I = Ki * integralSum;
-
-            double D = Kd * (error - lastError) / timer.seconds();
-
-            double F = Kf;
-
-            lastError = error;
-            timer.reset();
-
-            double power = Range.clip(P + I + D + F, -MAX_DOWN_SPEED, MAX_UP_SPEED);
-            telemetryPower = power;
-
-            liftMotor.setPower(power);
+        if (Math.abs(error) > INTEGRAL_ENABLE_POINT) {
+            integralSum = 0;
         }
-    }
-
-    public boolean motorWorking() {
-        return liftMotor.isBusy();
-    }
-
-
-    public int getAbsError() {
-        return Math.abs(currTarget - liftMotor.getCurrentPosition());
-    }
-
-    public int getError() {
-        return currTarget - liftMotor.getCurrentPosition();
-    }
-
-    public void toggleLift() {
-        liftEnabled = !liftEnabled;
-    }
-
-    public enum LiftState {
-        GROUND(GROUND_HEIGHT),
-        LOW_BASKET(LOW_BASKET_HEIGHT),
-        HIGH_BASKET(HIGH_BASKET_HEIGHT);
-
-        public int height;
-        LiftState(int height) {
-            this.height = height;
+        else {
+            integralSum = integralSum + (error * timer.seconds());
         }
 
-        public void changeHeight(int change) {
-            this.height += change;
-        }
-    }
+        double I = Ki * integralSum;
 
-    public LiftSubsystem(HardwareMap hardwareMap) {
-        liftMotor = hardwareMap.get(DcMotorImpl.class, HardwareMapNames.LIFT_MOTOR);
+        double D = Kd * (error - lastError) / timer.seconds();
 
-        liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        double F = Kf;
 
-        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        lastError = error;
+        timer.reset();
 
-//        currTarget = LiftSubsystem.GROUND;
-        setTargetPosition(LiftState.GROUND);
+        double power = Range.clip(P + I + D + F, -MAX_DOWN_SPEED, MAX_UP_SPEED);
 
-    }
-
-    public LiftSubsystem(HardwareMap hardwareMap, boolean TeleOp) {
-        liftMotor = hardwareMap.get(DcMotorImpl.class, HardwareMapNames.LIFT_MOTOR);
-
-        liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-//        currTarget = LiftSubsystem.GROUND;
-        setTargetPosition(LiftState.GROUND);
+        liftMotor.setPower(power);
     }
 }
