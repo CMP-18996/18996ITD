@@ -9,9 +9,9 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 @Config
 public class DepositSubsystem extends SubsystemBase {
-    public static double BUCKET_TRANSFER = 0.00;
-    public static double BUCKET_READY = 0.5;
-    public static double BUCKET_DEPOSIT = 1.0;
+    public static double TRANSFER_POS = 0.00;
+    public static double READY_POS = 0.5;
+    public static double DEPOSIT_POS = 1.0;
 
     private final Servo bucketServo;
     private BucketState bucketState;
@@ -24,11 +24,11 @@ public class DepositSubsystem extends SubsystemBase {
         public double getValue() {
             switch (this) {
                 case TRANSFER:
-                    return BUCKET_TRANSFER;
+                    return TRANSFER_POS;
                 case READY:
-                    return BUCKET_READY;
+                    return READY_POS;
                 case DEPOSIT:
-                    return BUCKET_DEPOSIT;
+                    return DEPOSIT_POS;
                 default:
                     throw new IllegalArgumentException();
             }
@@ -38,6 +38,7 @@ public class DepositSubsystem extends SubsystemBase {
     public DepositSubsystem(HardwareMap hardwareMap) {
         bucketServo = hardwareMap.get(Servo.class, HardwareMapNames.BUCKET_SERVO);
         bucketServo.setDirection(Servo.Direction.FORWARD);
+        setBucketState(BucketState.TRANSFER);
     }
 
     public void setBucketState(BucketState bucketState) {

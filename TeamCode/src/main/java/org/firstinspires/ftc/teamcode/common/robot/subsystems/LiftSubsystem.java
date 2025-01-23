@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.common.robot.subsystems;
 
-import static java.lang.Math.abs;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -28,13 +26,13 @@ public class LiftSubsystem extends SubsystemBase {
     public static double MAX_UP_SPEED = 1.0;
     public static double MAX_DOWN_SPEED = 0.6;
 
-    public final DcMotorEx liftMotor;
+    private final DcMotorEx liftMotor;
 
-    public LiftState liftState;
+    private LiftState liftState;
 
     private int lastError = 0;
-    public double integralSum = 0;
-    ElapsedTime timer = new ElapsedTime();
+    private double integralSum = 0;
+    private final ElapsedTime timer = new ElapsedTime();
 
     public enum LiftState {
         TRANSFER,
@@ -64,7 +62,7 @@ public class LiftSubsystem extends SubsystemBase {
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        setLiftState(LiftState.TRANSFER);
+        this.setLiftState(LiftState.TRANSFER);
     }
 
     public void setLiftState(LiftState liftState) {

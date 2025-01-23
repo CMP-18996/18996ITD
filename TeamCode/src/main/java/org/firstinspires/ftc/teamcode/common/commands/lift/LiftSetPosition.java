@@ -5,14 +5,12 @@ import com.arcrobotics.ftclib.command.CommandBase;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 
 public class LiftSetPosition extends CommandBase {
-    LiftSubsystem liftSubsystem;
-    LiftSubsystem.LiftState liftState;
-    int tolerance;
+    private final LiftSubsystem liftSubsystem;
+    private final LiftSubsystem.LiftState liftState;
+    private final int tolerance;
 
     public LiftSetPosition(LiftSubsystem liftSubsystem, LiftSubsystem.LiftState liftState){
-        this.liftState = liftState;
-        this.liftSubsystem = liftSubsystem;
-        this.tolerance = 10;
+        this(liftSubsystem, liftState, 10);
     }
 
     public LiftSetPosition(LiftSubsystem liftSubsystem, LiftSubsystem.LiftState liftState, int tolerance){
@@ -28,6 +26,7 @@ public class LiftSetPosition extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return (Math.abs(liftSubsystem.getError()) <= tolerance);
+        return (Math.abs(liftSubsystem.getError()) <= tolerance
+        || !liftState.equals(liftSubsystem.getLiftState()));
     }
 }
