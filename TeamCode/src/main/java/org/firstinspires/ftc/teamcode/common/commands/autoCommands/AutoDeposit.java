@@ -1,17 +1,12 @@
-package org.firstinspires.ftc.teamcode.common.autocmd;
+package org.firstinspires.ftc.teamcode.common.commands.autoCommands;
 
 import com.arcrobotics.ftclib.command.ParallelDeadlineGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 
-import org.firstinspires.ftc.teamcode.common.commands.DepositRotationCommand;
-import org.firstinspires.ftc.teamcode.common.commands.ExtendCommand;
-import org.firstinspires.ftc.teamcode.common.commands.IntakeCommand;
-import org.firstinspires.ftc.teamcode.common.commands.IntakeRotatorCommand;
-import org.firstinspires.ftc.teamcode.common.commands.LiftSetPosition;
+import org.firstinspires.ftc.teamcode.common.commands.deposit.DepositSetPosition_INST;
+import org.firstinspires.ftc.teamcode.common.commands.lift.LiftSetPosition;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
-import org.firstinspires.ftc.teamcode.common.robot.subsystems.ExtensionSubsystem;
-import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 
 public class AutoDeposit extends SequentialCommandGroup {
@@ -22,13 +17,13 @@ public class AutoDeposit extends SequentialCommandGroup {
                         new LiftSetPosition(liftSubsystem, LiftSubsystem.LiftState.HIGH_BASKET),
                         new SequentialCommandGroup(
                                 new WaitCommand(400),
-                                new DepositRotationCommand(depositSubsystem, DepositSubsystem.TransferRotatorState.DEPOSITING)
+                                new DepositSetPosition_INST(depositSubsystem, DepositSubsystem.BucketState.DEPOSIT)
                         )
                 ),
                 new ParallelDeadlineGroup(
                         new WaitCommand(800),
-                        new LiftSetPosition(liftSubsystem, LiftSubsystem.LiftState.GROUND),
-                        new DepositRotationCommand(depositSubsystem, DepositSubsystem.TransferRotatorState.TRANSFER_READY)
+                        new LiftSetPosition(liftSubsystem, LiftSubsystem.LiftState.TRANSFER),
+                        new DepositSetPosition_INST(depositSubsystem, DepositSubsystem.BucketState.TRANSFER)
                 )
         );
     }

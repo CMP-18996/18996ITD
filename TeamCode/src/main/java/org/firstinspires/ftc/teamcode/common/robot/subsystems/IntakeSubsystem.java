@@ -2,207 +2,233 @@ package org.firstinspires.ftc.teamcode.common.robot.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.qualcomm.robotcore.hardware.CRServoImpl;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
-import org.firstinspires.ftc.teamcode.common.robot.Team;
 
 @Config
 public class IntakeSubsystem extends SubsystemBase {
-    // Constants
-    public static Double INTAKE_ROTATION_TRANSFER = 0.0; // max and min rotation used as what arm is actually being rotated to, subject to change
-    public static Double INTAKE_ROTATION_PICK_UP = 0.30;
-    public static Double INTAKE_ROTATION_MOVING = 0.25;
+    public static double ARM_TRANSFER_POS = 0.0; // max and min rotation used as what arm is actually being rotated to, subject to change
+    public static double ARM_PICK_UP_POS = 0.30;
+    public static double ARM_MOVING_POS = 0.25;
+    public static double ARM_REST_POS = 0.3;
 
-    public static Double INTAKE_PIVOT_TRANSFER = 0.15;
-    public static Double INTAKE_PIVOT_PICK_UP = 0.30;
-    public static Double INTAKE_PIVOT_MOVING = 0.25;
+    public static double WRIST_TRANSFER_POS = 0.15;
+    public static double WRIST_PICK_UP_POS = 0.30;
+    public static double WRIST_MOVING_POS = 0.25;
+    public static double WRIST_REST_POS = 0.3;
 
-    public static double CLOSED_VALUE = .5;
-    public static double EJECTING_VALUE = 1.0;
-    public static double ACTIVE_VALUE = 1.0;
-    public static double DISABLED_VALUE = 0.0;
-    public static double REVERSING_VALUE = -1.0;
+    public static double TRAPDOOR_CLOSED_POS = 0.5;
+    public static double TRAPDOOR_OPEN_POS = 1.0;
 
-    // State
-    final private CRServoImpl intakeServo1;
-    final private Servo trapdoorServo, intakeRotationServo, intakePivotServo;
-    public ColorSensor colorSensor; //TODO: isn't this and the above INTERFACES? you can't instantiate interfaces...
-    private TrapdoorState trapdoorState = TrapdoorState.CLOSED;
-    private IntakingState intakingState = IntakingState.DISABLED;
-    private IntakeRotatorState intakeRotatorState = IntakeRotatorState.TRANSFERRING;
-    private IntakeArmPivotState intakeArmPivotState;
-    public ColorState colorState = ColorState.NONE;
-    public ColorSensorState colorSensorState = ColorSensorState.WORKING;
+    public static double ROLLER_ACTIVE = 1.0;
+    public static double ROLLER_DISABLED = 0.0;
+    public static double ROLLER_REVERSING = -1.0;
+
+    public static double ALPHA_CUTOFF = 60;
+
+    private final CRServo intakeRollerServo;
+    private final Servo trapdoorServo;
+    private final Servo intakeArmServo;
+    private final Servo intakeWristServo;
+    private final ColorSensor colorSensor;
+
+    private TrapdoorState trapdoorState;
+    private IntakeRollerState intakeRollerState;
+    private IntakeArmState intakeArmState;
+    private IntakeWristState intakeWristState;
+
+    private Color currentColor;
+    private ColorSensorStatus colorSensorStatus;
+
+    public enum IntakeRollerState {
+        ACTIVE,
+        DISABLED,
+        REVERSING;
+
+        public double getValue() {
+            switch (this) {
+                case ACTIVE:
+                    return ROLLER_ACTIVE;
+                case DISABLED:
+                    return ROLLER_DISABLED;
+                case REVERSING:
+                    return ROLLER_REVERSING;
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
+    }
+
+    public enum IntakeArmState {
+        TRANSFER,
+        REST,
+        MOVING,
+        PICK_UP;
+
+        public double getValue() {
+            switch (this) {
+                case TRANSFER:
+                    return ARM_TRANSFER_POS;
+                case REST:
+                    return ARM_REST_POS;
+                case MOVING:
+                    return ARM_MOVING_POS;
+                case PICK_UP:
+                    return ARM_PICK_UP_POS;
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
+    }
+
+    public enum IntakeWristState {
+        TRANSFER,
+        REST,
+        MOVING,
+        PICK_UP;
+
+        public double getValue() {
+            switch (this) {
+                case TRANSFER:
+                    return WRIST_TRANSFER_POS;
+                case REST:
+                    return WRIST_REST_POS;
+                case MOVING:
+                    return WRIST_MOVING_POS;
+                case PICK_UP:
+                    return WRIST_PICK_UP_POS;
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
+    }
+
     public enum TrapdoorState {
-        CLOSED(CLOSED_VALUE),
-        EJECTING(EJECTING_VALUE);
-        public double val;
-        TrapdoorState(double inval) {val = inval;}
-    }
-    public enum IntakingState {
-        ACTIVE(ACTIVE_VALUE),
-        DISABLED(DISABLED_VALUE),
-        REVERSING(REVERSING_VALUE);
-        public double val;
-        IntakingState(double inval) {val = inval;}
-    }
-    public enum IntakeArmPivotState {
-        PICK_UP(INTAKE_PIVOT_PICK_UP),
-        MOVING(INTAKE_PIVOT_MOVING),
-        TRANSFERRING(INTAKE_PIVOT_TRANSFER);
-        public Double val;
-        IntakeArmPivotState(Double inval) {val = inval; }
+        CLOSED,
+        OPEN;
+
+        public double getValue() {
+            switch (this) {
+                case CLOSED:
+                    return TRAPDOOR_CLOSED_POS;
+                case OPEN:
+                    return TRAPDOOR_OPEN_POS;
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
     }
 
-    public enum IntakeRotatorState {
-        TRANSFERRING(INTAKE_ROTATION_TRANSFER),
-        MOVING(INTAKE_ROTATION_MOVING),
-        PICKING_UP(INTAKE_ROTATION_PICK_UP);
-        public Double val;
-        IntakeRotatorState(Double inval) {val = inval;}
-    }
-
-    public enum ColorState {
+    public enum Color {
         NONE,
         YELLOW,
         RED,
         BLUE
     }
 
-    public enum ColorSensorState {
-        WORKING,
-        BROKEN
+    public enum ColorSensorStatus {
+        ENABLED,
+        DISABLED
     }
 
-    public void slightlyIncrementRotator(double increment) {
-        intakeRotationServo.setPosition(Range.clip(intakeRotatorState.val + increment, -1.0, 1.0));
+    public IntakeSubsystem(HardwareMap hardwareMap) {
+        trapdoorServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_TRAPDOOR);
+        intakeArmServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_BOTTOM_PIVOT);
+        intakeWristServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_TOP_PIVOT);
+        intakeRollerServo = hardwareMap.get(CRServo.class, HardwareMapNames.INTAKE_ROLLER_SERVO);
+        colorSensor = hardwareMap.get(ColorSensor.class, HardwareMapNames.INTAKE_COLOR_SENSOR);
+
+        trapdoorServo.setDirection(Servo.Direction.FORWARD);
+        intakeArmServo.setDirection(Servo.Direction.FORWARD);
+        intakeWristServo.setDirection(Servo.Direction.FORWARD);
+        intakeRollerServo.setDirection(DcMotor.Direction.FORWARD);
+        colorSensor.enableLed(true);
+
+        this.setTrapdoorState(TrapdoorState.CLOSED);
+        this.setIntakeArmState(IntakeArmState.REST);
+        this.setIntakeWristState(IntakeWristState.REST);
+        this.setIntakeRollerState(IntakeRollerState.DISABLED);
     }
 
-    /*
-    public ColorState updateColorState(){
-        int r, g, b, a;
-        r = colorSensor.red();
-        g = colorSensor.green();
-        b = colorSensor.blue();
-        a = colorSensor.alpha();
-        if (a < 100) return ColorState.NONE;
-
-        if(r > g && r > b){
-            colorState = ColorState.RED;
-        }
-        else if(g > r && g > b){
-            colorState = ColorState.YELLOW;
-        }
-        else if(b > r && b > g){
-            colorState = ColorState.BLUE;
-        }
-        else{
-            colorState = ColorState.NONE;
-            // this should NOT be NONE
-            // this is a edge case that we have to deal with
-        }
-        return colorState;
+    public void setColorSensorStatus(ColorSensorStatus colorSensorStatus) {
+        this.colorSensorStatus = colorSensorStatus;
     }
 
-     */
-
-    public Team updateColorState2(){
-        int r, g, b, a;
-        r = colorSensor.red();
-        g = colorSensor.green();
-        b = colorSensor.blue();
-        a = colorSensor.alpha();
-        Team returnedColorState;
-
-        if (colorSensorState == ColorSensorState.BROKEN) {
-            colorState = ColorState.NONE;
-
-            return Team.NONE;
-        }
-
-        if (a < 60) {
-            colorState = ColorState.NONE;
-            return Team.NONE;
-        }
-
-        if(r > g && r > b){
-            colorState = ColorState.RED;
-            returnedColorState = Team.RED;
-        }
-        else if(g > r && g > b){
-            colorState = ColorState.YELLOW;
-            returnedColorState = Team.YELLOW;
-        }
-        else if(b > r && b > g){
-            colorState = ColorState.BLUE;
-            returnedColorState = Team.BLUE;
-        }
-        else{
-            colorState = ColorState.NONE;
-            returnedColorState = Team.NONE;
-        }
-        return returnedColorState;
+    public void setTrapdoorState(TrapdoorState trapdoorState) {
+        this.trapdoorState = trapdoorState;
+        trapdoorServo.setPosition(trapdoorState.getValue());
     }
 
-    public void updateColorSensorState(ColorSensorState colorSensorState) {
-        this.colorSensorState = colorSensorState;
+    public void setIntakeArmState(IntakeArmState intakeArmState) {
+        this.intakeArmState = intakeArmState;
+        intakeArmServo.setPosition(intakeArmState.getValue());
     }
 
-    public ColorSensorState getColorSensorState() {
-        return colorSensorState;
+    public void setIntakeWristState(IntakeWristState intakeWristState) {
+        this.intakeWristState = intakeWristState;
+        intakeWristServo.setPosition(intakeWristState.getValue());
     }
 
-    public void updateTrapdoorState(TrapdoorState setState) {
-        trapdoorState = setState;
-        trapdoorServo.setPosition(trapdoorState.val);
+    public void setIntakeRollerState(IntakeRollerState intakeRollerState) {
+        this.intakeRollerState = intakeRollerState;
+        intakeRollerServo.setPower(intakeRollerState.getValue());
     }
 
-    public void updateIntakeArmPivotState(IntakeArmPivotState intakeArmPivotState) {
-        this.intakeArmPivotState = intakeArmPivotState;
-        intakePivotServo.setPosition(intakeArmPivotState.val);
-    }
-
-    public void updateIntakingState(IntakingState setState) {
-        intakingState = setState;
-        intakeServo1.setPower(intakingState.val);
-    }
-
-    public void updateIntakeRotatorState(IntakeRotatorState setState) {
-        intakeRotatorState = setState;
-        intakeRotationServo.setPosition(intakeRotatorState.val);
+    public ColorSensorStatus getColorSensorStatus() {
+        return colorSensorStatus;
     }
 
     public TrapdoorState getTrapdoorState() {
         return trapdoorState;
     }
 
-    public IntakingState getIntakingState() {
-        return intakingState;
+    public IntakeArmState getIntakeArmPivotState() { return intakeArmState; }
+
+    public IntakeWristState getIntakeWristState() {
+        return intakeWristState;
     }
 
-    public IntakeArmPivotState getIntakeArmPivotState() { return intakeArmPivotState; }
-
-    public IntakeRotatorState getIntakeRotatorState() {
-        return intakeRotatorState;
+    public IntakeRollerState getIntakeRollerState() {
+        return intakeRollerState;
     }
 
-    public IntakeSubsystem(HardwareMap hardwareMap) {
-        trapdoorServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_TRAPDOOR);
-        intakeRotationServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_BOTTOM_PIVOT);
-        intakePivotServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_TOP_PIVOT);
-        intakeServo1 = hardwareMap.get(CRServoImpl.class, HardwareMapNames.INTAKE_SERVO_1);
-        colorSensor = hardwareMap.get(ColorSensor.class, HardwareMapNames.INTAKE_COLOR_SENSOR);
-        intakeRotationServo.setDirection(Servo.Direction.FORWARD);
-        intakeServo1.setDirection(DcMotorSimple.Direction.FORWARD); // subject to change
-        this.updateIntakeRotatorState(IntakeRotatorState.TRANSFERRING);
-        this.updateIntakeArmPivotState(IntakeArmPivotState.TRANSFERRING);
-        this.updateIntakingState(IntakingState.DISABLED);
-        updateTrapdoorState(TrapdoorState.CLOSED);
+    public Color getCurrentColor() {
+        return currentColor;
+    }
+
+    private void updateCurrentColor() {
+        int color = colorSensor.argb();
+        int r, g, b, a;
+        r = android.graphics.Color.red(color);
+        g = android.graphics.Color.green(color);
+        b = android.graphics.Color.blue(color);
+        a = android.graphics.Color.alpha(color);
+
+        if(colorSensorStatus.equals(ColorSensorStatus.DISABLED) || a < ALPHA_CUTOFF) {
+            currentColor = Color.NONE;
+        }
+        else if(r > g && r > b){
+            currentColor = Color.RED;
+        }
+        else if(g > r && g > b){
+            currentColor = Color.YELLOW;
+        }
+        else if(b > r && b > g){
+            currentColor = Color.BLUE;
+        }
+        else {
+            // Pray this never happens
+            currentColor = Color.NONE;
+        }
+    }
+
+    @Override
+    public void periodic() {
+        updateCurrentColor();
     }
 }

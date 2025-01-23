@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.checkerframework.checker.units.qual.C;
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 @Config
@@ -25,7 +24,7 @@ public class TEST extends LinearOpMode {
     public void runOpMode() {
         Servo bottom = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_BOTTOM_PIVOT);
         Servo top = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_TOP_PIVOT);
-        CRServo intake = hardwareMap.get(CRServo.class, HardwareMapNames.INTAKE_SERVO_1);
+        CRServo intake = hardwareMap.get(CRServo.class, HardwareMapNames.INTAKE_ROLLER_SERVO);
 
         waitForStart();
         while(opModeIsActive()) {
@@ -33,20 +32,20 @@ public class TEST extends LinearOpMode {
             top.setPosition(INTAKE_PIVOT_TRANSFER);
             intake.setPower(0.2);
             sleep(1000);
-            while (!gamepad1.a) ;
+            while (!gamepad1.a && !opModeIsActive()) ;
             {
             }
             bottom.setPosition(INTAKE_ROTATION_MOVING);
             top.setPosition(INTAKE_PIVOT_MOVING);
             sleep(1000);
-            while (!gamepad1.a) ;
+            while (!gamepad1.a && !opModeIsActive()) ;
             {
             }
             bottom.setPosition(INTAKE_ROTATION_PICK_UP);
             top.setPosition(INTAKE_PIVOT_PICK_UP);
             intake.setPower(1);
             sleep(1000);
-            while (!gamepad1.a) ;
+            while (!gamepad1.a && !opModeIsActive()) ;
             {
             }
         }

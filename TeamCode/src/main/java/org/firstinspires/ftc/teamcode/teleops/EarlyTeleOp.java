@@ -1,5 +1,4 @@
-package org.firstinspires.ftc.teamcode.teleops;
-
+/*
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
@@ -17,18 +16,18 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.common.commands.ColorSensorStateCommand;
-import org.firstinspires.ftc.teamcode.common.commands.DepositRotationCommand;
-import org.firstinspires.ftc.teamcode.common.commands.ExtendCommand;
-import org.firstinspires.ftc.teamcode.common.commands.InstantLiftCommand;
-import org.firstinspires.ftc.teamcode.common.commands.IntakeArmPivotCommand;
-import org.firstinspires.ftc.teamcode.common.commands.IntakeCommand;
-import org.firstinspires.ftc.teamcode.common.commands.IntakeRotatorCommand;
-import org.firstinspires.ftc.teamcode.common.commands.LiftSetPosition;
-import org.firstinspires.ftc.teamcode.common.bigcommands.RetractAndTransferCommand;
-import org.firstinspires.ftc.teamcode.common.commands.SpecimenArmCommand;
-import org.firstinspires.ftc.teamcode.common.commands.SpecimenGripperCommand;
-import org.firstinspires.ftc.teamcode.common.commands.TrapdoorCommand;
+import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetColorSensorStatus_INST;
+import org.firstinspires.ftc.teamcode.common.commands.deposit.DepositSetPosition_INST;
+import org.firstinspires.ftc.teamcode.common.commands.extension.ExtensionSetPosition;
+import org.firstinspires.ftc.teamcode.common.commands.lift.LiftSetPosition_INST;
+import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeWristSetPosition_INST;
+import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetRollerState_INST;
+import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeArmSetPosition_INST;
+import org.firstinspires.ftc.teamcode.common.commands.lift.LiftSetPosition;
+import org.firstinspires.ftc.teamcode.common.commands.complexCommands.RetractAndTransferCommand;
+import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetArmPosition;
+import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetGripperPosition_INST;
+import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeTrapdoorSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.robot.Drive;
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 import org.firstinspires.ftc.teamcode.common.robot.OdometryHardware;
@@ -94,13 +93,13 @@ public class EarlyTeleOp extends CommandOpMode {
                 new ConditionalCommand(
                         new ScheduleCommand(
                                 new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.HIGH_BASKET),
-                                new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.READY_TO_DEPOSIT)
+                                new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.READY_TO_DEPOSIT)
                         ),
                         new ScheduleCommand(
                                 new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.GROUND),
-                                new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY)
+                                new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.TRANSFER)
                         ),
-                        () -> robot.lift.getCurrTarget() != LiftSubsystem.LiftState.HIGH_BASKET.height
+                        () -> robot.lift.getTargetPosition() != LiftSubsystem.LiftState.HIGH_BASKET.height
                 )
         );
 
@@ -108,13 +107,13 @@ public class EarlyTeleOp extends CommandOpMode {
                 new ConditionalCommand(
                         new ScheduleCommand(
                                 new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.LOW_BASKET),
-                                new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.READY_TO_DEPOSIT)
+                                new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.READY_TO_DEPOSIT)
                         ),
                         new ScheduleCommand(
                                 new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.GROUND),
-                                new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY)
+                                new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.TRANSFER)
                         ),
-                        () -> robot.lift.getCurrTarget() != LiftSubsystem.LiftState.LOW_BASKET.height
+                        () -> robot.lift.getTargetPosition() != LiftSubsystem.LiftState.LOW_BASKET.height
                 )
         );
 
@@ -147,10 +146,10 @@ public class EarlyTeleOp extends CommandOpMode {
 
 
                                     new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
-                                     */
+
                                     new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit), //weird thing here LOOK AT LATER
-                                    new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM),
-                                    new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED)
+                                    new ExtensionSetPosition(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM),
+                                    new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakingState.DISABLED)
                             ).whenFinished(() -> robot.setTransferringState(false))
                     );
                 }
@@ -160,35 +159,35 @@ public class EarlyTeleOp extends CommandOpMode {
         gamepad_1.getGamepadButton(GamepadKeys.Button.A).whenPressed(
                 new ConditionalCommand(
                         new SequentialCommandGroup(
-                                new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
+                                new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.DEPOSIT),
                                 new WaitCommand(500),
                                 new WaitCommand(1000),
-                                new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY),
-                                new InstantLiftCommand(robot.lift, LiftSubsystem.LiftState.GROUND)
+                                new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.TRANSFER),
+                                new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.GROUND)
                         ),
                         new SequentialCommandGroup(
-                                new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.DEPOSITING),
+                                new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.DEPOSIT),
                                 new WaitCommand(500),
                                 new WaitCommand(1000),
-                                new DepositRotationCommand(robot.deposit, DepositSubsystem.TransferRotatorState.TRANSFER_READY)
+                                new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.TRANSFER)
                         ),
-                        () -> robot.lift.getCurrTarget() != LiftSubsystem.LiftState.GROUND.height
+                        () -> robot.lift.getTargetPosition() != LiftSubsystem.LiftState.GROUND.height
                 )
         );
 
         gamepad_1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 new ConditionalCommand(
                         new ScheduleCommand(
-                                new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.ACTIVE),
-                                new TrapdoorCommand(robot.intake, IntakeSubsystem.TrapdoorState.CLOSED),
-                                new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.PICKING_UP),
-                                new IntakeArmPivotCommand(robot.intake, IntakeSubsystem.IntakeArmPivotState.PICK_UP)
+                                new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakingState.ACTIVE),
+                                new IntakeTrapdoorSetPosition_INST(robot.intake, IntakeSubsystem.TrapdoorState.CLOSED),
+                                new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeRotatorState.PICKING_UP),
+                                new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmPivotState.PICK_UP)
                                 //new IntakeDirectPivotCommand(robot.intake, IntakeSubsystem.IntakeDirectPivotState.PICK_UP)
                         ),
                         new ScheduleCommand(
-                                new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
-                                new IntakeRotatorCommand(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
-                                new IntakeArmPivotCommand(robot.intake, IntakeSubsystem.IntakeArmPivotState.MOVING)
+                                new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakingState.DISABLED),
+                                new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING),
+                                new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmPivotState.MOVING)
                                 //new IntakeDirectPivotCommand(robot.intake, IntakeSubsystem.IntakeDirectPivotState.MOVING)
                         ),
                         () -> robot.intake.getIntakingState().equals(IntakeSubsystem.IntakingState.DISABLED)
@@ -199,11 +198,11 @@ public class EarlyTeleOp extends CommandOpMode {
                 () -> {
                     previousIntakingState = robot.intake.getIntakingState();
                     schedule(
-                            new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING)
+                            new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakingState.REVERSING)
                     );
                 }
         ).whenReleased(
-                new IntakeCommand(robot.intake, previousIntakingState)
+                new IntakeSetRollerState_INST(robot.intake, previousIntakingState)
         );
         /*
         gamepad_1.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
@@ -216,15 +215,15 @@ public class EarlyTeleOp extends CommandOpMode {
                         ),
                         () -> robot.hang.getState().equals(HangSubsystem.HangPosition.DOWN)
                 )
-        ); */
+        );
 
         gamepad_1.getGamepadButton(GamepadKeys.Button.X).whenPressed(
                 new ConditionalCommand(
                         new ScheduleCommand(
-                                new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.CLOSED)
+                                new SpecimenSetGripperPosition_INST(robot.specimen, SpecimenSubsystem.GripperPosition.CLOSED)
                         ),
                         new ScheduleCommand(
-                                new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.OPEN)
+                                new SpecimenSetGripperPosition_INST(robot.specimen, SpecimenSubsystem.GripperPosition.OPEN)
                         ),
                         () -> robot.specimen.getGripperPosition() != SpecimenSubsystem.GripperPosition.CLOSED
                 )
@@ -232,19 +231,19 @@ public class EarlyTeleOp extends CommandOpMode {
 
         gamepad_1.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(() -> {
             LiftSubsystem.LiftState.GROUND.changeHeight(10);
-            robot.lift.setTargetPosition(LiftSubsystem.LiftState.GROUND);
+            robot.lift.setLiftState(LiftSubsystem.LiftState.GROUND);
         });
         gamepad_1.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(() -> {
             LiftSubsystem.LiftState.GROUND.changeHeight(-10);
-            robot.lift.setTargetPosition(LiftSubsystem.LiftState.GROUND);
+            robot.lift.setLiftState(LiftSubsystem.LiftState.GROUND);
         });
         gamepad_2.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(() -> {
             LiftSubsystem.LiftState.GROUND.changeHeight(10);
-            robot.lift.setTargetPosition(LiftSubsystem.LiftState.GROUND);
+            robot.lift.setLiftState(LiftSubsystem.LiftState.GROUND);
         });
         gamepad_2.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(() -> {
             LiftSubsystem.LiftState.GROUND.changeHeight(-10);
-            robot.lift.setTargetPosition(LiftSubsystem.LiftState.GROUND);
+            robot.lift.setLiftState(LiftSubsystem.LiftState.GROUND);
         });
 
         //  SECOND DRIVER
@@ -253,10 +252,10 @@ public class EarlyTeleOp extends CommandOpMode {
         gamepad_2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 new ConditionalCommand(
                         new ScheduleCommand(
-                                new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.CLOSED)
+                                new SpecimenSetGripperPosition_INST(robot.specimen, SpecimenSubsystem.GripperPosition.CLOSED)
                         ),
                         new ScheduleCommand(
-                                new SpecimenGripperCommand(robot.specimen, SpecimenSubsystem.GripperPosition.OPEN)
+                                new SpecimenSetGripperPosition_INST(robot.specimen, SpecimenSubsystem.GripperPosition.OPEN)
                         ),
                         () -> robot.specimen.getGripperPosition() != SpecimenSubsystem.GripperPosition.CLOSED
                 )
@@ -268,22 +267,22 @@ public class EarlyTeleOp extends CommandOpMode {
 
         gamepad_2.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 new ScheduleCommand(
-                        new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.CHAMBER)
+                        new SpecimenSetArmPosition(robot.specimen, SpecimenSubsystem.SpecimenPosition.CHAMBER)
                 )
         );
 
         gamepad_2.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
                 new ScheduleCommand(
-                        new SpecimenArmCommand(robot.specimen, SpecimenSubsystem.SpecimenPosition.WALL)
+                        new SpecimenSetArmPosition(robot.specimen, SpecimenSubsystem.SpecimenPosition.WALL)
                 )
         );
 
         gamepad_2.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
                 new ScheduleCommand(
                         new ConditionalCommand(
-                                new ColorSensorStateCommand(robot.intake, IntakeSubsystem.ColorSensorState.BROKEN),
-                                new ColorSensorStateCommand(robot.intake, IntakeSubsystem.ColorSensorState.WORKING),
-                                () -> robot.intake.getColorSensorState() == IntakeSubsystem.ColorSensorState.WORKING
+                                new IntakeSetColorSensorStatus_INST(robot.intake, IntakeSubsystem.ColorSensorStatus.BROKEN),
+                                new IntakeSetColorSensorStatus_INST(robot.intake, IntakeSubsystem.ColorSensorStatus.WORKING),
+                                () -> robot.intake.getColorSensorState() == IntakeSubsystem.ColorSensorStatus.WORKING
                         )
                 )
         );
@@ -297,7 +296,7 @@ public class EarlyTeleOp extends CommandOpMode {
                 ; // LIFT GOES DOWN WHEN HELD
         );
 
-         */
+
     }
 
     @Override
@@ -312,7 +311,7 @@ public class EarlyTeleOp extends CommandOpMode {
         }
 
 
-        if (robot.extension.getState().equals(ExtensionSubsystem.ExtensionState.CUSTOM)) {
+        if (robot.extension.getExtensionState().equals(ExtensionSubsystem.ExtensionState.CUSTOM)) {
             double rawExtensionPower;
             rawExtensionPower = gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) - gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
             robot.extension.setPower(Math.pow(rawExtensionPower, 3));
@@ -329,7 +328,7 @@ public class EarlyTeleOp extends CommandOpMode {
         else hangMotor.setPower(0);
 
         //Team detectedColor = robot.intake.updateColorState2();
-        Team detectedColor = robot.intake.updateColorState2();
+        Team detectedColor = robot.intake.getCurrentColor();
 
         boolean acceptedYellow = (detectedColor.equals(Team.YELLOW) && liftEnabled);
 
@@ -361,11 +360,11 @@ public class EarlyTeleOp extends CommandOpMode {
 
 
                             new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
-                             */
+
                             new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.GROUND),
                             new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit),
-                            new ExtendCommand(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM),
-                            new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.DISABLED)
+                            new ExtensionSetPosition(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM),
+                            new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakingState.DISABLED)
                     )//.whenFinished(() -> robot.setTransferringState(false))
             );
         }
@@ -373,9 +372,9 @@ public class EarlyTeleOp extends CommandOpMode {
         //else if ((detectedColor.equals(oppositeTeam) || detectedColor.equals(Team.YELLOW)) && !robot.isTransferring()) {
             schedule(
                     new SequentialCommandGroup(
-                            new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.REVERSING),
+                            new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakingState.REVERSING),
                             new WaitCommand(400),
-                            new IntakeCommand(robot.intake, IntakeSubsystem.IntakingState.ACTIVE)
+                            new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakingState.ACTIVE)
                     )
             );
         }
@@ -406,7 +405,7 @@ public class EarlyTeleOp extends CommandOpMode {
 
 
         telemetry.addLine("");
-        telemetry.addData("Extension State:", robot.extension.getState());
+        telemetry.addData("Extension State:", robot.extension.getExtensionState());
         telemetry.addData("Extension Target:", robot.extension.getTargetPosition());
         telemetry.addData("Extension Position:", robot.extension.getPosition());
         telemetry.addData("Extension Error:", robot.extension.getError());
@@ -416,12 +415,12 @@ public class EarlyTeleOp extends CommandOpMode {
 
 
         telemetry.addLine("");
-        telemetry.addData("Deposit Rotator State:", robot.deposit.getTransferRotatorState());
+        telemetry.addData("Deposit Rotator State:", robot.deposit.getBucketState());
 
         telemetry.addLine("");
         //telemetry.addData("Lift State:", ); Lift has no states?
         telemetry.addData("Ground", LiftSubsystem.LiftState.GROUND.height);
-        telemetry.addData("Lift Target:", robot.lift.getCurrTarget());
+        telemetry.addData("Lift Target:", robot.lift.getTargetPosition());
         telemetry.addData("Lift Position", robot.lift.getCurrentPosition());
         telemetry.addData("Lift Error:", robot.lift.getError());
         telemetry.addData("Lift Power", robot.lift.telemetryPower);
@@ -461,7 +460,8 @@ public class EarlyTeleOp extends CommandOpMode {
         FtcDashboard dashboard = FtcDashboard.getInstance();
         dashboard.sendTelemetryPacket(packet);
 
-         */
+
 
     }
 }
+*/
