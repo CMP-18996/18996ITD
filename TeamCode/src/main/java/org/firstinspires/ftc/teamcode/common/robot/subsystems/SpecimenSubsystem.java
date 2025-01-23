@@ -150,7 +150,7 @@ public class SpecimenSubsystem extends SubsystemBase {
         setSpecimenArmState(SpecimenArmState.MANUAL);
         armTarget += delta;
         integralSum = 0;
-        lastError = 0;
+        //lastError = 0;
         timer.reset();
     }
 
@@ -159,7 +159,7 @@ public class SpecimenSubsystem extends SubsystemBase {
         wristTarget += delta;
         wristServo.setPosition(wristTarget);
         integralSum = 0;
-        lastError = 0;
+        //lastError = 0;
         timer.reset();
     }
 

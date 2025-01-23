@@ -61,7 +61,7 @@ public class ExtensionSubsystem extends SubsystemBase {
         extensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         extensionMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        this.setExtensionState(ExtensionState.TRANSFER);
+        this.setExtensionState(ExtensionState.CUSTOM);
     }
 
     public void setExtensionState(ExtensionState extensionState) {
