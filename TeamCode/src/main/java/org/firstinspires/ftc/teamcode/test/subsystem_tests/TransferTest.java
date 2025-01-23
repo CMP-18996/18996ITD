@@ -2,19 +2,13 @@ package org.firstinspires.ftc.teamcode.test.subsystem_tests;
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
-import com.arcrobotics.ftclib.command.ConditionalCommand;
-import com.arcrobotics.ftclib.command.ScheduleCommand;
 import com.arcrobotics.ftclib.command.WaitCommand;
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.ExtendAndBeginIntakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.RetractAndTransferCommand;
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.WaitForColorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.deposit.DepositSetPosition_INST;
-import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeWristSetPosition_INST;
-import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeArmSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.lift.LiftSetPosition;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
@@ -38,7 +32,7 @@ public class TransferTest extends CommandOpMode {
                 new ExtendAndBeginIntakeCommand(robot.extension, robot.intake),
                 new WaitForColorCommand(robot.intake, IntakeSubsystem.Color.YELLOW),
                 new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
-                new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.HIGH_BASKET),
+                new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET),
                 new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.READY),
                 new WaitCommand(1000),
                 new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.DEPOSIT)

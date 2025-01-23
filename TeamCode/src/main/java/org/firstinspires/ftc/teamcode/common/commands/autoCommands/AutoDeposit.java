@@ -14,7 +14,7 @@ public class AutoDeposit extends SequentialCommandGroup {
         addCommands(
                 new ParallelDeadlineGroup(
                         new WaitCommand(1000),
-                        new LiftSetPosition(liftSubsystem, LiftSubsystem.LiftState.HIGH_BASKET),
+                        new LiftSetPosition(liftSubsystem, LiftSubsystem.LiftState.HIGH_BUCKET),
                         new SequentialCommandGroup(
                                 new WaitCommand(400),
                                 new DepositSetPosition_INST(depositSubsystem, DepositSubsystem.BucketState.DEPOSIT)

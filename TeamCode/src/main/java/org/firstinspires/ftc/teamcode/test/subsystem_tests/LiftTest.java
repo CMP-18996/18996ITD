@@ -1,24 +1,24 @@
 package org.firstinspires.ftc.teamcode.test.subsystem_tests;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.ScheduleCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.common.commands.lift.LiftSetPosition;
 import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetArmPosition;
 import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetGripperPosition_INST;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
+import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
-@TeleOp(name = "Specimen Test")
-public class SpecimenTest extends CommandOpMode {
-    Subsystems subsystems = Subsystems.SPECIMEN;
+@TeleOp(name = "Lift Test")
+public class LiftTest extends CommandOpMode {
+    Subsystems subsystems = Subsystems.LIFT;
     Robot robot;
     GamepadEx gamepad;
 
@@ -29,41 +29,36 @@ public class SpecimenTest extends CommandOpMode {
         gamepad = new GamepadEx(gamepad1);
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
-                new ScheduleCommand(
-                        new SpecimenSetArmPosition(robot.specimen, SpecimenSubsystem.SpecimenArmState.CHAMBER)
+                new ConditionalCommand(
+                        new ScheduleCommand(
+                                new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET)
+                        ),
+                        new ScheduleCommand(
+                                new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.TRANSFER)
+                        ),
+                        () -> robot.lift.getLiftState().equals(LiftSubsystem.LiftState.TRANSFER)
                 )
         );
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
-                new ScheduleCommand(
-                        new SpecimenSetArmPosition(robot.specimen, SpecimenSubsystem.SpecimenArmState.WALL)
-                )
-        );
-
-        gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 new ConditionalCommand(
                         new ScheduleCommand(
-                                new SpecimenSetGripperPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenGripperState.CLOSED)
+                                new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.LOW_BUCKET)
                         ),
                         new ScheduleCommand(
-                                new SpecimenSetGripperPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenGripperState.OPEN)
+                                new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.TRANSFER)
                         ),
-                        () -> robot.specimen.getSpecimenGripperState() != SpecimenSubsystem.SpecimenGripperState.CLOSED
+                        () -> robot.lift.getLiftState().equals(LiftSubsystem.LiftState.TRANSFER)
                 )
         );
-
     }
 
     @Override
     public void run() {
         CommandScheduler.getInstance().run();
 
-        if (gamepad1.left_stick_y != 0) { robot.specimen.manualAdjustArm((int) (-gamepad1.left_stick_y * 5)); }
-        if (gamepad1.right_stick_y != 0) { robot.specimen.manualAdjustWrist(-gamepad1.right_stick_y/30); }
-
-        telemetry.addData("ARM STATE", robot.specimen.getSpecimenArmState());
-        telemetry.addData("GRIPPER STATE", robot.specimen.getSpecimenGripperState());
-        telemetry.addData("ERROR", robot.specimen.getError());
+        telemetry.addData("STATE", robot.lift.getLiftState());
+        telemetry.addData("ERROR", robot.lift.getError());
         telemetry.update();
     }
 }

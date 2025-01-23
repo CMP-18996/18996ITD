@@ -36,16 +36,16 @@ public class LiftSubsystem extends SubsystemBase {
 
     public enum LiftState {
         TRANSFER,
-        LOW_BASKET,
-        HIGH_BASKET;
+        LOW_BUCKET,
+        HIGH_BUCKET;
 
         public int getValue() {
             switch (this) {
                 case TRANSFER:
                     return TRANSFER_POS;
-                case LOW_BASKET:
+                case LOW_BUCKET:
                     return LOW_BASKET_POS;
-                case HIGH_BASKET:
+                case HIGH_BUCKET:
                     return HIGH_BASKET_POS;
                 default:
                     throw new IllegalArgumentException();
