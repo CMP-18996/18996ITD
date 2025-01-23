@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 @Config
 public class DepositSubsystem extends SubsystemBase {
-    public static double TRANSFER_POS = 0.00;
+    public static double TRANSFER_POS = 0.05;
     public static double READY_POS = 0.5;
     public static double DEPOSIT_POS = 1.0;
 

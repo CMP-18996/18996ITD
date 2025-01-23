@@ -8,16 +8,12 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.common.commands.deposit.DepositSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeArmSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetRollerState_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeTrapdoorSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeWristSetPosition_INST;
-import org.firstinspires.ftc.teamcode.common.commands.lift.LiftSetPosition;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
-import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
 @TeleOp(name = "Intake Test")
@@ -96,7 +92,7 @@ public class IntakeTest extends CommandOpMode {
     public void run() {
         CommandScheduler.getInstance().run();
 
-        telemetry.addData("ARM STATE", robot.intake.getIntakeArmPivotState());
+        telemetry.addData("ARM STATE", robot.intake.getIntakeArmState());
         telemetry.addData("WRIST STATE", robot.intake.getIntakeWristState());
         telemetry.addData("TRAPDOOR STATE", robot.intake.getTrapdoorState());
         telemetry.addData("ROLLER STATE", robot.intake.getIntakeRollerState());

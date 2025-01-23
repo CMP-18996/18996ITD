@@ -16,23 +16,24 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.ExtensionSubsystem
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 
-public class RetractAndTransferCommand extends SequentialCommandGroup {
-    public RetractAndTransferCommand(ExtensionSubsystem extensionSubsystem, IntakeSubsystem intakeSubsystem, DepositSubsystem depositSubsystem, LiftSubsystem liftSubsystem) {
+/*
+THIS ONLY DOE STHE INTAKE PART USE RETRACT AND TRANSFER COMMAND
+ */
+public class TransferSampleCommand extends SequentialCommandGroup {
+    public TransferSampleCommand(IntakeSubsystem intakeSubsystem) {
         addCommands(
-                // raise the intake to clear submersible wall
-                new IntakeSetRollerState_INST(intakeSubsystem, IntakeSubsystem.IntakeRollerState.DISABLED),
+                // raise the intake and reverse rollers
+                new IntakeArmSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeArmState.TRANSFER),
+                new IntakeWristSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeWristState.TRANSFER),
+                new WaitCommand(200),
+                new IntakeTrapdoorSetPosition_INST(intakeSubsystem, IntakeSubsystem.TrapdoorState.OPEN),
+                new IntakeSetRollerState_INST(intakeSubsystem, IntakeSubsystem.IntakeRollerState.ACTIVE),
+
+                // wait until no sample is detected
+                new WaitForColorCommand(intakeSubsystem, IntakeSubsystem.Color.NONE),
+                new WaitCommand(300),
                 new IntakeArmSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeArmState.REST),
-                new IntakeWristSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeWristState.REST),
-                new WaitCommand(100),
-
-                // bring lift and extension into position
-                new ParallelCommandGroup(
-                        new LiftSetPosition(liftSubsystem, LiftSubsystem.LiftState.TRANSFER),
-                        new ExtensionSetPosition(extensionSubsystem, ExtensionSubsystem.ExtensionState.TRANSFER),
-                        new DepositSetPosition_INST(depositSubsystem, DepositSubsystem.BucketState.TRANSFER)
-                ),
-
-                new TransferSampleCommand(intakeSubsystem)
+                new IntakeWristSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeWristState.REST)
         );
     }
 }

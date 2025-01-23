@@ -58,7 +58,7 @@ public class SpecimenTest extends CommandOpMode {
     public void run() {
         CommandScheduler.getInstance().run();
 
-        if (gamepad1.left_stick_y != 0) { robot.specimen.manualAdjustArm((int) (-gamepad1.left_stick_y * 5)); }
+        if (gamepad1.left_stick_y != 0) { robot.specimen.manualAdjustArm((int) (-gamepad1.left_stick_y));}
         if (gamepad1.right_stick_y != 0) { robot.specimen.manualAdjustWrist(-gamepad1.right_stick_y/30); }
 
         telemetry.addData("ARM STATE", robot.specimen.getSpecimenArmState());

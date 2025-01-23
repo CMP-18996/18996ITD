@@ -13,23 +13,23 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 @Config
 public class IntakeSubsystem extends SubsystemBase {
     public static double ARM_TRANSFER_POS = 0.0; // max and min rotation used as what arm is actually being rotated to, subject to change
-    public static double ARM_PICK_UP_POS = 0.30;
-    public static double ARM_MOVING_POS = 0.25;
-    public static double ARM_REST_POS = 0.3;
+    public static double ARM_PICK_UP_POS = 0.82;
+    public static double ARM_MOVING_POS = 0.58;
+    public static double ARM_REST_POS = 0.15;
 
-    public static double WRIST_TRANSFER_POS = 0.15;
-    public static double WRIST_PICK_UP_POS = 0.30;
-    public static double WRIST_MOVING_POS = 0.25;
-    public static double WRIST_REST_POS = 0.3;
+    public static double WRIST_TRANSFER_POS = 0.875/5;
+    public static double WRIST_PICK_UP_POS = 0.6/5;
+    public static double WRIST_MOVING_POS = 0.8/5;
+    public static double WRIST_REST_POS = 1.0/5;
 
-    public static double TRAPDOOR_CLOSED_POS = 0.5;
-    public static double TRAPDOOR_OPEN_POS = 1.0;
+    public static double TRAPDOOR_CLOSED_POS = 0.3;
+    public static double TRAPDOOR_OPEN_POS = 0.8;
 
     public static double ROLLER_ACTIVE = 1.0;
     public static double ROLLER_DISABLED = 0.0;
     public static double ROLLER_REVERSING = -1.0;
 
-    public static double ALPHA_CUTOFF = 60;
+    public static double ALPHA_CUTOFF = 280;
 
     private final CRServo intakeRollerServo;
     private final Servo trapdoorServo;
@@ -146,13 +146,14 @@ public class IntakeSubsystem extends SubsystemBase {
         trapdoorServo.setDirection(Servo.Direction.FORWARD);
         intakeArmServo.setDirection(Servo.Direction.FORWARD);
         intakeWristServo.setDirection(Servo.Direction.FORWARD);
-        intakeRollerServo.setDirection(DcMotor.Direction.FORWARD);
+        intakeRollerServo.setDirection(DcMotor.Direction.REVERSE);
         colorSensor.enableLed(true);
 
         this.setTrapdoorState(TrapdoorState.CLOSED);
         this.setIntakeArmState(IntakeArmState.REST);
         this.setIntakeWristState(IntakeWristState.REST);
         this.setIntakeRollerState(IntakeRollerState.DISABLED);
+        this.setColorSensorStatus(ColorSensorStatus.ENABLED);
     }
 
     public void setColorSensorStatus(ColorSensorStatus colorSensorStatus) {
@@ -187,7 +188,7 @@ public class IntakeSubsystem extends SubsystemBase {
         return trapdoorState;
     }
 
-    public IntakeArmState getIntakeArmPivotState() { return intakeArmState; }
+    public IntakeArmState getIntakeArmState() { return intakeArmState; }
 
     public IntakeWristState getIntakeWristState() {
         return intakeWristState;
@@ -202,28 +203,36 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     private void updateCurrentColor() {
+        /*
         int color = colorSensor.argb();
         int r, g, b, a;
-        r = android.graphics.Color.red(color);
-        g = android.graphics.Color.green(color);
-        b = android.graphics.Color.blue(color);
-        a = android.graphics.Color.alpha(color);
+        a = (color >> 24) & 0xFF;
+        r = (color >> 16) & 0xFF;
+        g = (color >> 8) & 0xFF;
+           b?
 
-        if(colorSensorStatus.equals(ColorSensorStatus.DISABLED) || a < ALPHA_CUTOFF) {
-            currentColor = Color.NONE;
+         */
+        int r, g, b, a;
+        a = colorSensor.alpha();
+        r = colorSensor.red();
+        g = colorSensor.green();
+        b = colorSensor.blue();
+
+        if(colorSensorStatus.equals(IntakeSubsystem.ColorSensorStatus.DISABLED) || a < ALPHA_CUTOFF) {
+            currentColor = IntakeSubsystem.Color.NONE;
         }
         else if(r > g && r > b){
-            currentColor = Color.RED;
+            currentColor = IntakeSubsystem.Color.RED;
         }
         else if(g > r && g > b){
-            currentColor = Color.YELLOW;
+            currentColor = IntakeSubsystem.Color.YELLOW;
         }
         else if(b > r && b > g){
-            currentColor = Color.BLUE;
+            currentColor = IntakeSubsystem.Color.BLUE;
         }
         else {
             // Pray this never happens
-            currentColor = Color.NONE;
+            currentColor = IntakeSubsystem.Color.NONE;
         }
     }
 

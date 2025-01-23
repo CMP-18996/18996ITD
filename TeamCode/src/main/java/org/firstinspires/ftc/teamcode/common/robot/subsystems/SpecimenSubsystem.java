@@ -15,23 +15,25 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 @Config
 public class SpecimenSubsystem extends SubsystemBase {
-    public static double Kp = 0.004;
-    public static double Kd = -0.00023;
+    public static double Kp = 0.008;
+    public static double Kd = 0.0012;
     public static double Ki = 0.02;
-    public static double Kg = 0.20;
-    public static int INTEGRAL_ENABLE_POINT = 15;
+    public static double Kg = -0.35;
+    public static int INTEGRAL_ENABLE_POINT = 10;
 
-    public static int ARM_CHAMBER_POS = 500;
-    public static int ARM_WALL_POS = 58;
+    public double angleFromTicks;
 
-    public static double WRIST_CHAMBER_POS = 0.6852;
-    public static double WRIST_WALL_POS = 0.05;
+    public static int ARM_CHAMBER_POS = 270;
+    public static int ARM_WALL_POS = 20;
+
+    public static double WRIST_CHAMBER_POS = 0.8;
+    public static double WRIST_WALL_POS = 0.1;
 
     public static double GRIPPER_OPEN_POS = 0.5;
     public static double GRIPPER_CLOSED_POS = 0.82;
 
     public static double MAX_EXTENSION_SPEED = 0.8;
-    public static double MAX_RETURN_SPEED = 0.6;
+    public static double MAX_RETURN_SPEED = 0.7;
 
     // Used because of manual adjustment
     private int armTarget;
@@ -141,7 +143,7 @@ public class SpecimenSubsystem extends SubsystemBase {
     }
 
     public int getError() {
-        return armMotor.getCurrentPosition() - armTarget;
+        return -armMotor.getCurrentPosition() - armTarget;
     }
 
     public void manualAdjustArm(int delta) {
@@ -178,7 +180,7 @@ public class SpecimenSubsystem extends SubsystemBase {
 
         double D = Kd * (error - lastError) / timer.seconds();
 
-        double angleFromTicks = 360 * armMotor.getCurrentPosition() / 1503.6;
+        angleFromTicks = -360 * armMotor.getCurrentPosition() / 751.8;
         double G = Kg * Math.cos(Math.toRadians(angleFromTicks));
 
         lastError = error;

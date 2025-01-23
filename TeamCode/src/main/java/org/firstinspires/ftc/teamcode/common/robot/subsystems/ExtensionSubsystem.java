@@ -13,14 +13,14 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 @Config
 public class ExtensionSubsystem extends SubsystemBase {
-    public static double Kp = 0.007;
-    public static double Ki = 0.000001;
-    public static double Kd = 0.00001;
-    public static double Kf = 0.35;
+    public static double Kp = 0.011;
+    public static double Ki = 0.000000;
+    public static double Kd = 0.0003;
+    public static double Kf = 0.0;
     public static int INTEGRAL_ENABLE_POINT = 10;
 
     public static int TRANSFER_POS = 0;
-    public static int FULL_EXTENSION_POS = 500;
+    public static int FULL_EXTENSION_POS = 620;
 
     public static double MAX_EXTENSION_SPEED = 1.0;
     public static double MAX_RETRACTION_SPEED = 1.0;
@@ -117,7 +117,7 @@ public class ExtensionSubsystem extends SubsystemBase {
 
             double D = Kd * (error - lastError) / timer.seconds();
 
-            double F = Kf;
+            double F = Kf * ((double) Math.abs(error) / error);
 
             lastError = error;
             timer.reset();
