@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.teleops;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.ScheduleCommand;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -14,10 +15,14 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.EjectSampleCommand;
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.RetractAndTransferCommand;
+import org.firstinspires.ftc.teamcode.common.commands.complexCommands.TransferSampleCommand;
 import org.firstinspires.ftc.teamcode.common.commands.deposit.DepositSetPosition_INST;
+import org.firstinspires.ftc.teamcode.common.commands.extension.ExtensionSetPosition;
+import org.firstinspires.ftc.teamcode.common.commands.extension.ExtensionSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeArmSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetColorSensorStatus_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetRollerState_INST;
+import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeTrapdoorSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeWristSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.lift.LiftSetPosition;
 import org.firstinspires.ftc.teamcode.common.commands.lift.LiftSetPosition_INST;
@@ -26,7 +31,9 @@ import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetGrippe
 import org.firstinspires.ftc.teamcode.common.robot.Drive;
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
+import org.firstinspires.ftc.teamcode.common.robot.Team;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
+import org.firstinspires.ftc.teamcode.common.robot.subsystems.ExtensionSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
@@ -34,7 +41,7 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
 @TeleOp
 public class FullTeleOp extends CommandOpMode {
-    private final IntakeSubsystem.Color team = IntakeSubsystem.Color.BLUE;
+    private final Team team = Team.RED;
     private final boolean acceptYellow = true;
     private final boolean liftEnabled = false;
 
@@ -55,7 +62,7 @@ public class FullTeleOp extends CommandOpMode {
     public void initialize() {
         CommandScheduler.getInstance().reset();
 
-        robot = new Robot(hardwareMap, Subsystems.ALL);
+        robot = new Robot(hardwareMap, team, acceptYellow, Subsystems.ALL);
 
         hangMotor = hardwareMap.get(DcMotorEx.class, HardwareMapNames.HANG_MOTOR_1);
         hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -98,6 +105,22 @@ public class FullTeleOp extends CommandOpMode {
                         ),
                         () -> !robot.lift.getLiftState().equals(LiftSubsystem.LiftState.LOW_BUCKET)
                 )
+        );
+
+        gamepad_1.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
+                () -> {
+                    schedule(
+                            new TransferSampleCommand(robot.intake)
+                    );
+                }
+        );
+
+        gamepad_1.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
+                () -> {
+                    schedule(
+                            new EjectSampleCommand(robot.intake)
+                    );
+                }
         );
 
         // Deposit
@@ -176,6 +199,24 @@ public class FullTeleOp extends CommandOpMode {
                 }
         );
 
+        // EMERGENCY RESET
+        gamepad_1.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
+                () -> {
+                    CommandScheduler.getInstance().reset();
+                    robot.setTransferringState(false);
+                    schedule(
+                            new ParallelCommandGroup(
+                                new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM),
+                                new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.TRANSFER),
+                                new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.REST),
+                                new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.REST),
+                                new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.DISABLED),
+                                new IntakeTrapdoorSetPosition_INST(robot.intake, IntakeSubsystem.TrapdoorState.CLOSED)
+                            )
+                    );
+                }
+        );
+
         //  SECOND DRIVER
         //  SECOND DRIVER
         //  SECOND DRIVER
@@ -205,6 +246,7 @@ public class FullTeleOp extends CommandOpMode {
                 )
         );
 
+        // Enable/Disable Color Sensor
         gamepad_2.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
                 new ScheduleCommand(
                         new ConditionalCommand(
@@ -248,21 +290,27 @@ public class FullTeleOp extends CommandOpMode {
             previousPower = power;
         }
 
+        // Auto Transfer
         IntakeSubsystem.Color detectedColor = robot.intake.getCurrentColor();
 
-        if (((detectedColor.equals(team) || (detectedColor.equals(IntakeSubsystem.Color.YELLOW) == acceptYellow))
-                && !robot.isTransferring())) {
-            robot.setTransferringState(true);
-            schedule(
-                    new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit, robot.lift)
-            );
-        }
-        else if ((!detectedColor.equals(team) && !detectedColor.equals(IntakeSubsystem.Color.NONE) && !robot.isTransferring())) {
-            previousIntakingState = robot.intake.getIntakeRollerState();
-            schedule(
-                    new EjectSampleCommand(robot.intake),
-                    new IntakeSetRollerState_INST(robot.intake, previousIntakingState)
-            );
+        if(!detectedColor.equals(IntakeSubsystem.Color.NONE) && robot.isTransferring()) {
+            if(robot.acceptColor(detectedColor)) {
+                gamepad1.rumbleBlips(1);
+                robot.setTransferringState(true);
+                schedule(
+                        new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
+                        new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
+                );
+                robot.setTransferringState(false);
+            }
+            else {
+                gamepad1.rumbleBlips(2);
+                previousIntakingState = robot.intake.getIntakeRollerState();
+                schedule(
+                        new EjectSampleCommand(robot.intake),
+                        new IntakeSetRollerState_INST(robot.intake, previousIntakingState)
+                );
+            }
         }
 
         drive.robotCentricDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);

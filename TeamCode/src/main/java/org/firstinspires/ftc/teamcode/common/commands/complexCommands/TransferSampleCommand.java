@@ -33,7 +33,8 @@ public class TransferSampleCommand extends SequentialCommandGroup {
                 new WaitForColorCommand(intakeSubsystem, IntakeSubsystem.Color.NONE),
                 new WaitCommand(300),
                 new IntakeArmSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeArmState.REST),
-                new IntakeWristSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeWristState.REST)
+                new IntakeWristSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeWristState.REST),
+                new IntakeTrapdoorSetPosition_INST(intakeSubsystem, IntakeSubsystem.TrapdoorState.CLOSED)
         );
     }
 }

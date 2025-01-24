@@ -17,33 +17,8 @@ public class Drive {
 
     private DcMotor.ZeroPowerBehavior breakMode = DcMotor.ZeroPowerBehavior.BRAKE;
 
-    private AutoAlignMode autoAlignMode;
-
-    public static double Heading_P = 0.01;
-    public static double Heading_I = 0;
-    public static double Heading_D = 0;
-    public static double Heading_F = 0.15;
-
-    public double TURN_ = 0;
-
-
-    public enum AutoAlignMode {
-        NONE(0),
-        WALL(90),
-        BUCKET(225),
-        CHAMBER(270);
-
-        private double angle;
-
-        AutoAlignMode(double angle) {
-            this.angle = angle;
-        }
-    }
-
     public Drive(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
-
-        autoAlignMode = AutoAlignMode.NONE;
 
         leftFrontDrive = hardwareMap.get(DcMotor.class, HardwareMapNames.LEFT_FRONT);
         leftBackDrive = hardwareMap.get(DcMotor.class, HardwareMapNames.LEFT_BACK);
@@ -53,53 +28,9 @@ public class Drive {
         configureMotors();
     }
 
-    public void setAutoAlignMode(AutoAlignMode autoAlignMode) {
-        this.autoAlignMode = autoAlignMode;
-    }
-
-    public AutoAlignMode getAutoAlignMode() {
-        return autoAlignMode;
-    }
-
-    /*
-    *  X and Y are the components of the linear movement vector [-1.0, 1.0]
-    *  Turn is relative speed to rotate the robot [-1.0, 1.0]
-     */
-    public void robotCentricDrive(double x, double y, double turn, double heading) {
-        if (autoAlignMode == AutoAlignMode.NONE) {
-            calculateMotorPowers(x, y, turn);
-        }
-        else {
-            turn = calculateHeadingPID(Math.toRadians(autoAlignMode.angle), heading);
-            TURN_= turn;
-            calculateMotorPowers(x, y, turn);
-        }
-    }
-
     @Deprecated
     public void robotCentricDrive(double x, double y, double turn) {
         calculateMotorPowers(x, y, turn);
-    }
-
-    /*
-     *  X and Y are the components of the linear movement vector [-1.0, 1.0]
-     *  Turn is relative speed to rotate the robot [-1.0, 1.0]
-     *  CurrentHeading is the robot's current heading in RADIANS [-pi, pi]
-     */
-    public void fieldCentricDrive(double x, double y, double turn, double heading) {
-        double rotX = x * Math.cos(-heading) - y * Math.sin(-heading);
-        double rotY = x * Math.sin(-heading) + y * Math.cos(-heading);
-        calculateMotorPowers(rotX, rotY, turn);
-    }
-
-    private double calculateHeadingPID(double setpoint, double value) {
-        double error = setpoint - value;
-
-        double P = Heading_P * error;
-
-        //double F = Heading_F * Math.signum(error);
-
-        return P;
     }
 
     private void calculateMotorPowers(double x, double y, double turn) {
