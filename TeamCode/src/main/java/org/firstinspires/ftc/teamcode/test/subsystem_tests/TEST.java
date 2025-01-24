@@ -13,11 +13,11 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 public class TEST extends LinearOpMode {
 
     public static double INTAKE_ROTATION_TRANSFER = 0.0; // max and min rotation used as what arm is actually being rotated to, subject to change
-    public static double INTAKE_ROTATION_PICK_UP = 0.30;
+    public static double INTAKE_ROTATION_PICK_UP = 0.45;
     public static double INTAKE_ROTATION_MOVING = 0.25;
 
     public static double INTAKE_PIVOT_TRANSFER = 0.15;
-    public static double INTAKE_PIVOT_PICK_UP = 0.30;
+    public static double INTAKE_PIVOT_PICK_UP = 0.65;
     public static double INTAKE_PIVOT_MOVING = 0.25;
 
     @Override
@@ -30,7 +30,7 @@ public class TEST extends LinearOpMode {
         while(opModeIsActive()) {
             bottom.setPosition(INTAKE_ROTATION_TRANSFER);
             top.setPosition(INTAKE_PIVOT_TRANSFER);
-            intake.setPower(0.2);
+            intake.setPower(-0.2);
             sleep(1000);
             while (!gamepad1.a && !opModeIsActive()) ;
             {
@@ -43,7 +43,7 @@ public class TEST extends LinearOpMode {
             }
             bottom.setPosition(INTAKE_ROTATION_PICK_UP);
             top.setPosition(INTAKE_PIVOT_PICK_UP);
-            intake.setPower(1);
+            intake.setPower(-1);
             sleep(1000);
             while (!gamepad1.a && !opModeIsActive()) ;
             {

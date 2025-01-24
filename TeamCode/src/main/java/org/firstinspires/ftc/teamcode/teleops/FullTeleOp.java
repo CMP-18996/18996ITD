@@ -287,6 +287,24 @@ public class FullTeleOp extends CommandOpMode {
                     liftEnabled = !liftEnabled;
                 }
         );
+
+        gamepad_2.getGamepadButton(GamepadKeys.Button.A).whenPressed(
+                () -> {
+                    robot.setTransferringState(true);
+                    schedule(
+                            new SequentialCommandGroup(
+                                    new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
+                                    new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
+                            )
+                    );
+                    if (liftEnabled) {
+                        schedule(
+                                new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET)
+                        );
+                    }
+                    robot.setTransferringState(false);
+                }
+        );
     }
 
     @Override
