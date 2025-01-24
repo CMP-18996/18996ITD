@@ -27,6 +27,7 @@ import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeWristSetPosit
 import org.firstinspires.ftc.teamcode.common.commands.lift.LiftSetPosition;
 import org.firstinspires.ftc.teamcode.common.commands.lift.LiftSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetArmPosition;
+import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetArmPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetGripperPosition_INST;
 import org.firstinspires.ftc.teamcode.common.robot.Drive;
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
@@ -83,10 +84,10 @@ public class FullTeleOp extends CommandOpMode {
         gamepad_1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 new ConditionalCommand(
                         new ScheduleCommand(
-                                new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET)
+                                new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET)
                         ),
                         new ScheduleCommand(
-                                new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.TRANSFER),
+                                new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.TRANSFER),
                                 new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.TRANSFER)
                         ),
                         () -> !robot.lift.getLiftState().equals(LiftSubsystem.LiftState.HIGH_BUCKET)
@@ -236,14 +237,14 @@ public class FullTeleOp extends CommandOpMode {
         // Specimen Arm to Chamber
         gamepad_2.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 new ScheduleCommand(
-                        new SpecimenSetArmPosition(robot.specimen, SpecimenSubsystem.SpecimenArmState.CHAMBER)
+                        new SpecimenSetArmPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenArmState.CHAMBER)
                 )
         );
 
         // Specimen Arm to Wall
         gamepad_2.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
                 new ScheduleCommand(
-                        new SpecimenSetArmPosition(robot.specimen, SpecimenSubsystem.SpecimenArmState.WALL)
+                        new SpecimenSetArmPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenArmState.WALL)
                 )
         );
 
@@ -334,7 +335,7 @@ public class FullTeleOp extends CommandOpMode {
         telemetry.addData("COLOR", detectedColor);
         telemetry.addData("COLOR SENSOR STATUS", robot.intake.getColorSensorStatus());
         telemetry.addData("ACCEPT YELLOW", acceptYellow);
-        telemetry.addData("LIFT ENALBED", liftEnabled);
+        telemetry.addData("LIFT ENABLED", liftEnabled);
 
         drive.robotCentricDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
     }

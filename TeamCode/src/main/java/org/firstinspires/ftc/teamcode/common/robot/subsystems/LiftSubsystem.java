@@ -37,7 +37,8 @@ public class LiftSubsystem extends SubsystemBase {
     public enum LiftState {
         TRANSFER,
         LOW_BUCKET,
-        HIGH_BUCKET;
+        HIGH_BUCKET,
+        ZEROING;
 
         public int getValue() {
             switch (this) {
@@ -80,30 +81,35 @@ public class LiftSubsystem extends SubsystemBase {
         return liftState.getValue() - liftMotor.getCurrentPosition();
     }
 
+    public void setLiftMotorPower(double power) {
+        liftMotor.setPower(power);
+    }
+
     @Override
     public void periodic() {
-        int error = getError();
+        if (!liftState.equals(LiftState.ZEROING)) {
+            int error = getError();
 
-        double P = Kp * error;
+            double P = Kp * error;
 
-        if (Math.abs(error) > INTEGRAL_ENABLE_POINT) {
-            integralSum = 0;
+            if (Math.abs(error) > INTEGRAL_ENABLE_POINT) {
+                integralSum = 0;
+            } else {
+                integralSum = integralSum + (error * timer.seconds());
+            }
+
+            double I = Ki * integralSum;
+
+            double D = Kd * (error - lastError) / timer.seconds();
+
+            double F = Kf;
+
+            lastError = error;
+            timer.reset();
+
+            double power = Range.clip(P + I + D + F, -MAX_DOWN_SPEED, MAX_UP_SPEED);
+
+            liftMotor.setPower(power);
         }
-        else {
-            integralSum = integralSum + (error * timer.seconds());
-        }
-
-        double I = Ki * integralSum;
-
-        double D = Kd * (error - lastError) / timer.seconds();
-
-        double F = Kf;
-
-        lastError = error;
-        timer.reset();
-
-        double power = Range.clip(P + I + D + F, -MAX_DOWN_SPEED, MAX_UP_SPEED);
-
-        liftMotor.setPower(power);
     }
 }
