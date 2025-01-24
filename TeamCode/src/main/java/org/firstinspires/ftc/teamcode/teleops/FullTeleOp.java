@@ -42,8 +42,8 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 @TeleOp
 public class FullTeleOp extends CommandOpMode {
     private final Team team = Team.RED;
-    private final boolean acceptYellow = true;
-    private final boolean liftEnabled = false;
+    private boolean acceptYellow = true;
+    private boolean liftEnabled = false;
 
     private Robot robot;
     private Drive drive;
@@ -202,6 +202,7 @@ public class FullTeleOp extends CommandOpMode {
         // EMERGENCY RESET
         gamepad_1.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
                 () -> {
+                    gamepad1.rumbleBlips(3);
                     CommandScheduler.getInstance().reset();
                     robot.setTransferringState(false);
                     schedule(
@@ -268,6 +269,18 @@ public class FullTeleOp extends CommandOpMode {
         gamepad_2.getGamepadButton(GamepadKeys.Button.B).whenPressed(
                 () -> hangMotor.setPower(-1.0)
         ).whenReleased(() -> hangMotor.setPower(0.0));
+
+        gamepad_2.getGamepadButton(GamepadKeys.Button.RIGHT_STICK_BUTTON).whenPressed(
+                () -> {
+                    acceptYellow = !acceptYellow;
+                }
+        );
+
+        gamepad_2.getGamepadButton(GamepadKeys.Button.LEFT_STICK_BUTTON).whenPressed(
+                () -> {
+                    liftEnabled = !liftEnabled;
+                }
+        );
     }
 
     @Override
@@ -301,6 +314,11 @@ public class FullTeleOp extends CommandOpMode {
                         new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
                         new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
                 );
+                if(liftEnabled) {
+                    schedule(
+                            new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET)
+                    );
+                }
                 robot.setTransferringState(false);
             }
             else {
@@ -312,6 +330,11 @@ public class FullTeleOp extends CommandOpMode {
                 );
             }
         }
+
+        telemetry.addData("COLOR", detectedColor);
+        telemetry.addData("COLOR SENSOR STATUS", robot.intake.getColorSensorStatus());
+        telemetry.addData("ACCEPT YELLOW", acceptYellow);
+        telemetry.addData("LIFT ENALBED", liftEnabled);
 
         drive.robotCentricDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
     }
