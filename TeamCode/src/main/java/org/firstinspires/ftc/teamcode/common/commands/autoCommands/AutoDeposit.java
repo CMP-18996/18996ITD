@@ -27,7 +27,8 @@ public class AutoDeposit extends SequentialCommandGroup {
                                 new WaitCommand(400),
                                 new LiftSetPosition(liftSubsystem, LiftSubsystem.LiftState.TRANSFER)
                         )
-                )
+                ),
+                new DepositSetPosition_INST(depositSubsystem, DepositSubsystem.BucketState.TRANSFER)
         );
     }
 }

@@ -55,7 +55,7 @@ public class FullTeleOp extends CommandOpMode {
 
     private DcMotorEx hangMotor;
 
-    public IntakeSubsystem.IntakeRollerState previousIntakingState;
+    public IntakeSubsystem.IntakeRollerState previousIntakingState = IntakeSubsystem.IntakeRollerState.DISABLED;
 
     private double power = 0;
     private double previousPower = 0;
@@ -133,6 +133,7 @@ public class FullTeleOp extends CommandOpMode {
                                     new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.DEPOSIT),
                                     new WaitCommand(600),
                                     new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.TRANSFER),
+                                    new WaitCommand(600),
                                     new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.TRANSFER)
                             )
                     );
@@ -167,6 +168,7 @@ public class FullTeleOp extends CommandOpMode {
         ).whenReleased(
                 new IntakeSetRollerState_INST(robot.intake, previousIntakingState)
         );
+
 
         // Specimen Claw
         gamepad_1.getGamepadButton(GamepadKeys.Button.X).whenPressed(
@@ -296,11 +298,11 @@ public class FullTeleOp extends CommandOpMode {
             robot.specimen.manualAdjustArm((int) (Math.cbrt(gamepad_2.getLeftY() * 2)));
         }
         if (gamepad_2.getRightY() != 0) {
-            robot.specimen.manualAdjustWrist(Math.cbrt(gamepad_2.getRightY() / 20));
+            robot.specimen.manualAdjustWrist(Math.cbrt(gamepad_2.getRightY() / 50));
         }
 
         // Extension Triggers
-        power = Math.pow(gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER), 3);
+        power = Math.pow(gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) - gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER), 3);
 
         if(power != previousPower) {
             robot.extension.setExtensionMotorPower(power);

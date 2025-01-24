@@ -20,9 +20,9 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 public class EjectSampleCommand extends SequentialCommandGroup {
     public EjectSampleCommand(IntakeSubsystem intakeSubsystem) {
         addCommands(
-                new IntakeArmSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeArmState.MOVING),
-                new IntakeWristSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeWristState.MOVING),
-                new WaitCommand(100),
+                new IntakeArmSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeArmState.REST),
+                new IntakeWristSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeWristState.REST),
+                new WaitCommand(300),
                 new IntakeSetRollerState_INST(intakeSubsystem, IntakeSubsystem.IntakeRollerState.REVERSING),
 
                 new ParallelRaceGroup(

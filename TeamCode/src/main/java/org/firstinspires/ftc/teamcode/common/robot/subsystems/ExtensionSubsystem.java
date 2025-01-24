@@ -56,7 +56,7 @@ public class ExtensionSubsystem extends SubsystemBase {
         extensionMotor = hardwareMap.get(DcMotorEx.class, HardwareMapNames.EXTENSION_MOTOR);
 
         extensionMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        extensionMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        extensionMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         extensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         extensionMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
