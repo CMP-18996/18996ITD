@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.common.robot.subsystems;
 
+import static org.firstinspires.ftc.teamcode.common.robot.subsystems.ExtensionSubsystem.ExtensionState.ZEROING;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -36,7 +38,8 @@ public class ExtensionSubsystem extends SubsystemBase {
     public enum ExtensionState {
         TRANSFER,
         FULLY_EXTENDED,
-        CUSTOM;
+        CUSTOM,
+        ZEROING;
 
         public int getValue() {
             switch (this) {
@@ -101,15 +104,17 @@ public class ExtensionSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (!extensionState.equals(ExtensionState.CUSTOM)) {
+        if (extensionState.equals(ZEROING)){
+            extensionMotor.setPower(-0.5);
+        }
+        else if (!extensionState.equals(ExtensionState.CUSTOM)) {
             int error = getError();
 
             double P = Kp * error;
 
             if (Math.abs(error) > INTEGRAL_ENABLE_POINT) {
                 integralSum = 0;
-            }
-            else {
+            } else {
                 integralSum = integralSum + (error * timer.seconds());
             }
 

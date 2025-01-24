@@ -48,6 +48,8 @@ public class LiftSubsystem extends SubsystemBase {
                     return LOW_BASKET_POS;
                 case HIGH_BUCKET:
                     return HIGH_BASKET_POS;
+                case ZEROING:
+                    return 0;
                 default:
                     throw new IllegalArgumentException();
             }
@@ -110,6 +112,9 @@ public class LiftSubsystem extends SubsystemBase {
             double power = Range.clip(P + I + D + F, -MAX_DOWN_SPEED, MAX_UP_SPEED);
 
             liftMotor.setPower(power);
+        }
+        else {
+            liftMotor.setPower(-0.5);
         }
     }
 }
