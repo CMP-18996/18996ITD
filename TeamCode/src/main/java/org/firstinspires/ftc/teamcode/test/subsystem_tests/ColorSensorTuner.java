@@ -37,11 +37,10 @@ public class ColorSensorTuner extends LinearOpMode {
     }
 
     private void updateCurrentColor() {
-        color = colorSensor.argb();
-        a = (color >> 24) & 0xFF;
-        r = (color >> 16) & 0xFF;
-        g = (color >> 8) & 0xFF;
-        b = color & 0xFF;
+        a = colorSensor.alpha();
+        r = colorSensor.red();
+        g = colorSensor.green();
+        b = colorSensor.blue();
 
         if(colorSensorStatus.equals(IntakeSubsystem.ColorSensorStatus.DISABLED) || a < ALPHA_CUTOFF) {
             currentColor = IntakeSubsystem.Color.NONE;

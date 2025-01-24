@@ -4,6 +4,7 @@ import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.ScheduleCommand;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -128,10 +129,12 @@ public class FullTeleOp extends CommandOpMode {
         gamepad_1.getGamepadButton(GamepadKeys.Button.A).whenPressed(
                 () -> {
                     schedule(
-                            new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.DEPOSIT),
-                            new WaitCommand(100),
-                            new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.TRANSFER),
-                            new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.TRANSFER)
+                            new SequentialCommandGroup(
+                                    new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.DEPOSIT),
+                                    new WaitCommand(600),
+                                    new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.TRANSFER),
+                                    new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.TRANSFER)
+                            )
                     );
                 }
         );
@@ -290,10 +293,10 @@ public class FullTeleOp extends CommandOpMode {
 
         // Manual Specimen Adjustments
         if (gamepad_2.getLeftY() != 0) {
-            robot.specimen.manualAdjustArm((int) (Math.cbrt(gamepad_2.getLeftY())));
+            robot.specimen.manualAdjustArm((int) (Math.cbrt(gamepad_2.getLeftY() * 2)));
         }
         if (gamepad_2.getRightY() != 0) {
-            robot.specimen.manualAdjustWrist(Math.cbrt(gamepad_2.getRightY() / 50));
+            robot.specimen.manualAdjustWrist(Math.cbrt(gamepad_2.getRightY() / 20));
         }
 
         // Extension Triggers
@@ -336,6 +339,7 @@ public class FullTeleOp extends CommandOpMode {
         telemetry.addData("COLOR SENSOR STATUS", robot.intake.getColorSensorStatus());
         telemetry.addData("ACCEPT YELLOW", acceptYellow);
         telemetry.addData("LIFT ENABLED", liftEnabled);
+        telemetry.update();
 
         drive.robotCentricDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
     }

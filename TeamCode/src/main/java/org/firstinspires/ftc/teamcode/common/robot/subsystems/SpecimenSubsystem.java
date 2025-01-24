@@ -15,25 +15,25 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 @Config
 public class SpecimenSubsystem extends SubsystemBase {
-    public static double Kp = 0.008;
-    public static double Kd = 0.0012;
+    public static double Kp = 0.012;
+    public static double Kd = 0.001;
     public static double Ki = 0.02;
-    public static double Kg = -0.35;
-    public static int INTEGRAL_ENABLE_POINT = 10;
+    public static double Kg = -0.36;
+    public static int INTEGRAL_ENABLE_POINT = 15;
 
     public double angleFromTicks;
 
-    public static int ARM_CHAMBER_POS = 270;
+    public static int ARM_CHAMBER_POS = 250;
     public static int ARM_WALL_POS = 20;
 
-    public static double WRIST_CHAMBER_POS = 0.8;
-    public static double WRIST_WALL_POS = 0.1;
+    public static double WRIST_CHAMBER_POS = 0.7;
+    public static double WRIST_WALL_POS = 0.08;
 
     public static double GRIPPER_OPEN_POS = 0.5;
     public static double GRIPPER_CLOSED_POS = 0.82;
 
     public static double MAX_EXTENSION_SPEED = 0.8;
-    public static double MAX_RETURN_SPEED = 0.7;
+    public static double MAX_RETURN_SPEED = 0.8;
 
     // Used because of manual adjustment
     private int armTarget;
@@ -150,7 +150,7 @@ public class SpecimenSubsystem extends SubsystemBase {
         setSpecimenArmState(SpecimenArmState.MANUAL);
         armTarget += delta;
         integralSum = 0;
-        //lastError = 0;
+        lastError = 0;
         timer.reset();
     }
 
@@ -159,7 +159,7 @@ public class SpecimenSubsystem extends SubsystemBase {
         wristTarget += delta;
         wristServo.setPosition(wristTarget);
         integralSum = 0;
-        //lastError = 0;
+        lastError = 0;
         timer.reset();
     }
 
