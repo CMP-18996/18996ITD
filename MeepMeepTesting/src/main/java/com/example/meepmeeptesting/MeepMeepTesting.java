@@ -15,20 +15,15 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-12, 64, Math.toRadians(-90)))
-                .splineTo(new Vector2d(-12, 39), Math.toRadians(-90))
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(43, 68, Math.toRadians(-180)))
                 .setReversed(true)
-                .splineToLinearHeading(new Pose2d(-39.5, 46, Math.toRadians(245)), Math.toRadians(65))
-                .waitSeconds(1)
-                .setReversed(true)
-                .splineToLinearHeading(new Pose2d(-38, 53, Math.toRadians(150)), Math.toRadians(150))
+                .splineTo(new Vector2d(64,64), Math.toRadians(45))
                 .setReversed(false)
-                .waitSeconds(1)
-                .splineToLinearHeading(new Pose2d(-41, 51, Math.toRadians(235)), Math.toRadians(55))
+                .splineTo(new Vector2d(58.75,49), Math.toRadians(-110))
                 .setReversed(true)
-                .waitSeconds(1)
-                .splineToLinearHeading(new Pose2d(-38, 53, Math.toRadians(145)), Math.toRadians(145))
+                .splineTo(new Vector2d(64,64), Math.toRadians(45))
                 .build());
+
         meepMeep.setBackground(MeepMeep.Background.FIELD_INTO_THE_DEEP_JUICE_DARK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)

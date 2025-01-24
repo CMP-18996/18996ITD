@@ -11,7 +11,7 @@ public class AutoExtendRetractTransfer extends SequentialCommandGroup {
     public AutoExtendRetractTransfer(ExtensionSubsystem extensionSubsystem, IntakeSubsystem intakeSubsystem, LiftSubsystem liftSubsystem, DepositSubsystem depositSubsystem) {
         addCommands(
                 new AutoExtend(extensionSubsystem, intakeSubsystem, liftSubsystem),
-                new AutoRetractTransfer(extensionSubsystem, intakeSubsystem, depositSubsystem)
+                new AutoRetractTransfer(extensionSubsystem, intakeSubsystem, depositSubsystem, liftSubsystem)
         );
     }
 }

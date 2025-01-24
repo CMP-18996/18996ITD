@@ -50,28 +50,28 @@ public class MecanumDrive {
         // TODO: fill in these values based on
         //   see https://ftc-docs.firstinspires.org/en/latest/programming_resources/aaaa/imu.html?highlight=imu#physical-hub-mounting
         public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
+                RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
         public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
                 RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
 
         // drive model parameters
         public double inPerTick = 1; // SparkFun OTOS Note: you can probably leave this at 1
         public double lateralInPerTick = inPerTick;
-        public double trackWidthTicks = 11.722448442665726;
+        public double trackWidthTicks = 12.322594462715436;
 
         // feedforward parameters (in tick units)
-        public double kS = 2.55; //minimum voltage to get the robot to move consistently
-        public double kV = 0.11; //making it go far enough idk
-        public double kA = 0.02; //idk it does something
+        public double kS = 1.5314720195366727; //minimum voltage to get the robot to move consistently
+        public double kV = 0.12842187436313393; //making it go far enough idk
+        public double kA = 0.026; //idk it does something
 
         // path profile parameters (in inches)
         public double maxWheelVel = 50;
         public double minProfileAccel = -30;
-        public double maxProfileAccel = 50;
+        public double maxProfileAccel = 40;
 
         // turn profile parameters (in radians)
-        public double maxAngVel = 2 * Math.PI / 3.0; // shared with path
-        public double maxAngAccel = 2 * Math.PI / 3.0;
+        public double maxAngVel = Math.PI / 2; // shared with path
+        public double maxAngAccel = Math.PI / 2;
 
         // path controller gains
         public double axialGain = 8;
