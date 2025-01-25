@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.teleops;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
+import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.ScheduleCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
@@ -295,7 +296,8 @@ public class FullTeleOp extends CommandOpMode {
                                 new SequentialCommandGroup(
                                         new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
                                         new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM),
-                                        new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET)
+                                        new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET),
+                                        new InstantCommand(() -> robot.setTransferringState(false))
                                 )
                         );
                     }
@@ -303,11 +305,12 @@ public class FullTeleOp extends CommandOpMode {
                         schedule(
                                 new SequentialCommandGroup(
                                         new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
-                                        new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
+                                        new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM),
+                                        new InstantCommand(() -> robot.setTransferringState(false))
                                 )
                         );
                     }
-                    robot.setTransferringState(false);
+
                 }
         );
     }
@@ -344,7 +347,8 @@ public class FullTeleOp extends CommandOpMode {
                             new SequentialCommandGroup(
                                     new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
                                     new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM),
-                                    new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET)
+                                    new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET),
+                                    new InstantCommand(() -> robot.setTransferringState(false))
                             )
                     );
                 }
@@ -352,21 +356,23 @@ public class FullTeleOp extends CommandOpMode {
                     schedule(
                             new SequentialCommandGroup(
                                     new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
-                                    new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
+                                    new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM),
+                                    new InstantCommand(() -> robot.setTransferringState(false))
                             )
                     );
                 }
-                robot.setTransferringState(false);
             }
             else {
                 gamepad1.rumbleBlips(2);
                 //previousIntakingState = robot.intake.getIntakeRollerState();
                 schedule(
-                        new RejectSampleCommand(robot.intake),
-                        new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.PICK_UP),
-                        new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.PICK_UP),
-                        new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.ACTIVE)
-                        //new IntakeSetRollerState_INST(robot.intake, previousIntakingState) // This works???? wtf
+                        new SequentialCommandGroup(
+                            new RejectSampleCommand(robot.intake),
+                            new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.PICK_UP),
+                            new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.PICK_UP),
+                            new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.ACTIVE)
+                            //new IntakeSetRollerState_INST(robot.intake, previousIntakingState) // This works???? wtf
+                        )
                 );
             }
         }

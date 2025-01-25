@@ -125,11 +125,21 @@ public class Robot {
         if(color.equals(IntakeSubsystem.Color.NONE)) {
             return false;
         }
-        else if(color.equals(IntakeSubsystem.Color.RED) && team.equals(RED)) {
-            return true;
+        else if(color.equals(IntakeSubsystem.Color.RED)) {
+            if(team.equals(RED))  {
+                return true;
+            }
+            else{
+                return false;
+            }
         }
-        else if(color.equals(IntakeSubsystem.Color.BLUE) && team.equals(BLUE)) {
-            return true;
+        else if(color.equals(IntakeSubsystem.Color.BLUE)) {
+            if(team.equals(BLUE))  {
+                return true;
+            }
+            else{
+                return false;
+            }
         }
         else {
             return acceptYellow;
