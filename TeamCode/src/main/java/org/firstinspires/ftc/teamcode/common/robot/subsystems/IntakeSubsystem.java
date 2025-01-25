@@ -16,14 +16,16 @@ public class IntakeSubsystem extends SubsystemBase {
     public static double ARM_PICK_UP_POS = 0.82;
     public static double ARM_MOVING_POS = 0.58;
     public static double ARM_REST_POS = 0.15;
+    public static double ARM_REJECT_POS = 0.6;
 
     public static double WRIST_TRANSFER_POS = 0.875/5;
     public static double WRIST_PICK_UP_POS = 0.6/5;
     public static double WRIST_MOVING_POS = 0.7/5;
     public static double WRIST_REST_POS = 1.0/5;
+    public static double WRIST_REJECT_POS = 0.6/5;
 
-    public static double TRAPDOOR_CLOSED_POS = 0.3;
-    public static double TRAPDOOR_OPEN_POS = 0.8;
+    public static double TRAPDOOR_CLOSED_POS = 0.8;
+    public static double TRAPDOOR_OPEN_POS = 0.3;
 
     public static double ROLLER_ACTIVE = 1.0;
     public static double ROLLER_DISABLED = 0.0;
@@ -68,7 +70,8 @@ public class IntakeSubsystem extends SubsystemBase {
         TRANSFER,
         REST,
         MOVING,
-        PICK_UP;
+        PICK_UP,
+        REJECT;
 
         public double getValue() {
             switch (this) {
@@ -80,6 +83,8 @@ public class IntakeSubsystem extends SubsystemBase {
                     return ARM_MOVING_POS;
                 case PICK_UP:
                     return ARM_PICK_UP_POS;
+                case REJECT:
+                    return ARM_REJECT_POS;
                 default:
                     throw new IllegalArgumentException();
             }
@@ -90,7 +95,8 @@ public class IntakeSubsystem extends SubsystemBase {
         TRANSFER,
         REST,
         MOVING,
-        PICK_UP;
+        PICK_UP,
+        REJECT;
 
         public double getValue() {
             switch (this) {
@@ -102,6 +108,8 @@ public class IntakeSubsystem extends SubsystemBase {
                     return WRIST_MOVING_POS;
                 case PICK_UP:
                     return WRIST_PICK_UP_POS;
+                case REJECT:
+                    return WRIST_REJECT_POS;
                 default:
                     throw new IllegalArgumentException();
             }

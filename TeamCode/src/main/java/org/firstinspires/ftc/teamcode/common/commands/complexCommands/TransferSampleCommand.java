@@ -34,7 +34,8 @@ public class TransferSampleCommand extends SequentialCommandGroup {
                 new WaitCommand(300),
                 new IntakeArmSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeArmState.REST),
                 new IntakeWristSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeWristState.REST),
-                new IntakeTrapdoorSetPosition_INST(intakeSubsystem, IntakeSubsystem.TrapdoorState.CLOSED)
+                new IntakeTrapdoorSetPosition_INST(intakeSubsystem, IntakeSubsystem.TrapdoorState.CLOSED),
+                new IntakeSetRollerState_INST(intakeSubsystem, IntakeSubsystem.IntakeRollerState.DISABLED)
         );
     }
 }

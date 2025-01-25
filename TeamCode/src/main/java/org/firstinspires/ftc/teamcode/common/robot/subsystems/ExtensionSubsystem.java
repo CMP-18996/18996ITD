@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.common.robot.subsystems;
 
-import static org.firstinspires.ftc.teamcode.common.robot.subsystems.ExtensionSubsystem.ExtensionState.ZEROING;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -38,8 +36,7 @@ public class ExtensionSubsystem extends SubsystemBase {
     public enum ExtensionState {
         TRANSFER,
         FULLY_EXTENDED,
-        CUSTOM,
-        ZEROING;
+        CUSTOM;
 
         public int getValue() {
             switch (this) {
@@ -104,10 +101,7 @@ public class ExtensionSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (extensionState.equals(ZEROING)){
-            extensionMotor.setPower(-0.5);
-        }
-        else if (!extensionState.equals(ExtensionState.CUSTOM)) {
+        if (!extensionState.equals(ExtensionState.CUSTOM)) {
             int error = getError();
 
             double P = Kp * error;
@@ -122,12 +116,17 @@ public class ExtensionSubsystem extends SubsystemBase {
 
             double D = Kd * (error - lastError) / timer.seconds();
 
-            double F = Kf * ((double) Math.abs(error) / error);
+            double F = Kf * ((double)error / (double)Math.abs(error));
 
             lastError = error;
             timer.reset();
 
             double power = Range.clip(P + I + D + F, -MAX_RETRACTION_SPEED, MAX_EXTENSION_SPEED);
+
+            if(extensionState.equals(ExtensionState.TRANSFER)) {
+                power -= 0.3;
+                power = Range.clip(power, -MAX_RETRACTION_SPEED, MAX_RETRACTION_SPEED);
+            }
 
             extensionMotor.setPower(-power);
         }

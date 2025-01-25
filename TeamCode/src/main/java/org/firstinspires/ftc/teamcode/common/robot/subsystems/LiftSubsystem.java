@@ -13,9 +13,9 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 @Config
 public class LiftSubsystem extends SubsystemBase {
-    public static double Kp = 0.01;
+    public static double Kp = 0.013;
     public static double Ki = 0.04;
-    public static double Kd = 0.0003;
+    public static double Kd = 0.0004;
     public static double Kf = 0.3;
     public static int INTEGRAL_ENABLE_POINT = 20;
 
@@ -37,8 +37,7 @@ public class LiftSubsystem extends SubsystemBase {
     public enum LiftState {
         TRANSFER,
         LOW_BUCKET,
-        HIGH_BUCKET,
-        ZEROING;
+        HIGH_BUCKET;
 
         public int getValue() {
             switch (this) {
@@ -48,8 +47,6 @@ public class LiftSubsystem extends SubsystemBase {
                     return LOW_BASKET_POS;
                 case HIGH_BUCKET:
                     return HIGH_BASKET_POS;
-                case ZEROING:
-                    return 0;
                 default:
                     throw new IllegalArgumentException();
             }
@@ -83,38 +80,34 @@ public class LiftSubsystem extends SubsystemBase {
         return liftState.getValue() - liftMotor.getCurrentPosition();
     }
 
-    public void setLiftMotorPower(double power) {
-        liftMotor.setPower(power);
-    }
-
     @Override
     public void periodic() {
-        if (!liftState.equals(LiftState.ZEROING)) {
-            int error = getError();
+        int error = getError();
 
-            double P = Kp * error;
+        double P = Kp * error;
 
-            if (Math.abs(error) > INTEGRAL_ENABLE_POINT) {
-                integralSum = 0;
-            } else {
-                integralSum = integralSum + (error * timer.seconds());
-            }
-
-            double I = Ki * integralSum;
-
-            double D = Kd * (error - lastError) / timer.seconds();
-
-            double F = Kf;
-
-            lastError = error;
-            timer.reset();
-
-            double power = Range.clip(P + I + D + F, -MAX_DOWN_SPEED, MAX_UP_SPEED);
-
-            liftMotor.setPower(power);
+        if (Math.abs(error) > INTEGRAL_ENABLE_POINT) {
+            integralSum = 0;
+        } else {
+            integralSum = integralSum + (error * timer.seconds());
         }
-        else {
-            liftMotor.setPower(-0.5);
+
+        double I = Ki * integralSum;
+
+        double D = Kd * (error - lastError) / timer.seconds();
+
+        double F = Kf;
+
+        lastError = error;
+        timer.reset();
+
+        double power = Range.clip(P + I + D + F, -MAX_DOWN_SPEED, MAX_UP_SPEED);
+
+        if(liftState.equals(LiftState.TRANSFER)) {
+            power -= 0.2;
+            power = Range.clip(power, -MAX_DOWN_SPEED, MAX_UP_SPEED);
         }
+
+        liftMotor.setPower(power);
     }
 }

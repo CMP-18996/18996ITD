@@ -14,20 +14,17 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.firstinspires.ftc.teamcode.common.commands.complexCommands.EjectSampleCommand;
+import org.firstinspires.ftc.teamcode.common.commands.complexCommands.RejectSampleCommand;
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.RetractAndTransferCommand;
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.TransferSampleCommand;
 import org.firstinspires.ftc.teamcode.common.commands.deposit.DepositSetPosition_INST;
-import org.firstinspires.ftc.teamcode.common.commands.extension.ExtensionSetPosition;
 import org.firstinspires.ftc.teamcode.common.commands.extension.ExtensionSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeArmSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetColorSensorStatus_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetRollerState_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeTrapdoorSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeWristSetPosition_INST;
-import org.firstinspires.ftc.teamcode.common.commands.lift.LiftSetPosition;
 import org.firstinspires.ftc.teamcode.common.commands.lift.LiftSetPosition_INST;
-import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetArmPosition;
 import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetArmPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetGripperPosition_INST;
 import org.firstinspires.ftc.teamcode.common.robot.Drive;
@@ -45,7 +42,7 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 public class FullTeleOp extends CommandOpMode {
     private final Team team = Team.RED;
     private boolean acceptYellow = true;
-    private boolean liftEnabled = false;
+    private boolean liftEnabled = true;
 
     private Robot robot;
     private Drive drive;
@@ -120,7 +117,9 @@ public class FullTeleOp extends CommandOpMode {
         gamepad_1.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
                 () -> {
                     schedule(
-                            new EjectSampleCommand(robot.intake)
+                            new RejectSampleCommand(robot.intake),
+                            new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.PICK_UP),
+                            new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.PICK_UP)
                     );
                 }
         );
@@ -209,10 +208,10 @@ public class FullTeleOp extends CommandOpMode {
         gamepad_1.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
                 () -> {
                     gamepad1.rumbleBlips(3);
-                    CommandScheduler.getInstance().reset();
-                    robot.setTransferringState(false);
+                    //CommandScheduler.getInstance().reset();
+                    //robot.setTransferringState(false);
                     schedule(
-                            new ParallelCommandGroup(
+                            new SequentialCommandGroup(
                                 new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM),
                                 new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.TRANSFER),
                                 new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.REST),
@@ -291,15 +290,21 @@ public class FullTeleOp extends CommandOpMode {
         gamepad_2.getGamepadButton(GamepadKeys.Button.A).whenPressed(
                 () -> {
                     robot.setTransferringState(true);
-                    schedule(
-                            new SequentialCommandGroup(
-                                    new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
-                                    new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
-                            )
-                    );
                     if (liftEnabled) {
                         schedule(
-                                new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET)
+                                new SequentialCommandGroup(
+                                        new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
+                                        new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM),
+                                        new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET)
+                                )
+                        );
+                    }
+                    else {
+                        schedule(
+                                new SequentialCommandGroup(
+                                        new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
+                                        new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
+                                )
                         );
                     }
                     robot.setTransferringState(false);
@@ -316,7 +321,7 @@ public class FullTeleOp extends CommandOpMode {
             robot.specimen.manualAdjustArm((int) (Math.cbrt(gamepad_2.getLeftY() * 2)));
         }
         if (gamepad_2.getRightY() != 0) {
-            robot.specimen.manualAdjustWrist(Math.cbrt(gamepad_2.getRightY() / 50));
+            robot.specimen.manualAdjustWrist(Math.cbrt(gamepad_2.getRightY() / 100));
         }
 
         // Extension Triggers
@@ -330,27 +335,38 @@ public class FullTeleOp extends CommandOpMode {
         // Auto Transfer
         IntakeSubsystem.Color detectedColor = robot.intake.getCurrentColor();
 
-        if(!detectedColor.equals(IntakeSubsystem.Color.NONE) && robot.isTransferring()) {
+        if(!detectedColor.equals(IntakeSubsystem.Color.NONE) && !robot.isTransferring()) {
             if(robot.acceptColor(detectedColor)) {
                 gamepad1.rumbleBlips(1);
                 robot.setTransferringState(true);
-                schedule(
-                        new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
-                        new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
-                );
-                if(liftEnabled) {
+                if (liftEnabled) {
                     schedule(
-                            new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET)
+                            new SequentialCommandGroup(
+                                    new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
+                                    new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM),
+                                    new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET)
+                            )
+                    );
+                }
+                else {
+                    schedule(
+                            new SequentialCommandGroup(
+                                    new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
+                                    new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
+                            )
                     );
                 }
                 robot.setTransferringState(false);
             }
             else {
                 gamepad1.rumbleBlips(2);
-                previousIntakingState = robot.intake.getIntakeRollerState();
+                //previousIntakingState = robot.intake.getIntakeRollerState();
                 schedule(
-                        new EjectSampleCommand(robot.intake),
-                        new IntakeSetRollerState_INST(robot.intake, previousIntakingState)
+                        new RejectSampleCommand(robot.intake),
+                        new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.PICK_UP),
+                        new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.PICK_UP),
+                        new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.ACTIVE)
+                        //new IntakeSetRollerState_INST(robot.intake, previousIntakingState) // This works???? wtf
                 );
             }
         }
@@ -359,6 +375,8 @@ public class FullTeleOp extends CommandOpMode {
         telemetry.addData("COLOR SENSOR STATUS", robot.intake.getColorSensorStatus());
         telemetry.addData("ACCEPT YELLOW", acceptYellow);
         telemetry.addData("LIFT ENABLED", liftEnabled);
+        telemetry.addData("TRANSFERRING STATE", robot.isTransferring());
+        telemetry.addData("Accept Color", robot.acceptColor(detectedColor));
         telemetry.update();
 
         drive.robotCentricDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
