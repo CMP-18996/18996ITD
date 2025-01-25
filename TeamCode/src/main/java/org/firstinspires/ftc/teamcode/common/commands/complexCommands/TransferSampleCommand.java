@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.common.commands.complexCommands;
 
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
+import com.arcrobotics.ftclib.command.ParallelRaceGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 
@@ -30,7 +31,11 @@ public class TransferSampleCommand extends SequentialCommandGroup {
                 new IntakeSetRollerState_INST(intakeSubsystem, IntakeSubsystem.IntakeRollerState.ACTIVE),
 
                 // wait until no sample is detected
-                new WaitForColorCommand(intakeSubsystem, IntakeSubsystem.Color.NONE),
+                new ParallelRaceGroup(
+                        new WaitForColorCommand(intakeSubsystem, IntakeSubsystem.Color.NONE),
+                        new WaitCommand(2000)
+                ),
+
                 new WaitCommand(300),
                 new IntakeArmSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeArmState.REST),
                 new IntakeWristSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeWristState.REST),

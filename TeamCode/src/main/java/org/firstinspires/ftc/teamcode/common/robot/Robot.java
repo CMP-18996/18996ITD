@@ -121,6 +121,11 @@ public class Robot {
         return transferring;
     }
 
+    public void setAcceptYellow(boolean acceptYellow)
+    {
+        this.acceptYellow = acceptYellow;
+    }
+
     public boolean acceptColor(IntakeSubsystem.Color color) {
         if(color.equals(IntakeSubsystem.Color.NONE)) {
             return false;

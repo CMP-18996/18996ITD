@@ -279,6 +279,7 @@ public class FullTeleOp extends CommandOpMode {
         gamepad_2.getGamepadButton(GamepadKeys.Button.RIGHT_STICK_BUTTON).whenPressed(
                 () -> {
                     acceptYellow = !acceptYellow;
+                    robot.setAcceptYellow(acceptYellow);
                 }
         );
 
@@ -364,13 +365,19 @@ public class FullTeleOp extends CommandOpMode {
             }
             else {
                 gamepad1.rumbleBlips(2);
-                //previousIntakingState = robot.intake.getIntakeRollerState();
+                previousIntakingState = robot.intake.getIntakeRollerState();
                 schedule(
                         new SequentialCommandGroup(
+                                /*
                             new RejectSampleCommand(robot.intake),
                             new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.PICK_UP),
                             new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.PICK_UP),
                             new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.ACTIVE)
+
+                                 */
+                            new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.REVERSING),
+                            new WaitCommand(300),
+                            new IntakeSetRollerState_INST(robot.intake, previousIntakingState)
                             //new IntakeSetRollerState_INST(robot.intake, previousIntakingState) // This works???? wtf
                         )
                 );

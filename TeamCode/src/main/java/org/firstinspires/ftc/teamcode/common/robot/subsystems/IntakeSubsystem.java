@@ -31,7 +31,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public static double ROLLER_DISABLED = 0.0;
     public static double ROLLER_REVERSING = -1.0;
 
-    public static double ALPHA_CUTOFF = 310;
+    public static double ALPHA_CUTOFF = 320;
 
     private final CRServo intakeRollerServo;
     private final Servo trapdoorServo;

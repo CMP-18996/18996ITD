@@ -36,7 +36,8 @@ public class ExtensionSubsystem extends SubsystemBase {
     public enum ExtensionState {
         TRANSFER,
         FULLY_EXTENDED,
-        CUSTOM;
+        CUSTOM,
+        INSPECTION;
 
         public int getValue() {
             switch (this) {
@@ -46,6 +47,8 @@ public class ExtensionSubsystem extends SubsystemBase {
                     return FULL_EXTENSION_POS;
                 case CUSTOM:
                     return 0;
+                case INSPECTION:
+                    return 500;
                 default:
                     throw new IllegalArgumentException();
             }
