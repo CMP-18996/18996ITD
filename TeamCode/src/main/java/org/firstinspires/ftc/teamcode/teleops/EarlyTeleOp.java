@@ -59,9 +59,11 @@ public class EarlyTeleOp extends CommandOpMode {
 
     @Override
     public void initialize() {
-        CommandScheduler.getInstance().reset();
-
+//        robot = new Robot(hardwareMap, team, acceptYellow, Subsystems.ALL);
+        waitForStart();
         robot = new Robot(hardwareMap, team, acceptYellow, Subsystems.ALL);
+
+        CommandScheduler.getInstance().reset();
 
         hangMotor = hardwareMap.get(DcMotorEx.class, HardwareMapNames.HANG_MOTOR_1);
         hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -320,6 +322,7 @@ public class EarlyTeleOp extends CommandOpMode {
 
     @Override
     public void run() {
+        //robot = new Robot(hardwareMap, team, acceptYellow, Subsystems.ALL);
         CommandScheduler.getInstance().run();
 
         // Manual Specimen Adjustments
