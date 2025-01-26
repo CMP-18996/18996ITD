@@ -41,9 +41,9 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
 @TeleOp
 public class FullTeleOp extends CommandOpMode {
-    private final Team team = Team.RED;
-    private boolean acceptYellow = true;
-    private boolean liftEnabled = true;
+    private final Team team = Team.BLUE;
+    private boolean acceptYellow = false;
+    private boolean liftEnabled = false;
 
     private Robot robot;
     private Drive drive;
@@ -209,6 +209,13 @@ public class FullTeleOp extends CommandOpMode {
         gamepad_1.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
                 () -> {
                     gamepad1.rumbleBlips(3);
+                    schedule(
+                            new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.ZEROING),
+                            new WaitCommand(2000),
+                            new InstantCommand(() -> robot.lift.resetEncoder()),
+                            new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.TRANSFER)
+                    );
+
                     //CommandScheduler.getInstance().reset();
                     //robot.setTransferringState(false);
                     schedule(
@@ -390,6 +397,7 @@ public class FullTeleOp extends CommandOpMode {
         telemetry.addData("LIFT ENABLED", liftEnabled);
         telemetry.addData("TRANSFERRING STATE", robot.isTransferring());
         telemetry.addData("Accept Color", robot.acceptColor(detectedColor));
+        telemetry.addData("LIFT STATE", robot.lift.getLiftState());
         telemetry.update();
 
         drive.robotCentricDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);

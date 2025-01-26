@@ -7,6 +7,7 @@ import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoDeposit;
@@ -37,7 +38,7 @@ public class BasketAutoRR extends CommandOpMode {
         robot = new Robot(hardwareMap, Team.BLUE, Subsystems.EXTENSION, Subsystems.INTAKE, Subsystems.LIFT, Subsystems.DEPOSIT);
 
         super.schedule(
-                new InstantCommand(() -> robot.extension.setMaxExtensionSpeed(0.6)),
+                new InstantCommand(() -> robot.extension.setMaxExtensionSpeed(0.5)),
                 new SequentialCommandGroup(
                         //deposit preloaded block in basket
                         new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.REST),
@@ -100,14 +101,17 @@ public class BasketAutoRR extends CommandOpMode {
                         new AutoDeposit(robot.lift, robot.deposit),
 
                         //skedaddle
-                        /*new InstantCommand(() -> robot.hang.hangMotor.setPower(1)),
-                        new InstantCommand(() -> Actions.runBlocking(drive.actionBuilder(drive.pose)
+                        //new InstantCommand(() -> robot.hang.hangMotor.setPower(1)),
+
+                        new RRWrapper(drive, drive.actionBuilder(drive.pose)
                                 .setReversed(false)
-                                .splineTo(new Vector2d(28,16), Math.toRadians(-90))
-                                .build())),
-                        new InstantCommand(() -> robot.hang.hangMotor.setPower(0))*/
+                                .splineToLinearHeading(new Pose2d(57.5,52, Math.toRadians(-115)), Math.toRadians(-115))
+                                .build()),
+
+                        //new InstantCommand(() -> robot.hang.hangMotor.setPower(0))*/
 
                         //zero stuff
+                        new WaitCommand(500),
                         new ExtensionSetPosition(robot.extension, ExtensionSubsystem.ExtensionState.TRANSFER),
                         new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.TRANSFER),
                         new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.TRANSFER)

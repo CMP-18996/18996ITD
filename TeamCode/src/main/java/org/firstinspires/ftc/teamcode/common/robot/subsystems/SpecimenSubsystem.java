@@ -24,13 +24,13 @@ public class SpecimenSubsystem extends SubsystemBase {
     public double angleFromTicks;
 
     public static int ARM_CHAMBER_POS = 250;
-    public static int ARM_WALL_POS = 20;
+    public static int ARM_WALL_POS = 30;
 
     public static double WRIST_CHAMBER_POS = 0.7;
     public static double WRIST_WALL_POS = 0.08;
 
     public static double GRIPPER_OPEN_POS = 0.5;
-    public static double GRIPPER_CLOSED_POS = 0.82;
+    public static double GRIPPER_CLOSED_POS = 0.84;
 
     public static double MAX_EXTENSION_SPEED = 0.8;
     public static double MAX_RETURN_SPEED = 0.8;

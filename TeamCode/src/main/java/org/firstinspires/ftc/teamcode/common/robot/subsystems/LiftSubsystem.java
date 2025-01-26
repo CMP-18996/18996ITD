@@ -37,7 +37,8 @@ public class LiftSubsystem extends SubsystemBase {
     public enum LiftState {
         TRANSFER,
         LOW_BUCKET,
-        HIGH_BUCKET;
+         HIGH_BUCKET,
+        ZEROING;
 
         public int getValue() {
             switch (this) {
@@ -47,6 +48,8 @@ public class LiftSubsystem extends SubsystemBase {
                     return LOW_BASKET_POS;
                 case HIGH_BUCKET:
                     return HIGH_BASKET_POS;
+                case ZEROING:
+                    return -1000;
                 default:
                     throw new IllegalArgumentException();
             }
@@ -80,34 +83,44 @@ public class LiftSubsystem extends SubsystemBase {
         return liftState.getValue() - liftMotor.getCurrentPosition();
     }
 
+    public void resetEncoder() {
+        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
     @Override
     public void periodic() {
-        int error = getError();
+        if(!liftState.equals(LiftState.ZEROING)) {
+            int error = getError();
 
-        double P = Kp * error;
+            double P = Kp * error;
 
-        if (Math.abs(error) > INTEGRAL_ENABLE_POINT) {
-            integralSum = 0;
-        } else {
-            integralSum = integralSum + (error * timer.seconds());
+            if (Math.abs(error) > INTEGRAL_ENABLE_POINT) {
+                integralSum = 0;
+            } else {
+                integralSum = integralSum + (error * timer.seconds());
+            }
+
+            double I = Ki * integralSum;
+
+            double D = Kd * (error - lastError) / timer.seconds();
+
+            double F = Kf;
+
+            lastError = error;
+            timer.reset();
+
+            double power = Range.clip(P + I + D + F, -MAX_DOWN_SPEED, MAX_UP_SPEED);
+
+            if (liftState.equals(LiftState.TRANSFER)) {
+                power -= 0.2;
+                power = Range.clip(power, -MAX_DOWN_SPEED, MAX_UP_SPEED);
+            }
+
+            liftMotor.setPower(power);
         }
-
-        double I = Ki * integralSum;
-
-        double D = Kd * (error - lastError) / timer.seconds();
-
-        double F = Kf;
-
-        lastError = error;
-        timer.reset();
-
-        double power = Range.clip(P + I + D + F, -MAX_DOWN_SPEED, MAX_UP_SPEED);
-
-        if(liftState.equals(LiftState.TRANSFER)) {
-            power -= 0.2;
-            power = Range.clip(power, -MAX_DOWN_SPEED, MAX_UP_SPEED);
+        else {
+            liftMotor.setPower(-1.0);
         }
-
-        liftMotor.setPower(power);
     }
 }
