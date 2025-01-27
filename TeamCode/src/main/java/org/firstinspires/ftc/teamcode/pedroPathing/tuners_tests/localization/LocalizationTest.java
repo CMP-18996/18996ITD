@@ -27,6 +27,7 @@ import com.pedropathing.util.Drawing;
 import java.util.Arrays;
 import java.util.List;
 
+import org.firstinspires.ftc.teamcode.common.odo.STATICLocalizer;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
@@ -43,6 +44,8 @@ import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 public class LocalizationTest extends OpMode {
     private PoseUpdater poseUpdater;
     private DashboardPoseTracker dashboardPoseTracker;
+
+    private STATICLocalizer localizer;
     private Telemetry telemetryA;
 
     private DcMotorEx leftFront;
@@ -56,8 +59,19 @@ public class LocalizationTest extends OpMode {
      */
     @Override
     public void init() {
+
         Constants.setConstants(FConstants.class, LConstants.class);
-        poseUpdater = new PoseUpdater(hardwareMap);
+        localizer = new STATICLocalizer(hardwareMap);
+        poseUpdater = new PoseUpdater(hardwareMap, localizer);
+
+        poseUpdater.setStartingPose(localizer.measureSpecimenStartPose());
+
+        telemetryA.addData("start x", poseUpdater.getPose().getX());
+        telemetryA.addData("start y", poseUpdater.getPose().getY());
+        telemetryA.addData("start heading", poseUpdater.getPose().getHeading());
+        telemetryA.addData("localizer x", localizer.getPose().getX());
+        telemetryA.addData("localizer y", localizer.getPose().getY());
+        telemetryA.addData("localizer heading", localizer.getPose().getHeading());
 
         dashboardPoseTracker = new DashboardPoseTracker(poseUpdater);
 

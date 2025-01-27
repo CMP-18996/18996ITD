@@ -1,49 +1,55 @@
 package org.firstinspires.ftc.teamcode.common.odo;
 
 import com.acmerobotics.roadrunner.ftc.SparkFunOTOSCorrected;
-import com.pedropathing.localization.GoBildaPinpointDriver;
 import com.pedropathing.localization.Localizer;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.localization.constants.OTOSConstants;
 import com.pedropathing.pathgen.MathFunctions;
 import com.pedropathing.pathgen.Vector;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.AnalogInputController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 public class STATICLocalizer extends Localizer {
     private HardwareMap hardwareMap;
-    private Limelight3A limelight;
+    private Pose startPose;
     private SparkFunOTOS otos;
     private SparkFunOTOS.Pose2D otosPose;
     private SparkFunOTOS.Pose2D otosVel;
     private SparkFunOTOS.Pose2D otosAcc;
     private double previousHeading;
     private double totalHeading;
-    private Pose startPose;
+
+    private AnalogInputController analogInputController;
+    private AnalogInput rightSideUltrasonic;
+    private AnalogInput backSideUltrasonic;
+    private AnalogInput backLeftAngledUltrasonic;
+    private AnalogInput backRightAngledUltrasonic;
 
     private LocalizationMode localizationMode;
 
     public enum LocalizationMode {
-        PINPOINT,
-        OTOS,
-        BUCKET,
+        NORMAL,
+        SAMPLE_DEPOSIT,
         SPECIMEN_PICKUP,
-        CHAMBER
+        SPECIMEN_DEPOSIT
     }
 
-    public STATICLocalizer(HardwareMap hardwareMap) {this(hardwareMap, LocalizationMode.OTOS, new Pose());}
+    public STATICLocalizer(HardwareMap hardwareMap) {this(hardwareMap, LocalizationMode.NORMAL, new Pose());}
 
     public STATICLocalizer(HardwareMap hardwareMap, LocalizationMode localizationMode) {this(hardwareMap, localizationMode, new Pose());}
 
     public STATICLocalizer(HardwareMap hardwareMap, LocalizationMode localizationMode, Pose startPose) {
         this.hardwareMap = hardwareMap;
         this.localizationMode = localizationMode;
+
+        rightSideUltrasonic = hardwareMap.get(AnalogInput.class, HardwareMapNames.RIGHT_SIDE_ULTRASONIC);
+        backSideUltrasonic =  hardwareMap.get(AnalogInput.class, HardwareMapNames.BACK_SIDE_ULTRASONIC);
+        backLeftAngledUltrasonic =  hardwareMap.get(AnalogInput.class, HardwareMapNames.BACK_LEFT_SIDE_ULTRASONIC);
+        backRightAngledUltrasonic =  hardwareMap.get(AnalogInput.class, HardwareMapNames.BACK_RIGHT_SIDE_ULTRASONIC);
 
         // TODO: eliminate this
         if (OTOSConstants.useCorrectedOTOSClass) {
@@ -72,16 +78,14 @@ public class STATICLocalizer extends Localizer {
     @Override
     public Pose getPose() {
         switch (localizationMode) {
-            case OTOS:
+            case NORMAL:
                 Pose pose = new Pose(otosPose.x, otosPose.y, otosPose.h);
                 Vector vec = pose.getVector();
                 vec.rotateVector(startPose.getHeading());
                 return MathFunctions.addPoses(startPose, new Pose(vec.getXComponent(), vec.getYComponent(), pose.getHeading()));
-            case PINPOINT:
+            case SAMPLE_DEPOSIT:
 
-            case BUCKET:
-
-            case CHAMBER:
+            case SPECIMEN_DEPOSIT:
 
             case SPECIMEN_PICKUP:
 
@@ -93,13 +97,11 @@ public class STATICLocalizer extends Localizer {
     @Override
     public Pose getVelocity() {
         switch (localizationMode) {
-            case OTOS:
+            case NORMAL:
                 return new Pose(otosVel.x, otosVel.y, otosVel.h);
-            case PINPOINT:
+            case SAMPLE_DEPOSIT:
 
-            case BUCKET:
-
-            case CHAMBER:
+            case SPECIMEN_DEPOSIT:
 
             case SPECIMEN_PICKUP:
 
@@ -128,11 +130,9 @@ public class STATICLocalizer extends Localizer {
 
     @Override
     public void update() {
-        if(localizationMode == LocalizationMode.OTOS) {
-            otos.getPosVelAcc(otosPose, otosVel, otosAcc);
-            totalHeading += MathFunctions.getSmallestAngleDifference(otosPose.h, previousHeading);
-            previousHeading = otosPose.h;
-        }
+        otos.getPosVelAcc(otosPose, otosVel, otosAcc);
+        totalHeading += MathFunctions.getSmallestAngleDifference(otosPose.h, previousHeading);
+        previousHeading = otosPose.h;
     }
 
     @Override
@@ -146,10 +146,6 @@ public class STATICLocalizer extends Localizer {
         otos.setOffset(OTOSConstants.offset);
         otos.setLinearScalar(OTOSConstants.linearScalar);
         otos.setAngularScalar(OTOSConstants.angularScalar);
-    }
-
-    private void configureLimelight() {
-
     }
 
     public void setLocalizationMode(LocalizationMode localizationMode) {
@@ -170,4 +166,16 @@ public class STATICLocalizer extends Localizer {
     public double getTurningMultiplier() {return 0;}
     @Override
     public void resetIMU() {}
+
+    private static double getDistanceFromVoltage(double voltage) {
+        return 3300 * 520 / voltage;
+    }
+
+    public Pose measureSampleStartPose() {
+        return new Pose(144 - getDistanceFromVoltage(backSideUltrasonic.getVoltage()) - 9, 9, -90);
+    }
+
+    public Pose measureSpecimenStartPose() {
+        return new Pose(getDistanceFromVoltage(rightSideUltrasonic.getVoltage()) + 9, 9, 0);
+    }
 }
