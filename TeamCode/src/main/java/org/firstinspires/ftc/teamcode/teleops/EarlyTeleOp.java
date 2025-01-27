@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.common.commands.complexCommands.RetractAnd
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.TransferSampleCommand;
 import org.firstinspires.ftc.teamcode.common.commands.deposit.DepositSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.extension.ExtensionSetPosition_INST;
+import org.firstinspires.ftc.teamcode.common.commands.hang.HangCommand;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeArmSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetColorSensorStatus_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetRollerState_INST;
@@ -33,6 +34,7 @@ import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.Team;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.ExtensionSubsystem;
+import org.firstinspires.ftc.teamcode.common.robot.subsystems.HangSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
@@ -41,8 +43,8 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 @TeleOp
 public class EarlyTeleOp extends CommandOpMode {
     private final Team team = Team.RED;
-    private boolean acceptYellow = true;
-    private boolean liftEnabled = true;
+    private final boolean acceptYellow = true;
+    private final boolean liftEnabled = true;
 
     private Robot robot;
     private Drive drive;
@@ -64,11 +66,6 @@ public class EarlyTeleOp extends CommandOpMode {
         robot = new Robot(hardwareMap, team, acceptYellow, Subsystems.ALL);
 
         CommandScheduler.getInstance().reset();
-
-        hangMotor = hardwareMap.get(DcMotorEx.class, HardwareMapNames.HANG_MOTOR_1);
-        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        hangMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        hangMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         drive = new Drive(hardwareMap);
         drive.setBreakMode(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -270,19 +267,15 @@ public class EarlyTeleOp extends CommandOpMode {
         );
 
         gamepad_2.getGamepadButton(GamepadKeys.Button.X).whenPressed(
-                () -> hangMotor.setPower(1.0)
-        ).whenReleased(() -> hangMotor.setPower(0.0));
+                new HangCommand(robot.hang, HangSubsystem.HangState.UP)
+        ).whenReleased(
+                new HangCommand(robot.hang, HangSubsystem.HangState.OFF)
+        );
 
         gamepad_2.getGamepadButton(GamepadKeys.Button.B).whenPressed(
-                () -> hangMotor.setPower(-1.0)
-        ).whenReleased(() -> hangMotor.setPower(0.0));
-
-        gamepad_2.getGamepadButton(GamepadKeys.Button.RIGHT_STICK_BUTTON).whenPressed(
-                () -> {
-                    schedule(
-                        new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.INSPECTION)
-                    );
-                }
+                new HangCommand(robot.hang, HangSubsystem.HangState.DOWN)
+        ).whenReleased(
+                new HangCommand(robot.hang, HangSubsystem.HangState.OFF)
         );
 
         gamepad_2.getGamepadButton(GamepadKeys.Button.LEFT_STICK_BUTTON).whenPressed(

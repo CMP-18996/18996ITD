@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.ExtensionSubsystem;
+import org.firstinspires.ftc.teamcode.common.robot.subsystems.HangSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
@@ -19,6 +20,7 @@ public class Robot {
     public LiftSubsystem lift;
     public SpecimenSubsystem specimen;
     public HardwareMap hardwareMap;
+    public HangSubsystem hang;
     private boolean transferring = false;
     private final Team team;
     private boolean acceptYellow = false;
@@ -61,6 +63,7 @@ public class Robot {
                 extension = new ExtensionSubsystem(hardwareMap);
                 deposit = new DepositSubsystem(hardwareMap);
                 lift = new LiftSubsystem(hardwareMap);
+                hang = new HangSubsystem(hardwareMap);
                 intake = new IntakeSubsystem(hardwareMap);
                 specimen = new SpecimenSubsystem(hardwareMap);
             }
@@ -78,6 +81,9 @@ public class Robot {
             }
             else if (subsystem == Subsystems.INTAKE) {
                 intake = new IntakeSubsystem(hardwareMap);
+            }
+            else if (subsystem == Subsystems.HANG) {
+                hang = new HangSubsystem(hardwareMap);
             }
         }
     }
@@ -94,6 +100,7 @@ public class Robot {
                 lift = new LiftSubsystem(hardwareMap);
                 intake = new IntakeSubsystem(hardwareMap);
                 specimen = new SpecimenSubsystem(hardwareMap);
+                hang = new HangSubsystem(hardwareMap);
             }
             else if (subsystem == Subsystems.EXTENSION) {
                 extension = new ExtensionSubsystem(hardwareMap);
@@ -109,6 +116,9 @@ public class Robot {
             }
             else if (subsystem == Subsystems.INTAKE) {
                 intake = new IntakeSubsystem(hardwareMap);
+            }
+            else if (subsystem == Subsystems.HANG) {
+                hang = new HangSubsystem(hardwareMap);
             }
         }
     }
