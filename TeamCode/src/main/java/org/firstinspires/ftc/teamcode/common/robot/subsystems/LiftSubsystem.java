@@ -56,6 +56,11 @@ public class LiftSubsystem extends SubsystemBase {
         }
     }
 
+    public void resetEncoders() {
+        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
     public LiftSubsystem(HardwareMap hardwareMap) {
         liftMotor = hardwareMap.get(DcMotorEx.class, HardwareMapNames.LIFT_MOTOR);
 
