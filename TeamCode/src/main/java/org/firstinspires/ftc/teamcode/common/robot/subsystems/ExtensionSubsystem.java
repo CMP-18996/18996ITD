@@ -37,6 +37,7 @@ public class ExtensionSubsystem extends SubsystemBase {
         TRANSFER,
         FULLY_EXTENDED,
         CUSTOM,
+        ZEROING,
         INSPECTION;
 
         public int getValue() {
@@ -47,6 +48,8 @@ public class ExtensionSubsystem extends SubsystemBase {
                     return FULL_EXTENSION_POS;
                 case CUSTOM:
                     return 0;
+                case ZEROING:
+                    return -100;
                 case INSPECTION:
                     return 500;
                 default:
@@ -102,6 +105,11 @@ public class ExtensionSubsystem extends SubsystemBase {
         MAX_RETRACTION_SPEED = maxRetractionSpeed;
     }
 
+    public void resetEncoders() {
+        extensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        extensionMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
     @Override
     public void periodic() {
         if (!extensionState.equals(ExtensionState.CUSTOM)) {
@@ -132,6 +140,9 @@ public class ExtensionSubsystem extends SubsystemBase {
             }
 
             extensionMotor.setPower(-power);
+        }
+        else if (extensionState == ExtensionState.ZEROING) {
+            extensionMotor.setPower(-1);
         }
     }
 }

@@ -10,13 +10,17 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 public class LConstants {
     static {
-        OTOSConstants.useCorrectedOTOSClass = true;
-        OTOSConstants.hardwareMapName = HardwareMapNames.OTOS;
-        OTOSConstants.linearUnit = DistanceUnit.INCH;
-        OTOSConstants.angleUnit = AngleUnit.RADIANS;
-        OTOSConstants.offset = new SparkFunOTOS.Pose2D(-160/25.4, -88/25.4, Math.PI);
-        OTOSConstants.linearScalar = 1.011;
-        OTOSConstants.angularScalar = 0.966;
+        PinpointConstants.forwardY = 1;
+        PinpointConstants.strafeX = -2.5;
+        PinpointConstants.distanceUnit = DistanceUnit.INCH;
+        PinpointConstants.hardwareMapName = HardwareMapNames.PINPOINT;
+        PinpointConstants.useYawScalar = false;
+        PinpointConstants.yawScalar = 1.0;
+        PinpointConstants.useCustomEncoderResolution = false;
+        PinpointConstants.encoderResolution = GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD;
+        PinpointConstants.customEncoderResolution = 13.26291192;
+        PinpointConstants.forwardEncoderDirection = GoBildaPinpointDriver.EncoderDirection.REVERSED;
+        PinpointConstants.strafeEncoderDirection = GoBildaPinpointDriver.EncoderDirection.FORWARD;
     }
 }
 
