@@ -392,5 +392,19 @@ public class EarlyTeleOp extends CommandOpMode {
 
         drive.robotCentricDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
     }
+
+    public void runOpMode() throws InterruptedException {
+        initialize();
+
+        waitForStart();
+
+        robot = new Robot(hardwareMap, team, acceptYellow, Subsystems.ALL);
+
+        // run the scheduler
+        while (!isStopRequested() && opModeIsActive()) {
+            run();
+        }
+        reset();
+    }
 }
 
