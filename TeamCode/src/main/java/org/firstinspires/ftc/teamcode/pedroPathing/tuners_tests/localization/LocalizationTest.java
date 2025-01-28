@@ -12,6 +12,7 @@ import static com.pedropathing.follower.FollowerConstants.rightRearMotorDirectio
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.pedropathing.localization.Pose;
 import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -61,17 +62,17 @@ public class LocalizationTest extends OpMode {
     public void init() {
 
         Constants.setConstants(FConstants.class, LConstants.class);
-        localizer = new STATICLocalizer(hardwareMap);
-        poseUpdater = new PoseUpdater(hardwareMap, localizer);
+        poseUpdater = new PoseUpdater(hardwareMap);
 
-        poseUpdater.setStartingPose(localizer.measureSpecimenStartPose());
+        //poseUpdater.setStartingPose(localizer.measureSpecimenStartPose());
+        poseUpdater.setStartingPose(new Pose(0, 62.5, Math.toRadians(-90)));
 
-        telemetryA.addData("start x", poseUpdater.getPose().getX());
-        telemetryA.addData("start y", poseUpdater.getPose().getY());
-        telemetryA.addData("start heading", poseUpdater.getPose().getHeading());
-        telemetryA.addData("localizer x", localizer.getPose().getX());
-        telemetryA.addData("localizer y", localizer.getPose().getY());
-        telemetryA.addData("localizer heading", localizer.getPose().getHeading());
+        //telemetryA.addData("start x", poseUpdater.getPose().getX());
+        //telemetryA.addData("start y", poseUpdater.getPose().getY());
+        //telemetryA.addData("start heading", poseUpdater.getPose().getHeading());
+        //telemetryA.addData("localizer x", localizer.getPose().getX());
+        //telemetryA.addData("localizer y", localizer.getPose().getY());
+        //telemetryA.addData("localizer heading", localizer.getPose().getHeading());
 
         dashboardPoseTracker = new DashboardPoseTracker(poseUpdater);
 
