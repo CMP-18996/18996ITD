@@ -34,7 +34,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public static double ROLLER_DISABLED = 0.0;
     public static double ROLLER_REVERSING = -1.0;
 
-    public static double ALPHA_CUTOFF = 320;
+    public static double ALPHA_CUTOFF = 300;
 
     private final CRServo intakeRollerServo;
     private final Servo trapdoorServo;
@@ -220,14 +220,15 @@ public class IntakeSubsystem extends SubsystemBase {
         else if(colorSensor.alpha() < ALPHA_CUTOFF) {
             currentColor = Color.NONE;
         }
-        else if(colorSensor.red() > 300) {
-            currentColor = Color.RED;
+        // DO NOT CHANGE THE ORDER OF THESE IF STATEMENTS, COLOR DETECTION WILL BREAK
+        else if(colorSensor.blue() > 500) {
+            currentColor = Color.BLUE;
         }
-        else if(colorSensor.green() > 300) {
+        else if(colorSensor.green() > 600) {
             currentColor = Color.YELLOW;
         }
-        else if(colorSensor.blue() > 300) {
-            currentColor = Color.BLUE;
+        else if(colorSensor.red() > 600) {
+            currentColor = Color.RED;
         }
         else {
             currentColor = IntakeSubsystem.Color.NONE;
