@@ -20,7 +20,7 @@ public class ExtensionSubsystem extends SubsystemBase {
     public static int INTEGRAL_ENABLE_POINT = 10;
 
     public static int TRANSFER_POS = 0;
-    public static int FULL_EXTENSION_POS = 620;
+    public static int EXTENDED_POS = 620;
 
     public static double MAX_EXTENSION_SPEED = 1.0;
     public static double MAX_RETRACTION_SPEED = 1.0;
@@ -35,7 +35,7 @@ public class ExtensionSubsystem extends SubsystemBase {
 
     public enum ExtensionState {
         TRANSFER,
-        FULLY_EXTENDED,
+        EXTENDED,
         CUSTOM,
         ZEROING,
         INSPECTION;
@@ -44,12 +44,12 @@ public class ExtensionSubsystem extends SubsystemBase {
             switch (this) {
                 case TRANSFER:
                     return TRANSFER_POS;
-                case FULLY_EXTENDED:
-                    return FULL_EXTENSION_POS;
+                case EXTENDED:
+                    return EXTENDED_POS;
                 case CUSTOM:
                     return 0;
                 case ZEROING:
-                    return -100;
+                    return 0;
                 case INSPECTION:
                     return 500;
                 default:
@@ -105,6 +105,10 @@ public class ExtensionSubsystem extends SubsystemBase {
         MAX_RETRACTION_SPEED = maxRetractionSpeed;
     }
 
+    public void setExtendedEncoderValue(int position) {
+        EXTENDED_POS = position;
+    }
+
     public void resetEncoders() {
         extensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         extensionMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -112,7 +116,10 @@ public class ExtensionSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (!extensionState.equals(ExtensionState.CUSTOM)) {
+        if (extensionState == ExtensionState.ZEROING) {
+            extensionMotor.setPower(1);
+        }
+        else if (!extensionState.equals(ExtensionState.CUSTOM)) {
             int error = getError();
 
             double P = Kp * error;
@@ -140,9 +147,6 @@ public class ExtensionSubsystem extends SubsystemBase {
             }
 
             extensionMotor.setPower(-power);
-        }
-        else if (extensionState == ExtensionState.ZEROING) {
-            extensionMotor.setPower(-1);
         }
     }
 }

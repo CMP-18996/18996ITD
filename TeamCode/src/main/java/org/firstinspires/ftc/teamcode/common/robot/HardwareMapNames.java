@@ -66,8 +66,8 @@ public class HardwareMapNames {
     public static String RIGHT_BACK = "rightBack";
 
     // Specimen
-    public static String ARM_MOTOR = "armMotor";
-    public static String WRIST_SERVO = "armServo";
+    public static String ARM_MOTOR = "armServo";
+    public static String WRIST_SERVO = "wristServo";
     public static String GRIPPER_SERVO = "armClaw";
 
     // Ultrasonics

@@ -49,11 +49,16 @@ public class LiftSubsystem extends SubsystemBase {
                 case HIGH_BUCKET:
                     return HIGH_BASKET_POS;
                 case ZEROING:
-                    return -1000;
+                    return 0;
                 default:
                     throw new IllegalArgumentException();
             }
         }
+    }
+
+    public void resetEncoders() {
+        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public LiftSubsystem(HardwareMap hardwareMap) {
@@ -90,7 +95,10 @@ public class LiftSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if(!liftState.equals(LiftState.ZEROING)) {
+        if(liftState.equals(LiftState.ZEROING)) {
+            liftMotor.setPower(-1.0);
+        }
+        else {
             int error = getError();
 
             double P = Kp * error;
@@ -118,9 +126,6 @@ public class LiftSubsystem extends SubsystemBase {
             }
 
             liftMotor.setPower(power);
-        }
-        else {
-            liftMotor.setPower(-1.0);
         }
     }
 }

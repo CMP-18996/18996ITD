@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.common.robot.subsystems;
 
+import android.graphics.Color;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -8,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.checkerframework.checker.units.qual.C;
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 @Config
@@ -31,7 +34,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public static double ROLLER_DISABLED = 0.0;
     public static double ROLLER_REVERSING = -1.0;
 
-    public static double ALPHA_CUTOFF = 320;
+    public static double ALPHA_CUTOFF = 300;
 
     private final CRServo intakeRollerServo;
     private final Servo trapdoorServo;
@@ -211,35 +214,23 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     private void updateCurrentColor() {
-        /*
-        int color = colorSensor.argb();
-        int r, g, b, a;
-        a = (color >> 24) & 0xFF;
-        r = (color >> 16) & 0xFF;
-        g = (color >> 8) & 0xFF;
-           b?
-
-         */
-        int r, g, b, a;
-        a = colorSensor.alpha();
-        r = colorSensor.red();
-        g = colorSensor.green();
-        b = colorSensor.blue();
-
-        if(colorSensorStatus.equals(IntakeSubsystem.ColorSensorStatus.DISABLED) || a < ALPHA_CUTOFF) {
-            currentColor = IntakeSubsystem.Color.NONE;
+        if(colorSensorStatus.equals(IntakeSubsystem.ColorSensorStatus.DISABLED)) {
+            currentColor = Color.NONE;
         }
-        else if(r > g && r > b){
-            currentColor = IntakeSubsystem.Color.RED;
+        else if(colorSensor.alpha() < ALPHA_CUTOFF) {
+            currentColor = Color.NONE;
         }
-        else if(g > r && g > b){
-            currentColor = IntakeSubsystem.Color.YELLOW;
+        // DO NOT CHANGE THE ORDER OF THESE IF STATEMENTS, COLOR DETECTION WILL BREAK
+        else if(colorSensor.blue() > 500) {
+            currentColor = Color.BLUE;
         }
-        else if(b > r && b > g){
-            currentColor = IntakeSubsystem.Color.BLUE;
+        else if(colorSensor.green() > 600) {
+            currentColor = Color.YELLOW;
+        }
+        else if(colorSensor.red() > 600) {
+            currentColor = Color.RED;
         }
         else {
-            // Pray this never happens
             currentColor = IntakeSubsystem.Color.NONE;
         }
     }

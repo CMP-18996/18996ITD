@@ -1,16 +1,14 @@
 package org.firstinspires.ftc.teamcode.test.subsystem_tests;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.ScheduleCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetArmPosition;
+import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetArmPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetGripperPosition_INST;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
@@ -30,13 +28,13 @@ public class SpecimenTest extends CommandOpMode {
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 new ScheduleCommand(
-                        new SpecimenSetArmPosition(robot.specimen, SpecimenSubsystem.SpecimenArmState.CHAMBER)
+                        new SpecimenSetArmPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenArmState.CHAMBER)
                 )
         );
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
                 new ScheduleCommand(
-                        new SpecimenSetArmPosition(robot.specimen, SpecimenSubsystem.SpecimenArmState.WALL)
+                        new SpecimenSetArmPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenArmState.WALL)
                 )
         );
 
@@ -63,7 +61,6 @@ public class SpecimenTest extends CommandOpMode {
 
         telemetry.addData("ARM STATE", robot.specimen.getSpecimenArmState());
         telemetry.addData("GRIPPER STATE", robot.specimen.getSpecimenGripperState());
-        telemetry.addData("ERROR", robot.specimen.getError());
         telemetry.update();
     }
 }

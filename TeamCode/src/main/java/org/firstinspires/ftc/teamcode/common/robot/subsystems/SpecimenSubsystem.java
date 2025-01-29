@@ -15,47 +15,31 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 @Config
 public class SpecimenSubsystem extends SubsystemBase {
-    public static double Kp = 0.012;
-    public static double Kd = 0.001;
-    public static double Ki = 0.02;
-    public static double Kg = -0.36;
-    public static int INTEGRAL_ENABLE_POINT = 15;
+    public static double ARM_CHAMBER_POS = 0.55;
+    public static double ARM_WALL_POS = 0.07;
 
-    public double angleFromTicks;
-
-    public static int ARM_CHAMBER_POS = 250;
-    public static int ARM_WALL_POS = 30;
-
-    public static double WRIST_CHAMBER_POS = 0.7;
-    public static double WRIST_WALL_POS = 0.08;
+    public static double WRIST_CHAMBER_POS = 0.6;
+    public static double WRIST_WALL_POS = 0.05;
 
     public static double GRIPPER_OPEN_POS = 0.5;
     public static double GRIPPER_CLOSED_POS = 0.84;
 
-    public static double MAX_EXTENSION_SPEED = 0.8;
-    public static double MAX_RETURN_SPEED = 0.8;
-
-    // Used because of manual adjustment
-    private int armTarget;
-    private double wristTarget;
+    private double armValue;
+    private double wristValue;
 
     private final Servo wristServo;
     private final Servo gripperServo;
-    private final DcMotorEx armMotor;
+    private final Servo armServo;
 
     private SpecimenArmState specimenArmState;
     private SpecimenGripperState specimenGripperState;
-
-    private int lastError = 0;
-    private double integralSum = 0;
-    private final ElapsedTime timer = new ElapsedTime();
 
     public enum SpecimenArmState {
         CHAMBER,
         WALL,
         MANUAL;
 
-        public int getArmValue() {
+        public double getArmValue() {
             switch (this) {
                 case CHAMBER:
                     return ARM_CHAMBER_POS;
@@ -99,18 +83,13 @@ public class SpecimenSubsystem extends SubsystemBase {
     }
 
     public SpecimenSubsystem(HardwareMap hardwareMap) {
-        armMotor = hardwareMap.get(DcMotorEx.class, HardwareMapNames.ARM_MOTOR);
+        armServo = hardwareMap.get(Servo.class, HardwareMapNames.ARM_MOTOR);
         wristServo = hardwareMap.get(Servo.class, HardwareMapNames.WRIST_SERVO);
         gripperServo = hardwareMap.get(Servo.class, HardwareMapNames.GRIPPER_SERVO);
 
-        armMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        armServo.setDirection(Servo.Direction.FORWARD);
         wristServo.setDirection(Servo.Direction.FORWARD);
         gripperServo.setDirection(Servo.Direction.FORWARD);
-
-        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         this.setSpecimenArmState(SpecimenArmState.MANUAL);
         this.setSpecimenGripperState(SpecimenGripperState.CLOSED);
@@ -118,15 +97,8 @@ public class SpecimenSubsystem extends SubsystemBase {
 
     public void setSpecimenArmState(SpecimenArmState specimenArmState) {
         this.specimenArmState = specimenArmState;
-        if(!specimenArmState.equals(SpecimenArmState.MANUAL)) {
-            this.armTarget = specimenArmState.getArmValue();
-            integralSum = 0;
-            lastError = 0;
-            timer.reset();
-
-            this.wristTarget = specimenArmState.getWristValue();
-            wristServo.setPosition(specimenArmState.getWristValue());
-        }
+        armServo.setPosition(specimenArmState.getArmValue());
+        wristServo.setPosition(specimenArmState.getWristValue());
     }
 
     public void setSpecimenGripperState(SpecimenGripperState specimenGripperState) {
@@ -142,52 +114,15 @@ public class SpecimenSubsystem extends SubsystemBase {
         return specimenArmState;
     }
 
-    public int getError() {
-        return -armMotor.getCurrentPosition() - armTarget;
-    }
-
-    public void manualAdjustArm(int delta) {
+    public void manualAdjustArm(double delta) {
         setSpecimenArmState(SpecimenArmState.MANUAL);
-        armTarget += delta;
-        integralSum = 0;
-        lastError = 0;
-        timer.reset();
+        armValue = Range.clip(armValue + delta, 0.0, 1.0);
+        armServo.setPosition(armValue);
     }
 
     public void manualAdjustWrist(double delta) {
         setSpecimenArmState(SpecimenArmState.MANUAL);
-        wristTarget += delta;
-        wristServo.setPosition(wristTarget);
-        integralSum = 0;
-        lastError = 0;
-        timer.reset();
-    }
-
-    @Override
-    public void periodic() {
-        int error = getError();
-
-        double P = Kp * error;
-
-        if (Math.abs(error) > INTEGRAL_ENABLE_POINT) {
-            integralSum = 0;
-        }
-        else {
-            integralSum = integralSum + (error * timer.seconds());
-        }
-
-        double I = Ki * integralSum;
-
-        double D = Kd * (error - lastError) / timer.seconds();
-
-        angleFromTicks = -360 * armMotor.getCurrentPosition() / 751.8;
-        double G = Kg * Math.cos(Math.toRadians(angleFromTicks));
-
-        lastError = error;
-        timer.reset();
-
-        double power = Range.clip(P + D + I + G, -MAX_EXTENSION_SPEED, MAX_RETURN_SPEED);
-
-        armMotor.setPower(power);
+        wristValue = Range.clip(wristValue + delta, 0.0, 1.0);
+        wristServo.setPosition(wristValue);
     }
 }

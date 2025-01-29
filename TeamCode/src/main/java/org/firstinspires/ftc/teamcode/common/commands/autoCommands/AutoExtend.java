@@ -27,7 +27,7 @@ public class AutoExtend extends SequentialCommandGroup {
                 new ParallelDeadlineGroup(
                         new WaitCommand(1000),
                         new LiftSetPosition(liftSubsystem, LiftSubsystem.LiftState.TRANSFER),
-                        new ExtensionSetPosition(extensionSubsystem, ExtensionSubsystem.ExtensionState.FULLY_EXTENDED),
+                        new ExtensionSetPosition(extensionSubsystem, ExtensionSubsystem.ExtensionState.EXTENDED),
                         new IntakeArmSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeArmState.PICK_UP),
                         new IntakeWristSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeWristState.PICK_UP)
                 )
