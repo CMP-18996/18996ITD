@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.checkerframework.checker.units.qual.C;
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 @Config
@@ -213,36 +214,22 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     private void updateCurrentColor() {
-        /*
-        int color = colorSensor.argb();
-        int r, g, b, a;
-        a = (color >> 24) & 0xFF;
-        r = (color >> 16) & 0xFF;
-        g = (color >> 8) & 0xFF;
-           b?
-
-         */
-        int argb = colorSensor.argb();
-
-        int a = argb >> 24; //  24
-        int r = (argb >> 16) & 0xFF; // 16 0xFF
-        int g = (argb >> 8) & 0xFF; // 8
-        int b = argb & 0xFF; // 0
-
-        if(colorSensorStatus.equals(IntakeSubsystem.ColorSensorStatus.DISABLED) || a < ALPHA_CUTOFF) {
-            currentColor = IntakeSubsystem.Color.NONE;
+        if(colorSensorStatus.equals(IntakeSubsystem.ColorSensorStatus.DISABLED)) {
+            currentColor = Color.NONE;
         }
-        else if(r > g && r > b){
-            currentColor = IntakeSubsystem.Color.RED;
+        else if(colorSensor.alpha() < ALPHA_CUTOFF) {
+            currentColor = Color.NONE;
         }
-        else if(g > r && g > b){
-            currentColor = IntakeSubsystem.Color.YELLOW;
+        else if(colorSensor.red() > 300) {
+            currentColor = Color.RED;
         }
-        else if(b > r && b > g){
-            currentColor = IntakeSubsystem.Color.BLUE;
+        else if(colorSensor.green() > 300) {
+            currentColor = Color.YELLOW;
+        }
+        else if(colorSensor.blue() > 300) {
+            currentColor = Color.BLUE;
         }
         else {
-            // Pray this never happens
             currentColor = IntakeSubsystem.Color.NONE;
         }
     }

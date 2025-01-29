@@ -47,25 +47,11 @@ public class ColorSensorTuner extends LinearOpMode {
            b?
 
          */
-        argb = colorSensor.argb();
 
-        a = android.graphics.Color.alpha(argb);
-        r = android.graphics.Color.red(argb);
-        g = android.graphics.Color.green(argb);
-        b = android.graphics.Color.blue(argb);
-
-        if (colorSensorStatus.equals(IntakeSubsystem.ColorSensorStatus.DISABLED) || a < ALPHA_CUTOFF) {
-            currentColor = IntakeSubsystem.Color.NONE;
-        } else if (r > g && r > b) {
-            currentColor = IntakeSubsystem.Color.RED;
-        } else if (g > r && g > b) {
-            currentColor = IntakeSubsystem.Color.YELLOW;
-        } else if (b > r && b > g) {
-            currentColor = IntakeSubsystem.Color.BLUE;
-        } else {
-            // Pray this never happens
-            currentColor = IntakeSubsystem.Color.NONE;
-        }
+        a = colorSensor.alpha();
+        r = colorSensor.red();
+        g = colorSensor.green();
+        b = colorSensor.blue();
     }
 }
 
