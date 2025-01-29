@@ -224,10 +224,10 @@ public class IntakeSubsystem extends SubsystemBase {
          */
         int argb = colorSensor.argb();
 
-        int a = android.graphics.Color.alpha(argb);
-        int r = android.graphics.Color.red(argb);
-        int g = android.graphics.Color.green(argb);
-        int b = android.graphics.Color.blue(argb);
+        int a = argb >> 24; //  24
+        int r = (argb >> 16) & 0xFF; // 16 0xFF
+        int g = (argb >> 8) & 0xFF; // 8
+        int b = argb & 0xFF; // 0
 
         if(colorSensorStatus.equals(IntakeSubsystem.ColorSensorStatus.DISABLED) || a < ALPHA_CUTOFF) {
             currentColor = IntakeSubsystem.Color.NONE;
