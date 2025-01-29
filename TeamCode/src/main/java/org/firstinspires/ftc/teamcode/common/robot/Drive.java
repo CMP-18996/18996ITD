@@ -28,7 +28,6 @@ public class Drive {
         configureMotors();
     }
 
-    @Deprecated
     public void robotCentricDrive(double x, double y, double turn) {
         calculateMotorPowers(x, y, turn);
     }

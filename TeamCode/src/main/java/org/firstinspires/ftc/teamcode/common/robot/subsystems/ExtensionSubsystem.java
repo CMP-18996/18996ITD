@@ -105,7 +105,7 @@ public class ExtensionSubsystem extends SubsystemBase {
         MAX_RETRACTION_SPEED = maxRetractionSpeed;
     }
 
-    public void changeExtendedPosition(int position) {
+    public void setExtendedEncoderValue(int position) {
         EXTENDED_POS = position;
     }
 
@@ -116,7 +116,10 @@ public class ExtensionSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (!extensionState.equals(ExtensionState.CUSTOM)) {
+        if (extensionState == ExtensionState.ZEROING) {
+            extensionMotor.setPower(1);
+        }
+        else if (!extensionState.equals(ExtensionState.CUSTOM)) {
             int error = getError();
 
             double P = Kp * error;
@@ -144,9 +147,6 @@ public class ExtensionSubsystem extends SubsystemBase {
             }
 
             extensionMotor.setPower(-power);
-        }
-        else if (extensionState == ExtensionState.ZEROING) {
-            extensionMotor.setPower(-1);
         }
     }
 }

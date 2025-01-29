@@ -10,35 +10,37 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 public class HangSubsystem extends SubsystemBase {
     public DcMotorEx hangMotor;
-    public static double CUSTOM_HANG_VALUE = .6;
-    private HangState state = HangState.OFF;
+    private HangState hangState = HangState.OFF;
 
+    public enum HangState {
+        UP,
+        DOWN,
+        OFF,
+        HOLD;
 
-    public HangState getState() {
-        return state;
-    }
-    public void setState(HangState newState) {
-        state = newState;
-    }
-
-
-    @Override
-    public void periodic() {
-        if (state != HangState.OFF) {
-            hangMotor.setPower(state.power);
+        public double getValue() {
+            switch (this) {
+                case UP:
+                    return 1.0;
+                case DOWN:
+                    return -1.0;
+                case OFF:
+                    return 0;
+                case HOLD:
+                    return -0.5;
+                default:
+                    throw new IllegalArgumentException();
+            }
         }
     }
 
-    public enum HangState {
-        UP(1),
-        DOWN(-1),
-        OFF(0),
-        CUSTOM(CUSTOM_HANG_VALUE);
+    public void setHangState(HangState hangState) {
+        this.hangState = hangState;
+        hangMotor.setPower(hangState.getValue());
+    }
 
-         private double power;
-         HangState(double position) {
-             this.power = position;
-         }
+    public HangState getHangState() {
+        return hangState;
     }
 
     public HangSubsystem(HardwareMap hardwareMap) {
