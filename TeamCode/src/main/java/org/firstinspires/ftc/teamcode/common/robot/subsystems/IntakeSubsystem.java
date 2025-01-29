@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.common.robot.subsystems;
 
+import android.graphics.Color;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -220,11 +222,12 @@ public class IntakeSubsystem extends SubsystemBase {
            b?
 
          */
-        int r, g, b, a;
-        a = colorSensor.alpha();
-        r = colorSensor.red();
-        g = colorSensor.green();
-        b = colorSensor.blue();
+        int argb = colorSensor.argb();
+
+        int a = android.graphics.Color.alpha(argb);
+        int r = android.graphics.Color.red(argb);
+        int g = android.graphics.Color.green(argb);
+        int b = android.graphics.Color.blue(argb);
 
         if(colorSensorStatus.equals(IntakeSubsystem.ColorSensorStatus.DISABLED) || a < ALPHA_CUTOFF) {
             currentColor = IntakeSubsystem.Color.NONE;
