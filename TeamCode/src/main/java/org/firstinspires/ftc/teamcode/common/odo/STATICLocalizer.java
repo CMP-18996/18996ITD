@@ -176,6 +176,6 @@ public class STATICLocalizer extends Localizer {
     }
 
     public Pose measureSpecimenStartPose() {
-        return new Pose(getDistanceFromVoltage(rightSideUltrasonic.getVoltage()) + 9, 9, 0);
+        return new Pose(getDistanceFromVoltage(rightSideUltrasonic.getVoltage()) + 8, 15.5/2, 0);
     }
 }
