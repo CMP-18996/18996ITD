@@ -91,7 +91,7 @@ public class SpecimenAuto extends OpMode {
                 .setConstantHeadingInterpolation(scorePose.getHeading())
                 .setReversed(true)
                 .addPath(new BezierLine(new Point(pickup1Pose3), new Point(deposit1Pose)))
-                .setConstantHeadingInterpolation(scorePose.getHeading())
+                .setConstantHeadingInterpolation(scorePose.getHeading() + Math.PI)
                 .build();
 
         pushSample2 = follower.pathBuilder()
@@ -99,7 +99,7 @@ public class SpecimenAuto extends OpMode {
                 .setConstantHeadingInterpolation(scorePose.getHeading())
                 .setReversed(true)
                 .addPath(new BezierLine(new Point(pickup2Pose2), new Point(deposit2Pose)))
-                .setConstantHeadingInterpolation(deposit1Pose.getHeading())
+                .setConstantHeadingInterpolation(deposit1Pose.getHeading() + Math.PI)
                 .build();
 
         pushSample3 = follower.pathBuilder()
@@ -107,7 +107,7 @@ public class SpecimenAuto extends OpMode {
                 .setConstantHeadingInterpolation(scorePose.getHeading())
                 .setReversed(true)
                 .addPath(new BezierLine(new Point(pickup3Pose2), new Point(deposit3Pose)))
-                .setConstantHeadingInterpolation(deposit2Pose.getHeading())
+                .setConstantHeadingInterpolation(deposit2Pose.getHeading() + Math.PI)
                 .build();
 
         scoreGroundSpecimenAlt = follower.pathBuilder()
