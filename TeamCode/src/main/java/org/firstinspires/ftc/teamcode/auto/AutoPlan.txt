@@ -1,0 +1,30 @@
+Path:
+1. Start position straight line to clip first, p1
+2. Tangential to behind first tape spec, p2
+3. Push first spec in, next two steps should hopefully be just one curve
+4. Push second one spec in
+5. Push third in
+
+Hypothetical positions:
+
+Poses defined as (X, Y, Heading)
+Control points will just be written as (X, Y)
+
+Start: 7.5625, 55.3125, 0 deg heading -> (7.5625, 55.3125, 0)
+
+Preload spec deposit: (35, 55.3125, 0)
+Control One: (19.74, 33.42)
+Control Two: (71.55, 38.36)
+Control Three: (58.09, 22.21)
+
+Behind spec one: (65, 22, 0)
+
+Spec one in: (22, 22, 0)
+
+Behind spec two: (65, 12, 0)
+
+Spec two in: (22, 12, 0)
+
+Behind spec three: (65, 7, 0)
+
+Spec three: (22, 7, 0)

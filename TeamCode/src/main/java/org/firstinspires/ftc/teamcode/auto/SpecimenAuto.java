@@ -1,121 +1,276 @@
-/*
 package org.firstinspires.ftc.teamcode.auto;
 
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Vector2d;
-import com.arcrobotics.ftclib.command.CommandOpMode;
-import com.arcrobotics.ftclib.command.CommandScheduler;
-import com.arcrobotics.ftclib.command.InstantCommand;
-import com.arcrobotics.ftclib.command.SequentialCommandGroup;
-import com.arcrobotics.ftclib.command.WaitCommand;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierCurve;
+import com.pedropathing.pathgen.BezierLine;
+import com.pedropathing.pathgen.Path;
+import com.pedropathing.pathgen.PathChain;
+import com.pedropathing.pathgen.Point;
+import com.pedropathing.util.Constants;
+import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoExtend;
-import org.firstinspires.ftc.teamcode.common.commands.autoCommands.RRWrapper;
-import org.firstinspires.ftc.teamcode.common.commands.extension.ExtensionSetPosition;
-import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetRollerState_INST;
-import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeArmSetPosition_INST;
-import org.firstinspires.ftc.teamcode.common.commands.lift.LiftSetPosition;
-import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetArmPosition;
-import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetGripperPosition_INST;
-import org.firstinspires.ftc.teamcode.common.drive.SparkFunOTOSDrive;
-import org.firstinspires.ftc.teamcode.common.robot.Robot;
-import org.firstinspires.ftc.teamcode.common.robot.Team;
-import org.firstinspires.ftc.teamcode.common.robot.subsystems.ExtensionSubsystem;
-import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
-import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
-import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
-
-@Autonomous(name="specimen auto")
-public class SpecimenAuto extends CommandOpMode {
-    Pose2d beginPose;
-    SparkFunOTOSDrive drive;
-    Robot robot;
-    @Override
-    public void initialize() {
-        CommandScheduler.getInstance().reset();
-        beginPose = new Pose2d(-12, 64, Math.toRadians(-90));
-        drive = new SparkFunOTOSDrive(hardwareMap, beginPose);
-        robot = new Robot(hardwareMap, Team.BLUE, false, Subsystems.EXTENSION, Subsystems.INTAKE, Subsystems.SPECIMEN, Subsystems.LIFT);
-
-        super.schedule(
-                new SequentialCommandGroup(
-                        //drop preloaded specimen
-                        new InstantCommand(() -> robot.extension.setMaxPower(0.6)),
-                        new SpecimenSetArmPosition(robot.specimen, SpecimenSubsystem.SpecimenPosition.CHAMBER),
-                        new SpecimenSetGripperPosition_INST(robot.specimen, SpecimenSubsystem.GripperPosition.CLOSED),
-                        new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.GROUND),
-                        new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeRotatorState.MOVING),
-                        new WaitCommand(500),
-                        new RRWrapper(drive, drive.actionBuilder(drive.pose)
-                                .splineTo(new Vector2d(-12, 39), Math.toRadians(-90))
-                                .setReversed(true)
-                                .afterDisp(1, () -> super.schedule(new SpecimenSetGripperPosition_INST(robot.specimen, SpecimenSubsystem.GripperPosition.OPEN), new SpecimenSetArmPosition(robot.specimen, SpecimenSubsystem.SpecimenPosition.WALL)))
-                                .afterDisp(35, () -> super.schedule(new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeRotatorState.PICKING_UP)))
-                                .splineToLinearHeading(new Pose2d(-39.5, 46, Math.toRadians(245)), Math.toRadians(65))
-                                .build()),
+import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
+import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
 
-                        //move blocks over
-                        new AutoExtend(robot.extension, robot.intake, robot.lift),
-                        new RRWrapper(drive, drive.actionBuilder(drive.pose)
-                                .setReversed(false)
-                                .afterTime(1.5, () -> super.schedule(new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakingState.REVERSING)))
-                                .splineToLinearHeading(new Pose2d(-38, 53, Math.toRadians(150)), Math.toRadians(150))
-                                .build()),
+/**
+ * This is an example auto that showcases movement and control of two servos autonomously.
+ * It is a 0+4 (Specimen + Sample) bucket auto. It scores a neutral preload and then pickups 3 samples from the ground and scores them before parking.
+ * There are examples of different ways to build paths.
+ * A path progression method has been created and can advance based on time, position, or other factors.
+ *
+ * @author Baron Henderson - 20077 The Indubitables
+ * @version 2.0, 11/28/2024
+ */
 
-                        new RRWrapper(drive, drive.actionBuilder(drive.pose)
-                                .setReversed(true)
-                                .afterDisp(0.1, () -> super.schedule(new ExtensionSetPosition(robot.extension, ExtensionSubsystem.ExtensionState.TRANSFER)))
-                                .splineToLinearHeading(new Pose2d(-41, 51, Math.toRadians(235)), Math.toRadians(55))
-                                .build()),
-                        new AutoExtend(robot.extension, robot.intake, robot.lift),
-                        new RRWrapper(drive, drive.actionBuilder(drive.pose)
-                                .setReversed(false)
-                                .afterTime(2, () -> super.schedule(new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakingState.REVERSING)))
-                                .splineToLinearHeading(new Pose2d(-38, 53, Math.toRadians(145)), Math.toRadians(145))
-                                .build()),
+@Autonomous(name = "Specimen auto :(", group = "Examples")
+public class SpecimenAuto extends OpMode {
 
-                        new RRWrapper(drive, drive.actionBuilder(drive.pose)
-                                .setReversed(true)
-                                .afterDisp(0.1, () -> super.schedule(new ExtensionSetPosition(robot.extension, ExtensionSubsystem.ExtensionState.TRANSFER)))
-                                .splineToLinearHeading(new Pose2d(-45, 51, Math.toRadians(225)), Math.toRadians(45))
-                                .build()),
-                        new AutoExtend(robot.extension, robot.intake, robot.lift),
-                        new RRWrapper(drive, drive.actionBuilder(drive.pose)
-                                .setReversed(false)
-                                .afterTime(2.5, () -> super.schedule(new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakingState.REVERSING)))
-                                .splineToLinearHeading(new Pose2d(-38, 53, Math.toRadians(145)), Math.toRadians(145))
-                                .build()),
+    private Follower follower;
+    private Timer pathTimer, actionTimer, opmodeTimer;
 
-                        //hang specimens
-                        new RRWrapper(drive, drive.actionBuilder(drive.pose)
-                                .setReversed(true)
-                                .afterDisp(1, () -> super.schedule(new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakingState.DISABLED), new ExtensionSetPosition(robot.extension, ExtensionSubsystem.ExtensionState.TRANSFER), new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeRotatorState.TRANSFERRING)))
-                                .splineToLinearHeading(new Pose2d(-48, 64, Math.toRadians(-90)), Math.toRadians(90))
-                                .build()),
-                        new SpecimenSetGripperPosition_INST(robot.specimen, SpecimenSubsystem.GripperPosition.CLOSED),
-                        new RRWrapper(drive, drive.actionBuilder(drive.pose)
-                                .setReversed(false)
-                                .afterDisp(1, () -> super.schedule(new SpecimenSetArmPosition(robot.specimen, SpecimenSubsystem.SpecimenPosition.CHAMBER)))
-                                .splineToConstantHeading(new Vector2d(-24, 56), Math.toRadians(-90))
-                                .splineToConstantHeading(new Vector2d(-12, 39), Math.toRadians(-90))
-                                .build()),
+    /** This is the variable where we store the state of our auto.
+     * It is used by the pathUpdate method. */
+    private int pathState;
 
-                        new RRWrapper(drive, drive.actionBuilder(drive.pose)
-                                .setReversed(true)
-                                .afterDisp(1, () -> super.schedule(new SpecimenSetArmPosition(robot.specimen, SpecimenSubsystem.SpecimenPosition.WALL), new SpecimenSetGripperPosition_INST(robot.specimen, SpecimenSubsystem.GripperPosition.OPEN)))
-                                .splineToLinearHeading(new Pose2d(-48, 64, Math.toRadians(-90)), Math.toRadians(90))
-                                .build())
-                )
-        );
+    /* Create and Define Poses + Paths
+     * Poses are built with three constructors: x, y, and heading (in Radians).
+     * Pedro uses 0 - 144 for x and y, with 0, 0 being on the bottom left.
+     * (For Into the Deep, this would be Blue Observation Zone (0,0) to Red Observation Zone (144,144).)
+     * Even though Pedro uses a different coordinate system than RR, you can convert any roadrunner pose by adding +72 both the x and y.
+     * This visualizer is very easy to use to find and create paths/pathchains/poses: <https://pedro-path-generator.vercel.app/>
+     * Lets assume our robot is 18 by 18 inches
+     * Lets assume the Robot is facing the human player and we want to score in the bucket */
+
+    /** Start Pose of our robot */
+    private final Pose startPose = new Pose(7.5625, 55.3125, Math.toRadians(0));
+
+    /** Scoring Pose of our robot at submersible */
+    private final Pose scorePose = new Pose(35, 55.3125, Math.toRadians(0));
+
+    /** Going from scorePose to behind first grounded sample */
+    private final Pose pickup1Pose1 = new Pose(19.74, 33.42);
+    private final Pose pickup1Pose2 = new Pose(71.55, 38.36);
+    private final Pose pickup1Pose3 = new Pose(58.09, 22.21);
+    private final Pose pickup1PoseEND = new Pose(65, 22);
+
+    /** Depositing first grounded sample in observation zone */
+    private final Pose deposit1Pose = new Pose(20, 27, Math.toRadians(0));
+
+    /** Going from deposit1Pose to behind second grounded sample */
+    private final Pose pickup2Pose1 = new Pose(70, 36, Math.toRadians(0));
+    private final Pose pickup2Pose2 = new Pose(60, 15, Math.toRadians(0));
+
+    /** Depositing second grounded sample in observation zone */
+    private final Pose deposit2Pose = new Pose(20, 15, Math.toRadians(0));
+
+    /** Going from deposit2Pose to behind third grounded sample */
+    private final Pose pickup3Pose1 = new Pose(72, 24, Math.toRadians(0));
+    private final Pose pickup3Pose2 = new Pose(60, 6, Math.toRadians(0));
+
+    /** Depositing third grounded sample in observation zone */
+    private final Pose deposit3Pose = new Pose(15, 6, Math.toRadians(0));
+
+    /** From submersible direct to top of observation zone */
+    private final Pose specimenPose = new Pose(15, 24, Math.toRadians(0));
+
+    /* These are our Paths and PathChains that we will define in buildPaths() */
+    private PathChain scorePreloadedSpecimen, pushSample1, pushSample2, pushSample3, scoreGroundSpecimen, scoreGroundSpecimenAlt, returnGroundSpecimen;
+
+    public void buildPaths() {
+        /* Goes from startPose to the scorePose for the preloaded specimen dropoff */
+        scorePreloadedSpecimen = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(startPose), new Point(scorePose)))
+                .setConstantHeadingInterpolation(scorePose.getHeading())
+                .build();
+
+        pushSample1 = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(scorePose), new Point(pickup1Pose1), new Point(pickup1Pose2), new Point(pickup1Pose3), new Point(pickup1PoseEND)))
+                .setTangentHeadingInterpolation()
+                .build();
+
+        pushSample2 = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(deposit1Pose), new Point(pickup2Pose1), new Point(pickup2Pose2)))
+                .setConstantHeadingInterpolation(scorePose.getHeading())
+                .setReversed(true)
+                .addPath(new BezierLine(new Point(pickup2Pose2), new Point(deposit2Pose)))
+                .setConstantHeadingInterpolation(deposit1Pose.getHeading() + Math.PI)
+                .build();
+
+        pushSample3 = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(deposit2Pose), new Point(pickup3Pose1), new Point(pickup3Pose2)))
+                .setConstantHeadingInterpolation(scorePose.getHeading())
+                .setReversed(true)
+                .addPath(new BezierLine(new Point(pickup3Pose2), new Point(deposit3Pose)))
+                .setConstantHeadingInterpolation(deposit2Pose.getHeading() + Math.PI)
+                .build();
+
+        scoreGroundSpecimenAlt = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(deposit3Pose), new Point(scorePose)))
+                .setConstantHeadingInterpolation(scorePose.getHeading())
+                .build();
+
+        scoreGroundSpecimen = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(specimenPose), new Point(scorePose)))
+                .setConstantHeadingInterpolation(scorePose.getHeading())
+                .build();
+
+        returnGroundSpecimen = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(scorePose), new Point(specimenPose)))
+                .setConstantHeadingInterpolation(scorePose.getHeading())
+                .build();
     }
 
+    /** This switch is called continuously and runs the pathing, at certain points, it triggers the action state.
+     * Everytime the switch changes case, it will reset the timer. (This is because of the setPathState() method)
+     * The followPath() function sets the follower to run the specific path, but does NOT wait for it to finish before moving on. */
+    public void autonomousPathUpdate() {
+        switch (pathState) {
+            case 0:
+                follower.followPath(scorePreloadedSpecimen);
+                setPathState(1);
+                break;
+            case 1:
+
+                /* You could check for
+                - Follower State: "if(!follower.isBusy() {}"
+                - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
+                - Robot Position: "if(follower.getPose().getX() > 36) {}"
+                */
+
+                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
+                if(!follower.isBusy()) {
+                    /* Score Preload */
+
+                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
+                    follower.followPath(pushSample1,true);
+                    setPathState(2);
+                }
+                break;
+            case 2:
+
+                /* You could check for
+                - Follower State: "if(!follower.isBusy() {}"
+                - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
+                - Robot Position: "if(follower.getPose().getX() > 36) {}"
+                */
+
+                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
+                if(!follower.isBusy()) {
+                    /* Score Preload */
+
+                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
+                    follower.followPath(pushSample2, true);
+                    setPathState(3);
+                }
+                break;
+            case 3:
+
+                /* You could check for
+                - Follower State: "if(!follower.isBusy() {}"
+                - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
+                - Robot Position: "if(follower.getPose().getX() > 36) {}"
+                */
+
+                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
+                if(!follower.isBusy()) {
+                    /* Score Preload */
+
+                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
+                    follower.followPath(pushSample3, true);
+                    setPathState(4);
+                }
+                break;
+            case 4:
+                if(!follower.isBusy()) {
+                    /* Grab Sample */
+
+                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
+                    follower.followPath(scoreGroundSpecimenAlt,true);
+                    setPathState(5);
+                }
+                break;
+            case 6:
+            case 8:
+            case 10:
+                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
+                if(!follower.isBusy()) {
+                    /* Grab Sample */
+
+                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
+                    follower.followPath(scoreGroundSpecimen,true);
+                    if (pathState == 10) setPathState(-1434); else setPathState(pathState + 1);
+                }
+                break;
+            case 5:
+            case 7:
+            case 9:
+                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
+                if(!follower.isBusy()) {
+                    /* Score Sample */
+
+                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
+                    follower.followPath(returnGroundSpecimen,true);
+                    setPathState(pathState + 1);
+                }
+                break;
+        }
+    }
+
+    /** These change the states of the paths and actions
+     * It will also reset the timers of the individual switches **/
+    public void setPathState(int pState) {
+        pathState = pState;
+        pathTimer.resetTimer();
+    }
+
+    /** This is the main loop of the OpMode, it will run repeatedly after clicking "Play". **/
     @Override
-    public void run() {
-        CommandScheduler.getInstance().run();
+    public void loop() {
+
+        // These loop the movements of the robot
+        follower.update();
+        autonomousPathUpdate();
+
+        // Feedback to Driver Hub
+        telemetry.addData("path state", pathState);
+        telemetry.addData("x", follower.getPose().getX());
+        telemetry.addData("y", follower.getPose().getY());
+        telemetry.addData("heading", follower.getPose().getHeading());
+        telemetry.update();
+    }
+
+    /** This method is called once at the init of the OpMode. **/
+    @Override
+    public void init() {
+        pathTimer = new Timer();
+        opmodeTimer = new Timer();
+        opmodeTimer.resetTimer();
+
+        Constants.setConstants(FConstants.class, LConstants.class);
+        follower = new Follower(hardwareMap);
+        follower.setStartingPose(startPose);
+        buildPaths();
+    }
+
+    /** This method is called continuously after Init while waiting for "play". **/
+    @Override
+    public void init_loop() {}
+
+    /** This method is called once at the start of the OpMode.
+     * It runs all the setup actions, including building paths and starting the path system **/
+    @Override
+    public void start() {
+        opmodeTimer.resetTimer();
+        setPathState(0);
+    }
+
+    /** We do not use this because everything should automatically disable **/
+    @Override
+    public void stop() {
     }
 }
 
- */

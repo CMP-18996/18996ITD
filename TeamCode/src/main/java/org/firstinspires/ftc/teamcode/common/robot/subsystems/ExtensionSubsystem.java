@@ -49,7 +49,7 @@ public class ExtensionSubsystem extends SubsystemBase {
                 case CUSTOM:
                     return 0;
                 case ZEROING:
-                    return -100;
+                    return 0;
                 case INSPECTION:
                     return 500;
                 default:

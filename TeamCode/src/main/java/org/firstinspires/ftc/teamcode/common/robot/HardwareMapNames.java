@@ -70,4 +70,10 @@ public class HardwareMapNames {
     public static String ARM_MOTOR = "armServo";
     public static String WRIST_SERVO = "wristServo";
     public static String GRIPPER_SERVO = "armClaw";
+
+    // Ultrasonics
+    public static String RIGHT_SIDE_ULTRASONIC = "rightUltrasonic";
+    public static String BACK_SIDE_ULTRASONIC = "backUltrasonic";
+    public static String BACK_LEFT_SIDE_ULTRASONIC = "backLeftUltrasonic";
+    public static String BACK_RIGHT_SIDE_ULTRASONIC = "backRightUltrasonic";
 }
