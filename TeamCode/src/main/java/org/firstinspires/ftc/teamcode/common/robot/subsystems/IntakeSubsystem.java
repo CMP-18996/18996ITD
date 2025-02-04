@@ -220,7 +220,7 @@ public class IntakeSubsystem extends SubsystemBase {
         else if(colorSensor.alpha() < ALPHA_CUTOFF) {
             currentColor = Color.NONE;
         }
-        // DO NOT CHANGE THE ORDER OF THESE IF STATEMENTS, COLOR DETECTION WILL BREAK
+        // DO NOT CHANGE THE ORDER OF THESE IF STATEMENTS, COLOR DETECTION WILL BREAK.
         else if(colorSensor.blue() > 500) {
             currentColor = Color.BLUE;
         }

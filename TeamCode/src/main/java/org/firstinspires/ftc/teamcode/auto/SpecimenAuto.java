@@ -235,7 +235,7 @@ public class SpecimenAuto extends OpMode {
         follower.update();
         autonomousPathUpdate();
 
-        // Feedback to Driver Hub
+        // Feedback to Driver Hub.
         telemetry.addData("path state", pathState);
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
