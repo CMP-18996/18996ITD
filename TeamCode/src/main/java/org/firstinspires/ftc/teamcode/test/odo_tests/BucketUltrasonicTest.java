@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.test.odo_tests;
 
 import com.pedropathing.localization.GoBildaPinpointDriver;
+import com.pedropathing.localization.Pose;
+import com.pedropathing.util.Drawing;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
@@ -32,15 +34,13 @@ public class BucketUltrasonicTest extends LinearOpMode {
             telemetry.addData("BACK RIGHT VOLTAGE", backRightAngledUltrasonic.getVoltage());
 
             /*
-
             telemetry.addData("BACK LEFT", getDistanceFromVoltage(backLeftAngledUltrasonic.getVoltage()));
             telemetry.addData("BACK RIGHT", getDistanceFromVoltage(backRightAngledUltrasonic.getVoltage()));
             */
 
-            /*
             Pose pose = new Pose(
-                    getDistanceFromVoltage(backRightAngledUltrasonic.getVoltage()) * Math.sin(Math.PI + pinpoint.getHeading()),
-                    getDistanceFromVoltage(backLeftAngledUltrasonic.getVoltage()) * Math.sin(Math.PI + pinpoint.getHeading()),
+                    (getDistanceFromVoltage(backRightAngledUltrasonic.getVoltage()) + 10) * Math.sin(Math.PI - Math.abs(Math.PI/4 + pinpoint.getHeading())),
+                    144 - (getDistanceFromVoltage(backRightAngledUltrasonic.getVoltage()) + 10) * Math.sin(Math.PI - Math.abs(Math.PI/4 + pinpoint.getHeading())),
                     pinpoint.getHeading());
 
             Drawing.drawRobot(pose, "#4CAF50");
@@ -49,13 +49,12 @@ public class BucketUltrasonicTest extends LinearOpMode {
             telemetry.addData("x", pose.getX());
             telemetry.addData("y", pose.getY());
             telemetry.addData("heading", Math.toDegrees(pose.getHeading()));
-             */
 
             telemetry.update();
         }
     }
 
     private static double getDistanceFromVoltage(double voltage) {
-        return 3300 * 520 / voltage;
+        return voltage / 3.3 * 520 / 2.54 ;
     }
 }

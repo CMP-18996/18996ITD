@@ -46,15 +46,16 @@ public class SpecimenAuto extends OpMode {
      * Lets assume the Robot is facing the human player and we want to score in the bucket */
 
     /** Start Pose of our robot */
-    private final Pose startPose = new Pose(10.000, 60.000, Math.toRadians(0));
+    private final Pose startPose = new Pose(7.5625, 55.3125, Math.toRadians(0));
 
     /** Scoring Pose of our robot at submersible */
-    private final Pose scorePose = new Pose(36, 66, Math.toRadians(0));
+    private final Pose scorePose = new Pose(35, 55.3125, Math.toRadians(0));
 
     /** Going from scorePose to behind first grounded sample */
-    private final Pose pickup1Pose1 = new Pose(12, 14, Math.toRadians(0));
-    private final Pose pickup1Pose2 = new Pose(72, 40, Math.toRadians(0));
-    private final Pose pickup1Pose3 = new Pose(60, 27, Math.toRadians(0));
+    private final Pose pickup1Pose1 = new Pose(19.74, 33.42);
+    private final Pose pickup1Pose2 = new Pose(71.55, 38.36);
+    private final Pose pickup1Pose3 = new Pose(58.09, 22.21);
+    private final Pose pickup1PoseEND = new Pose(65, 22);
 
     /** Depositing first grounded sample in observation zone */
     private final Pose deposit1Pose = new Pose(20, 27, Math.toRadians(0));
@@ -83,15 +84,12 @@ public class SpecimenAuto extends OpMode {
         /* Goes from startPose to the scorePose for the preloaded specimen dropoff */
         scorePreloadedSpecimen = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(startPose), new Point(scorePose)))
-                .setConstantHeadingInterpolation(startPose.getHeading())
+                .setConstantHeadingInterpolation(scorePose.getHeading())
                 .build();
 
         pushSample1 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(scorePose), new Point(pickup1Pose1), new Point(pickup1Pose2), new Point(pickup1Pose3)))
-                .setConstantHeadingInterpolation(scorePose.getHeading())
-                .setReversed(true)
-                .addPath(new BezierLine(new Point(pickup1Pose3), new Point(deposit1Pose)))
-                .setConstantHeadingInterpolation(scorePose.getHeading() + Math.PI)
+                .addPath(new BezierCurve(new Point(scorePose), new Point(pickup1Pose1), new Point(pickup1Pose2), new Point(pickup1Pose3), new Point(pickup1PoseEND)))
+                .setTangentHeadingInterpolation()
                 .build();
 
         pushSample2 = follower.pathBuilder()

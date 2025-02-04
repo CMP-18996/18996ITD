@@ -10,8 +10,8 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
-@TeleOp(name = "Specimen Deposit Test")
-public class SpecimenDepositTest extends LinearOpMode {
+@TeleOp(name = "Specimen Ultrasonic Test")
+public class SpecimenUltrasonicTest extends LinearOpMode {
 
     private Limelight3A limelight;
     private AnalogInput rightSideUltrasonic;
@@ -21,9 +21,12 @@ public class SpecimenDepositTest extends LinearOpMode {
     @Override
     public void runOpMode() {
 
+        /*
         limelight = hardwareMap.get(Limelight3A.class, HardwareMapNames.LIMELIGHT);
         limelight.pipelineSwitch(6);
         limelight.start();
+
+         */
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, HardwareMapNames.PINPOINT);
         pinpoint.recalibrateIMU();
@@ -37,18 +40,18 @@ public class SpecimenDepositTest extends LinearOpMode {
         while(opModeIsActive()) {
             pinpoint.update(GoBildaPinpointDriver.readData.ONLY_UPDATE_HEADING);
 
+            /*
             telemetry.addData("RIGHT SIDE VOLTAGE", rightSideUltrasonic.getVoltage());
             telemetry.addData("BACK SIDE VOLTAGE", backSideUltrasonic.getVoltage());
-
-            /*
-            telemetry.addData("RIGHT SIDE", getDistanceFromVoltage(rightSideUltrasonic.getVoltage()));
-            telemetry.addData("BACK SIDE", getDistanceFromVoltage(backSideUltrasonic.getVoltage()));
             */
 
-            /*
+            telemetry.addData("RIGHT SIDE", getDistanceFromVoltage(rightSideUltrasonic.getVoltage()));
+            telemetry.addData("BACK SIDE", getDistanceFromVoltage(backSideUltrasonic.getVoltage()));
+
             Pose pose = new Pose(
-                    getDistanceFromVoltage(backSideUltrasonic.getVoltage()) * Math.sin(Math.PI + pinpoint.getHeading()),
-                    getDistanceFromVoltage(rightSideUltrasonic.getVoltage()) * Math.sin(Math.PI + pinpoint.getHeading()),
+                    //getDistanceFromVoltage(backSideUltrasonic.getVoltage()) * Math.sin(Math.PI/2 - Math.abs(pinpoint.getHeading())),
+                    24,
+                    (getDistanceFromVoltage(rightSideUltrasonic.getVoltage()) + 8) * Math.sin(Math.PI/2 - Math.abs(pinpoint.getHeading())),
                     pinpoint.getHeading());
 
             Drawing.drawRobot(pose, "#4CAF50");
@@ -57,13 +60,12 @@ public class SpecimenDepositTest extends LinearOpMode {
             telemetry.addData("x", pose.getX());
             telemetry.addData("y", pose.getY());
             telemetry.addData("heading", Math.toDegrees(pose.getHeading()));
-             */
 
             telemetry.update();
         }
     }
 
     private static double getDistanceFromVoltage(double voltage) {
-        return 3300 * 520 / voltage;
+        return voltage / 3.3 * 520 / 2.54 ;
     }
 }
