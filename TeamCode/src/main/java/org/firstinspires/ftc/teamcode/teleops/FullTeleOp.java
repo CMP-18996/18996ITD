@@ -12,6 +12,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.common.commands.complexCommands.CompactForHangCommand;
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.ReadySampleDepositCommand;
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.RejectSampleCommand;
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.RetractAndTransferCommand;
@@ -201,6 +202,14 @@ public class FullTeleOp extends CommandOpMode {
                             new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.MOVING),
                             new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.MOVING),
                             new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.ACTIVE)
+                    );
+                }
+        );
+
+        gamepad_1.getGamepadButton(GamepadKeys.Button.B).whenPressed(
+                () -> {
+                    schedule(
+                            new CompactForHangCommand(robot.extension, robot.intake, robot.deposit, robot.lift, robot.specimen)
                     );
                 }
         );
