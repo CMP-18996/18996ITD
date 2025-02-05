@@ -20,7 +20,7 @@ public class TransferSampleCommand extends SequentialCommandGroup {
                 new IntakeArmSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeArmState.TRANSFER),
                 new IntakeWristSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeWristState.TRANSFER),
                 new WaitCommand(200),
-                new IntakeTrapdoorSetPosition_INST(intakeSubsystem, IntakeSubsystem.TrapdoorState.OPEN),
+                new IntakeTrapdoorSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeTrapdoorState.OPEN),
                 new IntakeSetMotorState_INST(intakeSubsystem, IntakeSubsystem.IntakeMotorState.ACTIVE),
 
                 // wait until no sample is detected
@@ -32,7 +32,7 @@ public class TransferSampleCommand extends SequentialCommandGroup {
                 new WaitCommand(300),
                 new IntakeArmSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeArmState.REST),
                 new IntakeWristSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeWristState.REST),
-                new IntakeTrapdoorSetPosition_INST(intakeSubsystem, IntakeSubsystem.TrapdoorState.CLOSED),
+                new IntakeTrapdoorSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeTrapdoorState.CLOSED),
                 new IntakeSetMotorState_INST(intakeSubsystem, IntakeSubsystem.IntakeMotorState.DISABLED)
         );
     }

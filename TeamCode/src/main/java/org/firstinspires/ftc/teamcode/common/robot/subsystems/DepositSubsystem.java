@@ -9,9 +9,10 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 @Config
 public class DepositSubsystem extends SubsystemBase {
-    public static double TRANSFER_POS = 0.05;
-    public static double READY_POS = 0.5;
+    public static double HUMAN_PLAYER_DEPOSIT_POS = 0;
+    public static double TRANSFER_POS = 0.2;
     public static double DEPOSIT_POS = 1.0;
+
     public static double TOP_OPEN_POS = 0.0;
     public static double BOTTOM_OPEN_POS = 0.0;
     public static double CLOSED_POS = 0.0;
@@ -22,16 +23,16 @@ public class DepositSubsystem extends SubsystemBase {
     private DepositTrapdoorState depositTrapdoorState;
 
     public enum BucketState {
+        HUMAN_PLAYER_DEPOSIT,
         TRANSFER,
-        READY,
         DEPOSIT;
 
         public double getValue() {
             switch (this) {
+                case HUMAN_PLAYER_DEPOSIT:
+                    return HUMAN_PLAYER_DEPOSIT_POS;
                 case TRANSFER:
                     return TRANSFER_POS;
-                case READY:
-                    return READY_POS;
                 case DEPOSIT:
                     return DEPOSIT_POS;
                 default:
@@ -41,23 +42,33 @@ public class DepositSubsystem extends SubsystemBase {
     }
 
     public enum DepositTrapdoorState {
-        TOP_OPEN(TOP_OPEN_POS),
-        BOTTOM_OPEN(BOTTOM_OPEN_POS),
-        CLOSED(CLOSED_POS);
+        TOP_OPEN,
+        BOTTOM_OPEN,
+        CLOSED;
 
-        public double position;
-        DepositTrapdoorState(double position) {
-            this.position = position;
+        public double getValue() {
+            switch (this) {
+                case TOP_OPEN:
+                    return TOP_OPEN_POS;
+                case BOTTOM_OPEN:
+                    return BOTTOM_OPEN_POS;
+                case CLOSED:
+                    return CLOSED_POS;
+                default:
+                    throw new IllegalArgumentException();
+            }
         }
     }
 
     public DepositSubsystem(HardwareMap hardwareMap) {
         bucketServo = hardwareMap.get(Servo.class, HardwareMapNames.BUCKET_SERVO);
-        bucketServo.setDirection(Servo.Direction.FORWARD);
-        setBucketState(BucketState.TRANSFER);
         depositTrapdoorServo = hardwareMap.get(Servo.class, HardwareMapNames.DEPOSIT_TRAPDOOR);
+
+        bucketServo.setDirection(Servo.Direction.FORWARD);
         depositTrapdoorServo.setDirection(Servo.Direction.FORWARD);
-        setDepositTrapdoor(DepositTrapdoorState.TOP_OPEN);
+
+        setBucketState(BucketState.TRANSFER);
+        setDepositTrapdoorState(DepositTrapdoorState.TOP_OPEN);
     }
 
     public void setBucketState(BucketState bucketState) {
@@ -65,12 +76,16 @@ public class DepositSubsystem extends SubsystemBase {
         bucketServo.setPosition(bucketState.getValue());
     }
 
-    public void setDepositTrapdoor(DepositTrapdoorState state) {
-        this.depositTrapdoorState = state;
-        depositTrapdoorServo.setPosition(depositTrapdoorState.position);
-    }
-
     public BucketState getBucketState() {
         return bucketState;
+    }
+
+    public void setDepositTrapdoorState(DepositTrapdoorState state) {
+        this.depositTrapdoorState = state;
+        depositTrapdoorServo.setPosition(depositTrapdoorState.getValue());
+    }
+
+    public DepositTrapdoorState getDepositTrapdoorState() {
+        return depositTrapdoorState;
     }
 }

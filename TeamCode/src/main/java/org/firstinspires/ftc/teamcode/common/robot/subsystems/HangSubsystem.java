@@ -44,7 +44,7 @@ public class HangSubsystem extends SubsystemBase {
     }
 
     public HangSubsystem(HardwareMap hardwareMap) {
-        hangMotor = hardwareMap.get(DcMotorEx.class, HardwareMapNames.HANG_MOTOR_1);
+        hangMotor = hardwareMap.get(DcMotorEx.class, HardwareMapNames.HANG_MOTOR);
         hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         hangMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         hangMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

@@ -5,6 +5,7 @@ import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.common.commands.deposit.DepositSetPosition_INST;
+import org.firstinspires.ftc.teamcode.common.commands.deposit.DepositTrapdoorPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.extension.ExtensionSetPosition;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeArmSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeWristSetPosition_INST;
@@ -27,7 +28,8 @@ public class RetractAndTransferCommand extends SequentialCommandGroup {
                 new ParallelCommandGroup(
                         new LiftSetPosition(liftSubsystem, LiftSubsystem.LiftState.TRANSFER),
                         new ExtensionSetPosition(extensionSubsystem, ExtensionSubsystem.ExtensionState.TRANSFER),
-                        new DepositSetPosition_INST(depositSubsystem, DepositSubsystem.BucketState.TRANSFER)
+                        new DepositSetPosition_INST(depositSubsystem, DepositSubsystem.BucketState.TRANSFER),
+                        new DepositTrapdoorPosition_INST(depositSubsystem, DepositSubsystem.DepositTrapdoorState.TOP_OPEN)
                 ),
 
                 new TransferSampleCommand(intakeSubsystem)

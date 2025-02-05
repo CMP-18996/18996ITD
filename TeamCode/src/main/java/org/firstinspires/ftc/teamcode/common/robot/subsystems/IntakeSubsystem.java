@@ -39,7 +39,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private final Servo intakeWristServo;
     private final ColorSensor colorSensor;
 
-    private TrapdoorState trapdoorState;
+    private IntakeTrapdoorState intakeTrapdoorState;
     private IntakeMotorState intakeMotorState;
     private IntakeArmState intakeArmState;
     private IntakeWristState intakeWristState;
@@ -116,7 +116,7 @@ public class IntakeSubsystem extends SubsystemBase {
         }
     }
 
-    public enum TrapdoorState {
+    public enum IntakeTrapdoorState {
         CLOSED,
         OPEN;
 
@@ -157,7 +157,7 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
         colorSensor.enableLed(true);
 
-        this.setTrapdoorState(TrapdoorState.CLOSED);
+        this.setTrapdoorState(IntakeTrapdoorState.CLOSED);
         this.setIntakeArmState(IntakeArmState.REST);
         this.setIntakeWristState(IntakeWristState.REST);
         this.setIntakeMotorState(IntakeMotorState.DISABLED);
@@ -168,9 +168,9 @@ public class IntakeSubsystem extends SubsystemBase {
         this.colorSensorStatus = colorSensorStatus;
     }
 
-    public void setTrapdoorState(TrapdoorState trapdoorState) {
-        this.trapdoorState = trapdoorState;
-        trapdoorServo.setPosition(trapdoorState.getValue());
+    public void setTrapdoorState(IntakeTrapdoorState intakeTrapdoorState) {
+        this.intakeTrapdoorState = intakeTrapdoorState;
+        trapdoorServo.setPosition(intakeTrapdoorState.getValue());
     }
 
     public void setIntakeArmState(IntakeArmState intakeArmState) {
@@ -192,8 +192,8 @@ public class IntakeSubsystem extends SubsystemBase {
         return colorSensorStatus;
     }
 
-    public TrapdoorState getTrapdoorState() {
-        return trapdoorState;
+    public IntakeTrapdoorState getTrapdoorState() {
+        return intakeTrapdoorState;
     }
 
     public IntakeArmState getIntakeArmState() { return intakeArmState; }

@@ -9,6 +9,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.common.commands.deposit.DepositSetPosition_INST;
+import org.firstinspires.ftc.teamcode.common.commands.deposit.DepositTrapdoorPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.lift.LiftSetPosition;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
@@ -33,15 +34,27 @@ public class DepositTest extends CommandOpMode {
                 )
         );
 
-        gamepad.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
-                new ScheduleCommand(
-                        new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.READY)
-                )
-        );
-
         gamepad.getGamepadButton(GamepadKeys.Button.B).whenPressed(
                 new ScheduleCommand(
                         new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.DEPOSIT)
+                )
+        );
+
+        gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
+                new ScheduleCommand(
+                        new DepositTrapdoorPosition_INST(robot.deposit, DepositSubsystem.DepositTrapdoorState.TOP_OPEN)
+                )
+        );
+
+        gamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
+                new ScheduleCommand(
+                        new DepositTrapdoorPosition_INST(robot.deposit, DepositSubsystem.DepositTrapdoorState.CLOSED)
+                )
+        );
+
+        gamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
+                new ScheduleCommand(
+                        new DepositTrapdoorPosition_INST(robot.deposit, DepositSubsystem.DepositTrapdoorState.BOTTOM_OPEN)
                 )
         );
     }
@@ -51,6 +64,7 @@ public class DepositTest extends CommandOpMode {
         CommandScheduler.getInstance().run();
 
         telemetry.addData("STATE", robot.deposit.getBucketState());
+        telemetry.addData("TRAPDOOR", robot.deposit.getDepositTrapdoorState());
         telemetry.update();
     }
 }

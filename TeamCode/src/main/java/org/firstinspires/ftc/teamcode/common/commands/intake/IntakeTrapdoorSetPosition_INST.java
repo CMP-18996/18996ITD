@@ -7,9 +7,9 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 
 public class IntakeTrapdoorSetPosition_INST extends InstantCommand{
 
-    public IntakeTrapdoorSetPosition_INST(IntakeSubsystem intakeSubsystem, IntakeSubsystem.TrapdoorState trapdoorState){
+    public IntakeTrapdoorSetPosition_INST(IntakeSubsystem intakeSubsystem, IntakeSubsystem.IntakeTrapdoorState intakeTrapdoorState){
         super(
-                () -> intakeSubsystem.setTrapdoorState(trapdoorState)
+                () -> intakeSubsystem.setTrapdoorState(intakeTrapdoorState)
         );
     }
 }

@@ -53,7 +53,7 @@ public class HardwareMapNames {
     public static String DEPOSIT_TRAPDOOR = "depositTrapdoor";
 
     // Hang
-    public static String HANG_MOTOR_1 = "hang1";
+    public static String HANG_MOTOR = "hang1";
 
     // Odometry
     public static String OTOS = "sensor_otos";

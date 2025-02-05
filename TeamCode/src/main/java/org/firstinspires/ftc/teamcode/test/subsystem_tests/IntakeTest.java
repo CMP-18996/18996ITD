@@ -77,12 +77,12 @@ public class IntakeTest extends CommandOpMode {
         gamepad.getGamepadButton(GamepadKeys.Button.A).whenPressed(
                 new ConditionalCommand(
                         new ScheduleCommand(
-                                new IntakeTrapdoorSetPosition_INST(robot.intake, IntakeSubsystem.TrapdoorState.OPEN)
+                                new IntakeTrapdoorSetPosition_INST(robot.intake, IntakeSubsystem.IntakeTrapdoorState.OPEN)
                         ),
                         new ScheduleCommand(
-                                new IntakeTrapdoorSetPosition_INST(robot.intake, IntakeSubsystem.TrapdoorState.CLOSED)
+                                new IntakeTrapdoorSetPosition_INST(robot.intake, IntakeSubsystem.IntakeTrapdoorState.CLOSED)
                         ),
-                        () -> robot.intake.getTrapdoorState().equals(IntakeSubsystem.TrapdoorState.CLOSED)
+                        () -> robot.intake.getTrapdoorState().equals(IntakeSubsystem.IntakeTrapdoorState.CLOSED)
                 )
         );
 

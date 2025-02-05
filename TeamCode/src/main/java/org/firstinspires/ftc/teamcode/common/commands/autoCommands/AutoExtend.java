@@ -23,7 +23,7 @@ public class AutoExtend extends SequentialCommandGroup {
                 new IntakeWristSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeWristState.REST),
                 new IntakeSetMotorState_INST(intakeSubsystem, IntakeSubsystem.IntakeMotorState.ACTIVE),
                 new LiftSetPosition_INST(liftSubsystem, LiftSubsystem.LiftState.TRANSFER),
-                new IntakeTrapdoorSetPosition_INST(intakeSubsystem, IntakeSubsystem.TrapdoorState.CLOSED),
+                new IntakeTrapdoorSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeTrapdoorState.CLOSED),
                 new ParallelDeadlineGroup(
                         new WaitCommand(1000),
                         new LiftSetPosition(liftSubsystem, LiftSubsystem.LiftState.TRANSFER),

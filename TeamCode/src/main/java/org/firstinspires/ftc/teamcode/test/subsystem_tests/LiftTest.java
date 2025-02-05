@@ -48,6 +48,18 @@ public class LiftTest extends CommandOpMode {
                         () -> robot.lift.getLiftState().equals(LiftSubsystem.LiftState.TRANSFER)
                 )
         );
+
+        gamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
+                new ConditionalCommand(
+                        new ScheduleCommand(
+                                new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.HUMAN_PLAYER_DEPOSIT)
+                        ),
+                        new ScheduleCommand(
+                                new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.TRANSFER)
+                        ),
+                        () -> robot.lift.getLiftState().equals(LiftSubsystem.LiftState.TRANSFER)
+                )
+        );
     }
 
     @Override
