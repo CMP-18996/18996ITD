@@ -1,16 +1,13 @@
 package org.firstinspires.ftc.teamcode.common.robot.subsystems;
 
-import android.graphics.Color;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.checkerframework.checker.units.qual.C;
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 @Config
@@ -36,21 +33,21 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public static double ALPHA_CUTOFF = 300;
 
-    private final CRServo intakeRollerServo;
+    private final DcMotorEx intakeMotor;
     private final Servo trapdoorServo;
     private final Servo intakeArmServo;
     private final Servo intakeWristServo;
     private final ColorSensor colorSensor;
 
     private TrapdoorState trapdoorState;
-    private IntakeRollerState intakeRollerState;
+    private IntakeMotorState intakeMotorState;
     private IntakeArmState intakeArmState;
     private IntakeWristState intakeWristState;
 
     private Color currentColor;
     private ColorSensorStatus colorSensorStatus;
 
-    public enum IntakeRollerState {
+    public enum IntakeMotorState {
         ACTIVE,
         DISABLED,
         REVERSING;
@@ -151,19 +148,19 @@ public class IntakeSubsystem extends SubsystemBase {
         trapdoorServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_TRAPDOOR);
         intakeArmServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_BOTTOM_PIVOT);
         intakeWristServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_TOP_PIVOT);
-        intakeRollerServo = hardwareMap.get(CRServo.class, HardwareMapNames.INTAKE_ROLLER_SERVO);
+        intakeMotor = hardwareMap.get(DcMotorEx.class, HardwareMapNames.INTAKE_MOTOR);
         colorSensor = hardwareMap.get(ColorSensor.class, HardwareMapNames.INTAKE_COLOR_SENSOR);
 
         trapdoorServo.setDirection(Servo.Direction.FORWARD);
         intakeArmServo.setDirection(Servo.Direction.FORWARD);
         intakeWristServo.setDirection(Servo.Direction.FORWARD);
-        intakeRollerServo.setDirection(DcMotor.Direction.REVERSE);
+        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
         colorSensor.enableLed(true);
 
         this.setTrapdoorState(TrapdoorState.CLOSED);
         this.setIntakeArmState(IntakeArmState.REST);
         this.setIntakeWristState(IntakeWristState.REST);
-        this.setIntakeRollerState(IntakeRollerState.DISABLED);
+        this.setIntakeMotorState(IntakeMotorState.DISABLED);
         this.setColorSensorStatus(ColorSensorStatus.ENABLED);
     }
 
@@ -186,9 +183,9 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeWristServo.setPosition(intakeWristState.getValue());
     }
 
-    public void setIntakeRollerState(IntakeRollerState intakeRollerState) {
-        this.intakeRollerState = intakeRollerState;
-        intakeRollerServo.setPower(intakeRollerState.getValue());
+    public void setIntakeMotorState(IntakeMotorState intakeMotorState) {
+        this.intakeMotorState = intakeMotorState;
+        intakeMotor.setPower(intakeMotorState.getValue());
     }
 
     public ColorSensorStatus getColorSensorStatus() {
@@ -205,8 +202,8 @@ public class IntakeSubsystem extends SubsystemBase {
         return intakeWristState;
     }
 
-    public IntakeRollerState getIntakeRollerState() {
-        return intakeRollerState;
+    public IntakeMotorState getIntakeRollerState() {
+        return intakeMotorState;
     }
 
     public Color getCurrentColor() {

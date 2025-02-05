@@ -7,8 +7,6 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import org.firstinspires.ftc.teamcode.common.commands.deposit.DepositSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.extension.ExtensionSetPosition;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeArmSetPosition_INST;
-import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetRollerState_INST;
-import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeTrapdoorSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeWristSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.lift.LiftSetPosition;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;

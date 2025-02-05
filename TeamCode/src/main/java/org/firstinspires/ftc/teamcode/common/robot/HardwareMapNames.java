@@ -36,7 +36,7 @@ public class HardwareMapNames {
 
 
     // Intake
-    public static String INTAKE_ROLLER_SERVO = "intakeRoller";
+    public static String INTAKE_MOTOR = "intakeMotor";
     public static String INTAKE_BOTTOM_PIVOT = "intakeBottomPivot";
     public static String INTAKE_TRAPDOOR = "intakeTrapdoor";
     public static String INTAKE_COLOR_SENSOR = "colorSensor";

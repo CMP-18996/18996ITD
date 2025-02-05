@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.common.commands.extension.ExtensionSetPosi
 import org.firstinspires.ftc.teamcode.common.commands.hang.HangCommand_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeArmSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetColorSensorStatus_INST;
-import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetRollerState_INST;
+import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetMotorState_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeTrapdoorSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeWristSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.lift.LiftSetPosition_INST;
@@ -49,7 +49,7 @@ public class FullTeleOp extends CommandOpMode {
     private GamepadEx gamepad_1;
     private GamepadEx gamepad_2;
 
-    public IntakeSubsystem.IntakeRollerState previousIntakingState = IntakeSubsystem.IntakeRollerState.DISABLED;
+    public IntakeSubsystem.IntakeMotorState previousIntakingState = IntakeSubsystem.IntakeMotorState.DISABLED;
 
     private double previousPower = 0;
 
@@ -145,12 +145,12 @@ public class FullTeleOp extends CommandOpMode {
                         new ScheduleCommand(
                                 new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.PICK_UP),
                                 new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.PICK_UP),
-                                new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.ACTIVE)
+                                new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.ACTIVE)
                         ),
                         new ScheduleCommand(
                                 new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.MOVING),
                                 new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.MOVING),
-                                new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.ACTIVE)
+                                new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.ACTIVE)
                         ),
                         () -> !robot.intake.getIntakeArmState().equals(IntakeSubsystem.IntakeArmState.PICK_UP)
                 )
@@ -161,11 +161,11 @@ public class FullTeleOp extends CommandOpMode {
                 () -> {
                     previousIntakingState = robot.intake.getIntakeRollerState();
                     schedule(
-                            new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.REVERSING)
+                            new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.REVERSING)
                     );
                 }
         ).whenReleased(
-                new IntakeSetRollerState_INST(robot.intake, previousIntakingState)
+                new IntakeSetMotorState_INST(robot.intake, previousIntakingState)
         );
 
 
@@ -188,7 +188,7 @@ public class FullTeleOp extends CommandOpMode {
                     schedule(
                             new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.REST),
                             new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.REST),
-                            new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.DISABLED)
+                            new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.DISABLED)
                     );
                 }
         );
@@ -199,7 +199,7 @@ public class FullTeleOp extends CommandOpMode {
                     schedule(
                             new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.MOVING),
                             new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.MOVING),
-                            new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.ACTIVE)
+                            new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.ACTIVE)
                     );
                 }
         );
@@ -223,7 +223,7 @@ public class FullTeleOp extends CommandOpMode {
                                 new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.TRANSFER),
                                 new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.REST),
                                 new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.REST),
-                                new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.DISABLED),
+                                new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.DISABLED),
                                 new IntakeTrapdoorSetPosition_INST(robot.intake, IntakeSubsystem.TrapdoorState.CLOSED)
                             )
                     );
@@ -399,9 +399,9 @@ public class FullTeleOp extends CommandOpMode {
                             new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.ACTIVE)
 
                                  */
-                            new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.REVERSING),
+                            new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.REVERSING),
                             new WaitCommand(300),
-                            new IntakeSetRollerState_INST(robot.intake, previousIntakingState)
+                            new IntakeSetMotorState_INST(robot.intake, previousIntakingState)
                             //new IntakeSetRollerState_INST(robot.intake, previousIntakingState) // This works???? wtf
                         )
                 );

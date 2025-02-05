@@ -9,7 +9,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeArmSetPosition_INST;
-import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetRollerState_INST;
+import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetMotorState_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeTrapdoorSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeWristSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
@@ -58,19 +58,19 @@ public class IntakeTest extends CommandOpMode {
 
         gamepad.getGamepadButton(GamepadKeys.Button.X).whenPressed(
                 new ScheduleCommand(
-                        new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.ACTIVE)
+                        new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.ACTIVE)
                 )
         );
 
         gamepad.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
                 new ScheduleCommand(
-                        new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.DISABLED)
+                        new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.DISABLED)
                 )
         );
 
         gamepad.getGamepadButton(GamepadKeys.Button.B).whenPressed(
                 new ScheduleCommand(
-                        new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.REVERSING)
+                        new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.REVERSING)
                 )
         );
 
