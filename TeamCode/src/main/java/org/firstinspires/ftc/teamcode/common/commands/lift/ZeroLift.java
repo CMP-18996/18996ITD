@@ -10,8 +10,8 @@ public class ZeroLift extends SequentialCommandGroup {
     public ZeroLift(LiftSubsystem liftSubsystem) {
         addCommands(
                 new SequentialCommandGroup(
-                        new InstantCommand(() -> liftSubsystem.setLiftState(LiftSubsystem.LiftState.ZEROING)),
-                        new WaitCommand(1000),
+                        new LiftSetPosition_INST(liftSubsystem, LiftSubsystem.LiftState.ZEROING),
+                        new WaitCommand(100),
                         new InstantCommand(liftSubsystem::resetEncoders),
                         new LiftSetPosition_INST(liftSubsystem, LiftSubsystem.LiftState.TRANSFER)
                 )

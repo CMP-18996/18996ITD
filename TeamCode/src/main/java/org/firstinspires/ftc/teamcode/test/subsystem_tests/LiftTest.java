@@ -4,11 +4,13 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.ScheduleCommand;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.common.commands.lift.LiftSetPosition;
+import org.firstinspires.ftc.teamcode.common.commands.lift.ZeroLift;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
@@ -27,7 +29,8 @@ public class LiftTest extends CommandOpMode {
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 new ConditionalCommand(
-                        new ScheduleCommand(
+                        new SequentialCommandGroup(
+                                new ZeroLift(robot.lift),
                                 new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET)
                         ),
                         new ScheduleCommand(
@@ -39,7 +42,8 @@ public class LiftTest extends CommandOpMode {
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
                 new ConditionalCommand(
-                        new ScheduleCommand(
+                        new SequentialCommandGroup(
+                                new ZeroLift(robot.lift),
                                 new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.LOW_BUCKET)
                         ),
                         new ScheduleCommand(
@@ -51,7 +55,8 @@ public class LiftTest extends CommandOpMode {
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
                 new ConditionalCommand(
-                        new ScheduleCommand(
+                        new SequentialCommandGroup(
+                                new ZeroLift(robot.lift),
                                 new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.HUMAN_PLAYER_DEPOSIT)
                         ),
                         new ScheduleCommand(
