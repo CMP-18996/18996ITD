@@ -13,9 +13,9 @@ public class DepositSubsystem extends SubsystemBase {
     public static double TRANSFER_POS = 0.2;
     public static double DEPOSIT_POS = 1.0;
 
-    public static double TOP_OPEN_POS = 0.0;
-    public static double BOTTOM_OPEN_POS = 0.0;
-    public static double CLOSED_POS = 0.0;
+    public static double TOP_OPEN_POS = 0.1;
+    public static double BOTTOM_OPEN_POS = 0.4;
+    public static double CLOSED_POS = 0.9;
 
     private final Servo bucketServo;
     private final Servo depositTrapdoorServo;
@@ -80,8 +80,8 @@ public class DepositSubsystem extends SubsystemBase {
         return bucketState;
     }
 
-    public void setDepositTrapdoorState(DepositTrapdoorState state) {
-        this.depositTrapdoorState = state;
+    public void setDepositTrapdoorState(DepositTrapdoorState depositTrapdoorState) {
+        this.depositTrapdoorState = depositTrapdoorState;
         depositTrapdoorServo.setPosition(depositTrapdoorState.getValue());
     }
 

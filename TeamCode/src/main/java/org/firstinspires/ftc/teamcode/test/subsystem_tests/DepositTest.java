@@ -34,6 +34,12 @@ public class DepositTest extends CommandOpMode {
                 )
         );
 
+        gamepad.getGamepadButton(GamepadKeys.Button.A).whenPressed(
+                new ScheduleCommand(
+                        new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.HUMAN_PLAYER_DEPOSIT)
+                )
+        );
+
         gamepad.getGamepadButton(GamepadKeys.Button.B).whenPressed(
                 new ScheduleCommand(
                         new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.DEPOSIT)

@@ -25,17 +25,13 @@ public class ExtensionTest extends CommandOpMode {
     Robot robot;
     GamepadEx gamepad;
 
+    private double previousPower = 0;
+
     @Override
     public void initialize() {
         CommandScheduler.getInstance().reset();
         robot = new Robot(hardwareMap, subsystems);
         gamepad = new GamepadEx(gamepad1);
-
-        gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
-                new ScheduleCommand(
-                        new ExtensionSetPosition(robot.extension, ExtensionSubsystem.ExtensionState.EXTENDED)
-                )
-        );
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 new ConditionalCommand(
@@ -63,8 +59,10 @@ public class ExtensionTest extends CommandOpMode {
         CommandScheduler.getInstance().run();
 
         double power = gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
-        if(power != 0) {
+
+        if(power != previousPower) {
             robot.extension.setExtensionMotorPower(power);
+            previousPower = power;
         }
 
         telemetry.addData("STATE", robot.extension.getExtensionState());
