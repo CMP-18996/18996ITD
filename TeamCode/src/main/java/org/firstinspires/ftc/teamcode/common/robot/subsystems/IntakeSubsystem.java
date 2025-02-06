@@ -29,6 +29,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public static double ROLLER_ACTIVE = 1.0;
     public static double ROLLER_DISABLED = 0.0;
+    public static double ROLLER_HOLD = 0.2;
     public static double ROLLER_REVERSING = -1.0;
 
     public static double ALPHA_CUTOFF = 300;
@@ -49,6 +50,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public enum IntakeMotorState {
         ACTIVE,
+        HOLD,
         DISABLED,
         REVERSING;
 
@@ -56,6 +58,8 @@ public class IntakeSubsystem extends SubsystemBase {
             switch (this) {
                 case ACTIVE:
                     return ROLLER_ACTIVE;
+                case HOLD:
+                    return ROLLER_HOLD;
                 case DISABLED:
                     return ROLLER_DISABLED;
                 case REVERSING:

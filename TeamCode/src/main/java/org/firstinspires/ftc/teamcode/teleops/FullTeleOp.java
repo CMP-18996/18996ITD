@@ -201,7 +201,7 @@ public class FullTeleOp extends CommandOpMode {
                     schedule(
                             new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.MOVING),
                             new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.MOVING),
-                            new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.ACTIVE)
+                            new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.HOLD)
                     );
                 }
         );
