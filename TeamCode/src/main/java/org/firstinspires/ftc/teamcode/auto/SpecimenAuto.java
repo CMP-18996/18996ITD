@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.auto;
 
+import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.BezierCurve;
@@ -12,6 +13,12 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetArmPosition_INST;
+import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetGripperPosition_INST;
+import org.firstinspires.ftc.teamcode.common.robot.Robot;
+import org.firstinspires.ftc.teamcode.common.robot.Team;
+import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
+import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
@@ -28,7 +35,6 @@ import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
 @Autonomous(name = "Specimen auto :(", group = "Examples")
 public class SpecimenAuto extends OpMode {
-
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
 
@@ -52,34 +58,35 @@ public class SpecimenAuto extends OpMode {
     private final Pose scorePose = new Pose(35, 55.3125, Math.toRadians(0));
 
     /** Going from scorePose to behind first grounded sample */
-    private final Pose pickup1Pose1 = new Pose(19.74, 33.42);
-    private final Pose pickup1Pose2 = new Pose(71.55, 38.36);
-    private final Pose pickup1Pose3 = new Pose(58.09, 22.21);
+    private final Pose pickup1Pose1 = new Pose(24, 24);
+    private final Pose pickup1Pose2 = new Pose(72, 43);
+    private final Pose pickup1Pose3 = new Pose(64, 28);
     private final Pose pickup1PoseEND = new Pose(65, 22);
 
     /** Depositing first grounded sample in observation zone */
-    private final Pose deposit1Pose = new Pose(20, 27, Math.toRadians(0));
+    private final Pose deposit1Pose = new Pose(15, 27, Math.toRadians(180));
 
     /** Going from deposit1Pose to behind second grounded sample */
     private final Pose pickup2Pose1 = new Pose(70, 36, Math.toRadians(0));
     private final Pose pickup2Pose2 = new Pose(60, 15, Math.toRadians(0));
 
     /** Depositing second grounded sample in observation zone */
-    private final Pose deposit2Pose = new Pose(20, 15, Math.toRadians(0));
+    private final Pose deposit2Pose = new Pose(15, 15, Math.toRadians(0));
 
     /** Going from deposit2Pose to behind third grounded sample */
     private final Pose pickup3Pose1 = new Pose(72, 24, Math.toRadians(0));
-    private final Pose pickup3Pose2 = new Pose(60, 6, Math.toRadians(0));
+    private final Pose pickup3Pose2 = new Pose(60, 9, Math.toRadians(0));
 
     /** Depositing third grounded sample in observation zone */
-    private final Pose deposit3Pose = new Pose(15, 6, Math.toRadians(0));
+    private final Pose deposit3Pose = new Pose(15, 9, Math.toRadians(0));
 
     /** From submersible direct to top of observation zone */
     private final Pose specimenPose = new Pose(15, 24, Math.toRadians(0));
 
     /* These are our Paths and PathChains that we will define in buildPaths() */
-    private PathChain scorePreloadedSpecimen, pushSample1, pushSample2, pushSample3, scoreGroundSpecimen, scoreGroundSpecimenAlt, returnGroundSpecimen;
+    private PathChain scorePreloadedSpecimen, pushSamples, pushSample1, pushSample2, pushSample3, scoreGroundSpecimen, scoreGroundSpecimenAlt, returnGroundSpecimen;
 
+    private Robot robot;
     public void buildPaths() {
         /* Goes from startPose to the scorePose for the preloaded specimen dropoff */
         scorePreloadedSpecimen = follower.pathBuilder()
@@ -87,40 +94,66 @@ public class SpecimenAuto extends OpMode {
                 .setConstantHeadingInterpolation(scorePose.getHeading())
                 .build();
 
-        pushSample1 = follower.pathBuilder()
+        /*pushSample1 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(scorePose), new Point(pickup1Pose1), new Point(pickup1Pose2), new Point(pickup1Pose3), new Point(pickup1PoseEND)))
-                .setTangentHeadingInterpolation()
+                .setConstantHeadingInterpolation(scorePose.getHeading())
+                .addPath(new BezierCurve(new Point(pickup1PoseEND), new Point(deposit1Pose)))
+                .setConstantHeadingInterpolation(Math.PI)
+                .setReversed(true)
                 .build();
 
         pushSample2 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(deposit1Pose), new Point(pickup2Pose1), new Point(pickup2Pose2)))
                 .setConstantHeadingInterpolation(scorePose.getHeading())
-                .setReversed(true)
                 .addPath(new BezierLine(new Point(pickup2Pose2), new Point(deposit2Pose)))
-                .setConstantHeadingInterpolation(deposit1Pose.getHeading() + Math.PI)
+                .setConstantHeadingInterpolation(Math.PI)
+                .setReversed(true)
                 .build();
 
         pushSample3 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(deposit2Pose), new Point(pickup3Pose1), new Point(pickup3Pose2)))
                 .setConstantHeadingInterpolation(scorePose.getHeading())
-                .setReversed(true)
                 .addPath(new BezierLine(new Point(pickup3Pose2), new Point(deposit3Pose)))
-                .setConstantHeadingInterpolation(deposit2Pose.getHeading() + Math.PI)
+                .setConstantHeadingInterpolation(Math.PI)
+                .setReversed(true)
+                .build();*/
+
+        pushSamples = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(scorePose), new Point(pickup1Pose1), new Point(pickup1Pose2), new Point(pickup1Pose3), new Point(pickup1PoseEND)))
+                .setConstantHeadingInterpolation(scorePose.getHeading())
+                .addPath(new BezierCurve(new Point(pickup1PoseEND), new Point(deposit1Pose)))
+                .setConstantHeadingInterpolation(Math.PI)
+                .setReversed(true)
+
+                .addPath(new BezierCurve(new Point(deposit1Pose), new Point(pickup2Pose1), new Point(pickup2Pose2)))
+                .setConstantHeadingInterpolation(scorePose.getHeading())
+                .setReversed(false)
+                .addPath(new BezierLine(new Point(pickup2Pose2), new Point(deposit2Pose)))
+                .setConstantHeadingInterpolation(Math.PI)
+                .setReversed(true)
+
+                .addPath(new BezierCurve(new Point(deposit2Pose), new Point(pickup3Pose1), new Point(pickup3Pose2)))
+                .setConstantHeadingInterpolation(scorePose.getHeading())
+                .setReversed(false)
+                .addPath(new BezierLine(new Point(pickup3Pose2), new Point(deposit3Pose)))
+                .setConstantHeadingInterpolation(Math.PI)
+                .setReversed(true)
                 .build();
 
         scoreGroundSpecimenAlt = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(deposit3Pose), new Point(scorePose)))
-                .setConstantHeadingInterpolation(scorePose.getHeading())
+                .setLinearHeadingInterpolation(Math.toRadians(64), 0)
                 .build();
 
         scoreGroundSpecimen = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(specimenPose), new Point(scorePose)))
-                .setConstantHeadingInterpolation(scorePose.getHeading())
+                .setLinearHeadingInterpolation(Math.toRadians(47), 0)
                 .build();
 
         returnGroundSpecimen = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(scorePose), new Point(specimenPose)))
-                .setConstantHeadingInterpolation(scorePose.getHeading())
+                .setLinearHeadingInterpolation(Math.toRadians(47), 0)
+                .setReversed(true)
                 .build();
     }
 
@@ -130,65 +163,22 @@ public class SpecimenAuto extends OpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                follower.followPath(scorePreloadedSpecimen);
+                CommandScheduler.getInstance().schedule(new SpecimenSetArmPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenArmState.CHAMBER));
+                follower.followPath(scorePreloadedSpecimen, true);
                 setPathState(1);
                 break;
             case 1:
-
-                /* You could check for
-                - Follower State: "if(!follower.isBusy() {}"
-                - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
-                - Robot Position: "if(follower.getPose().getX() > 36) {}"
-                */
-
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
                 if(!follower.isBusy()) {
-                    /* Score Preload */
-
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
-                    follower.followPath(pushSample1,true);
-                    setPathState(2);
-                }
-                break;
-            case 2:
-
-                /* You could check for
-                - Follower State: "if(!follower.isBusy() {}"
-                - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
-                - Robot Position: "if(follower.getPose().getX() > 36) {}"
-                */
-
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if(!follower.isBusy()) {
-                    /* Score Preload */
-
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
-                    follower.followPath(pushSample2, true);
-                    setPathState(3);
-                }
-                break;
-            case 3:
-
-                /* You could check for
-                - Follower State: "if(!follower.isBusy() {}"
-                - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
-                - Robot Position: "if(follower.getPose().getX() > 36) {}"
-                */
-
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if(!follower.isBusy()) {
-                    /* Score Preload */
-
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
-                    follower.followPath(pushSample3, true);
+                    CommandScheduler.getInstance().schedule(new SpecimenSetGripperPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenGripperState.OPEN));
+                    CommandScheduler.getInstance().schedule(new SpecimenSetArmPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenArmState.WALL));
+                    follower.followPath(pushSamples,true);
                     setPathState(4);
                 }
                 break;
             case 4:
                 if(!follower.isBusy()) {
-                    /* Grab Sample */
-
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
+                    CommandScheduler.getInstance().schedule(new SpecimenSetGripperPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenGripperState.CLOSED));
+                    CommandScheduler.getInstance().schedule(new SpecimenSetArmPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenArmState.CHAMBER));
                     follower.followPath(scoreGroundSpecimenAlt,true);
                     setPathState(5);
                 }
@@ -196,23 +186,19 @@ public class SpecimenAuto extends OpMode {
             case 6:
             case 8:
             case 10:
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
                 if(!follower.isBusy()) {
-                    /* Grab Sample */
-
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
+                    CommandScheduler.getInstance().schedule(new SpecimenSetGripperPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenGripperState.CLOSED));
+                    CommandScheduler.getInstance().schedule(new SpecimenSetArmPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenArmState.CHAMBER));
                     follower.followPath(scoreGroundSpecimen,true);
-                    if (pathState == 10) setPathState(-1434); else setPathState(pathState + 1);
+                    setPathState(pathState == 10 ? -1434 : pathState + 1);
                 }
                 break;
             case 5:
             case 7:
             case 9:
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
                 if(!follower.isBusy()) {
-                    /* Score Sample */
-
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
+                    CommandScheduler.getInstance().schedule(new SpecimenSetGripperPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenGripperState.OPEN));
+                    CommandScheduler.getInstance().schedule(new SpecimenSetArmPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenArmState.WALL));
                     follower.followPath(returnGroundSpecimen,true);
                     setPathState(pathState + 1);
                 }
@@ -234,6 +220,7 @@ public class SpecimenAuto extends OpMode {
         // These loop the movements of the robot
         follower.update();
         autonomousPathUpdate();
+        CommandScheduler.getInstance().run();
 
         // Feedback to Driver Hub
         telemetry.addData("path state", pathState);
@@ -253,12 +240,14 @@ public class SpecimenAuto extends OpMode {
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
         follower.setStartingPose(startPose);
+        follower.setMaxPower(1);
         buildPaths();
-    }
 
-    /** This method is called continuously after Init while waiting for "play". **/
-    @Override
-    public void init_loop() {}
+        CommandScheduler.getInstance().reset();
+        //It doesn't matter which team it is due to symmetry :)
+        robot = new Robot(hardwareMap, Team.BLUE, Subsystems.SPECIMEN);
+        CommandScheduler.getInstance().schedule(new SpecimenSetGripperPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenGripperState.CLOSED));
+    }
 
     /** This method is called once at the start of the OpMode.
      * It runs all the setup actions, including building paths and starting the path system **/
@@ -266,11 +255,6 @@ public class SpecimenAuto extends OpMode {
     public void start() {
         opmodeTimer.resetTimer();
         setPathState(0);
-    }
-
-    /** We do not use this because everything should automatically disable **/
-    @Override
-    public void stop() {
     }
 }
 
