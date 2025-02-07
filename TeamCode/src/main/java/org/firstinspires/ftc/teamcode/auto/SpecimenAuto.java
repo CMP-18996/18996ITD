@@ -5,7 +5,6 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.BezierLine;
-import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
@@ -13,210 +12,231 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoExtend;
+import org.firstinspires.ftc.teamcode.common.commands.complexCommands.CompactForHangCommand;
+import org.firstinspires.ftc.teamcode.common.commands.extension.ExtensionSetPosition_INST;
+import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetMotorState_INST;
 import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetArmPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetGripperPosition_INST;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.Team;
+import org.firstinspires.ftc.teamcode.common.robot.subsystems.ExtensionSubsystem;
+import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
-
-/**
- * This is an example auto that showcases movement and control of two servos autonomously.
- * It is a 0+4 (Specimen + Sample) bucket auto. It scores a neutral preload and then pickups 3 samples from the ground and scores them before parking.
- * There are examples of different ways to build paths.
- * A path progression method has been created and can advance based on time, position, or other factors.
- *
- * @author Baron Henderson - 20077 The Indubitables
- * @version 2.0, 11/28/2024
- */
-
-@Autonomous(name = "Specimen auto :(", group = "Examples")
+@Autonomous(name = "Specimen auto :(")
 public class SpecimenAuto extends OpMode {
     private Follower follower;
-    private Timer pathTimer, actionTimer, opmodeTimer;
 
-    /** This is the variable where we store the state of our auto.
-     * It is used by the pathUpdate method. */
+    private Timer pathTimer;
+
     private int pathState;
 
-    /* Create and Define Poses + Paths
-     * Poses are built with three constructors: x, y, and heading (in Radians).
-     * Pedro uses 0 - 144 for x and y, with 0, 0 being on the bottom left.
-     * (For Into the Deep, this would be Blue Observation Zone (0,0) to Red Observation Zone (144,144).)
-     * Even though Pedro uses a different coordinate system than RR, you can convert any roadrunner pose by adding +72 both the x and y.
-     * This visualizer is very easy to use to find and create paths/pathchains/poses: <https://pedro-path-generator.vercel.app/>
-     * Lets assume our robot is 18 by 18 inches
-     * Lets assume the Robot is facing the human player and we want to score in the bucket */
-
-    /** Start Pose of our robot */
     private final Pose startPose = new Pose(7.5625, 55.3125, Math.toRadians(0));
 
-    /** Scoring Pose of our robot at submersible */
-    private final Pose scorePose = new Pose(35, 55.3125, Math.toRadians(0));
+    private final Pose chamberPose = new Pose(33, 55.3125, Math.toRadians(0));
 
-    /** Going from scorePose to behind first grounded sample */
-    private final Pose pickup1Pose1 = new Pose(24, 24);
-    private final Pose pickup1Pose2 = new Pose(72, 43);
-    private final Pose pickup1Pose3 = new Pose(64, 28);
-    private final Pose pickup1PoseEND = new Pose(65, 22);
+    private final Pose spikePickup1 = new Pose(30.59, 46.81, Math.toRadians(301));
 
-    /** Depositing first grounded sample in observation zone */
-    private final Pose deposit1Pose = new Pose(15, 27, Math.toRadians(180));
+    private final Pose spikePickup2 = new Pose(30.24, 38.80, Math.toRadians(300));
 
-    /** Going from deposit1Pose to behind second grounded sample */
-    private final Pose pickup2Pose1 = new Pose(70, 36, Math.toRadians(0));
-    private final Pose pickup2Pose2 = new Pose(60, 15, Math.toRadians(0));
+    private final Pose spikePickup3 = new Pose(31.72, 31.29, Math.toRadians(295));
 
-    /** Depositing second grounded sample in observation zone */
-    private final Pose deposit2Pose = new Pose(15, 15, Math.toRadians(0));
+    private final Pose spikeDrop1 = new Pose(30.59, 46.81, Math.toRadians(240));
 
-    /** Going from deposit2Pose to behind third grounded sample */
-    private final Pose pickup3Pose1 = new Pose(72, 24, Math.toRadians(0));
-    private final Pose pickup3Pose2 = new Pose(60, 9, Math.toRadians(0));
+    private final Pose spikeDrop2 = new Pose(30.24, 30.80, Math.toRadians(232));
 
-    /** Depositing third grounded sample in observation zone */
-    private final Pose deposit3Pose = new Pose(15, 9, Math.toRadians(0));
+    private final Pose spikeDrop3 = new Pose(31.72, 31.29, Math.toRadians(225));
 
-    /** From submersible direct to top of observation zone */
-    private final Pose specimenPose = new Pose(15, 24, Math.toRadians(0));
+    private final Pose wallPose = new Pose(9.14, 30.13, 0);
 
     /* These are our Paths and PathChains that we will define in buildPaths() */
-    private PathChain scorePreloadedSpecimen, pushSamples, pushSample1, pushSample2, pushSample3, scoreGroundSpecimen, scoreGroundSpecimenAlt, returnGroundSpecimen;
+    private PathChain scorePreloadedSpecimen, pickupSpike1, pickupSpike2, pickupSpike3, dropSpike1, dropSpike2, dropSpike3;
 
     private Robot robot;
+
     public void buildPaths() {
-        /* Goes from startPose to the scorePose for the preloaded specimen dropoff */
         scorePreloadedSpecimen = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(startPose), new Point(scorePose)))
-                .setConstantHeadingInterpolation(scorePose.getHeading())
+                .addPath(new BezierLine(new Point(startPose), new Point(chamberPose)))
+                .setConstantHeadingInterpolation(chamberPose.getHeading())
+                .setZeroPowerAccelerationMultiplier(4)
                 .build();
 
-        /*pushSample1 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(scorePose), new Point(pickup1Pose1), new Point(pickup1Pose2), new Point(pickup1Pose3), new Point(pickup1PoseEND)))
-                .setConstantHeadingInterpolation(scorePose.getHeading())
-                .addPath(new BezierCurve(new Point(pickup1PoseEND), new Point(deposit1Pose)))
-                .setConstantHeadingInterpolation(Math.PI)
-                .setReversed(true)
+        pickupSpike1 = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(chamberPose), new Point(spikePickup1)))
+                .setLinearHeadingInterpolation(chamberPose.getHeading(), spikePickup1.getHeading())
                 .build();
 
-        pushSample2 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(deposit1Pose), new Point(pickup2Pose1), new Point(pickup2Pose2)))
-                .setConstantHeadingInterpolation(scorePose.getHeading())
-                .addPath(new BezierLine(new Point(pickup2Pose2), new Point(deposit2Pose)))
-                .setConstantHeadingInterpolation(Math.PI)
-                .setReversed(true)
+        pickupSpike2 = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(chamberPose), new Point(spikePickup2)))
+                .setLinearHeadingInterpolation(chamberPose.getHeading(), spikePickup2.getHeading())
                 .build();
 
-        pushSample3 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(deposit2Pose), new Point(pickup3Pose1), new Point(pickup3Pose2)))
-                .setConstantHeadingInterpolation(scorePose.getHeading())
-                .addPath(new BezierLine(new Point(pickup3Pose2), new Point(deposit3Pose)))
-                .setConstantHeadingInterpolation(Math.PI)
-                .setReversed(true)
-                .build();*/
-
-        pushSamples = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(scorePose), new Point(pickup1Pose1), new Point(pickup1Pose2), new Point(pickup1Pose3), new Point(pickup1PoseEND)))
-                .setConstantHeadingInterpolation(scorePose.getHeading())
-                .addPath(new BezierCurve(new Point(pickup1PoseEND), new Point(deposit1Pose)))
-                .setConstantHeadingInterpolation(Math.PI)
-                .setReversed(true)
-
-                .addPath(new BezierCurve(new Point(deposit1Pose), new Point(pickup2Pose1), new Point(pickup2Pose2)))
-                .setConstantHeadingInterpolation(scorePose.getHeading())
-                .setReversed(false)
-                .addPath(new BezierLine(new Point(pickup2Pose2), new Point(deposit2Pose)))
-                .setConstantHeadingInterpolation(Math.PI)
-                .setReversed(true)
-
-                .addPath(new BezierCurve(new Point(deposit2Pose), new Point(pickup3Pose1), new Point(pickup3Pose2)))
-                .setConstantHeadingInterpolation(scorePose.getHeading())
-                .setReversed(false)
-                .addPath(new BezierLine(new Point(pickup3Pose2), new Point(deposit3Pose)))
-                .setConstantHeadingInterpolation(Math.PI)
-                .setReversed(true)
+        pickupSpike3 = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(chamberPose), new Point(spikePickup3)))
+                .setLinearHeadingInterpolation(chamberPose.getHeading(), spikePickup3.getHeading())
                 .build();
 
-        scoreGroundSpecimenAlt = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(deposit3Pose), new Point(scorePose)))
-                .setLinearHeadingInterpolation(Math.toRadians(64), 0)
+        dropSpike1 = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(spikePickup1), new Point(spikeDrop1)))
+                .setLinearHeadingInterpolation(spikePickup1.getHeading(), spikeDrop1.getHeading())
                 .build();
 
-        scoreGroundSpecimen = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimenPose), new Point(scorePose)))
-                .setLinearHeadingInterpolation(Math.toRadians(47), 0)
+        dropSpike2 = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(spikePickup2), new Point(spikeDrop2)))
+                .setLinearHeadingInterpolation(spikePickup2.getHeading(), spikeDrop2.getHeading())
                 .build();
 
-        returnGroundSpecimen = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(scorePose), new Point(specimenPose)))
-                .setLinearHeadingInterpolation(Math.toRadians(47), 0)
-                .setReversed(true)
+        dropSpike3 = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(spikePickup3), new Point(spikeDrop3)))
+                .setLinearHeadingInterpolation(spikePickup3.getHeading(), spikeDrop3.getHeading())
                 .build();
     }
 
-    /** This switch is called continuously and runs the pathing, at certain points, it triggers the action state.
-     * Everytime the switch changes case, it will reset the timer. (This is because of the setPathState() method)
-     * The followPath() function sets the follower to run the specific path, but does NOT wait for it to finish before moving on. */
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
+                // RAISE STUFF
                 CommandScheduler.getInstance().schedule(new SpecimenSetArmPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenArmState.CHAMBER));
+
                 follower.followPath(scorePreloadedSpecimen, true);
                 setPathState(1);
                 break;
             case 1:
+                // LET GO !!!!
                 if(!follower.isBusy()) {
                     CommandScheduler.getInstance().schedule(new SpecimenSetGripperPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenGripperState.OPEN));
+
+                    setPathState(2);
+                }
+                break;
+            case 2:
+                // RETRACT AND MOVE TO SPIKE 1
+                if(pathTimer.getElapsedTime() > 1000) {
                     CommandScheduler.getInstance().schedule(new SpecimenSetArmPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenArmState.WALL));
-                    follower.followPath(pushSamples,true);
+
+                    follower.followPath(pickupSpike1,true);
+                    setPathState(3);
+                }
+                break;
+            case 3:
+                // GET BLOCK
+                if(!follower.isBusy()) {
+                    CommandScheduler.getInstance().schedule(new AutoExtend(robot.extension, robot.intake, robot.lift));
+
                     setPathState(4);
                 }
                 break;
             case 4:
-                if(!follower.isBusy()) {
-                    CommandScheduler.getInstance().schedule(new SpecimenSetGripperPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenGripperState.CLOSED));
-                    CommandScheduler.getInstance().schedule(new SpecimenSetArmPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenArmState.CHAMBER));
-                    follower.followPath(scoreGroundSpecimenAlt,true);
+                // swing
+                //if(!robot.intake.getCurrentColor().equals(IntakeSubsystem.Color.NONE)) {
+                    if(pathTimer.getElapsedTime() > 1000) {
+                    CommandScheduler.getInstance().schedule(new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.HOLD));
+
+                    follower.followPath(dropSpike1);
                     setPathState(5);
                 }
                 break;
-            case 6:
-            case 8:
-            case 10:
+            case 5:
+                // throw !!!
                 if(!follower.isBusy()) {
-                    CommandScheduler.getInstance().schedule(new SpecimenSetGripperPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenGripperState.CLOSED));
-                    CommandScheduler.getInstance().schedule(new SpecimenSetArmPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenArmState.CHAMBER));
-                    follower.followPath(scoreGroundSpecimen,true);
-                    setPathState(pathState == 10 ? -1434 : pathState + 1);
+                    CommandScheduler.getInstance().schedule(new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.REVERSING));
+
+                    setPathState(6);
                 }
                 break;
-            case 5:
+            case 6:
+                // RETRACT AND MOVE TO SPIKE 2
+                if(pathTimer.getElapsedTime() > 1000) {
+                    CommandScheduler.getInstance().schedule(new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.DISABLED));
+                    CommandScheduler.getInstance().schedule(new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.TRANSFER));
+
+                    follower.followPath(pickupSpike2,true);
+                    setPathState(7);
+                }
+                break;
             case 7:
-            case 9:
+                // GET BLOCK
                 if(!follower.isBusy()) {
-                    CommandScheduler.getInstance().schedule(new SpecimenSetGripperPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenGripperState.OPEN));
-                    CommandScheduler.getInstance().schedule(new SpecimenSetArmPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenArmState.WALL));
-                    follower.followPath(returnGroundSpecimen,true);
-                    setPathState(pathState + 1);
+                    CommandScheduler.getInstance().schedule(new AutoExtend(robot.extension, robot.intake, robot.lift));
+
+                    setPathState(8);
+                }
+                break;
+            case 8:
+                // swing
+                //if(!robot.intake.getCurrentColor().equals(IntakeSubsystem.Color.NONE)) {
+                if(pathTimer.getElapsedTime() > 1000) {
+                    CommandScheduler.getInstance().schedule(new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.HOLD));
+
+                    follower.followPath(dropSpike2);
+                    setPathState(9);
+                }
+                break;
+            case 9:
+                // throw !!!
+                if(!follower.isBusy()) {
+                    CommandScheduler.getInstance().schedule(new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.REVERSING));
+
+                    setPathState(10);
+                }
+                break;
+            case 10:
+                // RETRACT AND MOVE TO SPIKE 3
+                if(pathTimer.getElapsedTime() > 1000) {
+                    CommandScheduler.getInstance().schedule(new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.DISABLED));
+                    CommandScheduler.getInstance().schedule(new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.TRANSFER));
+
+                    follower.followPath(pickupSpike3,true);
+                    setPathState(11);
+                }
+                break;
+            case 11:
+                // GET BLOCK
+                if(!follower.isBusy()) {
+                    CommandScheduler.getInstance().schedule(new AutoExtend(robot.extension, robot.intake, robot.lift));
+
+                    setPathState(12);
+                }
+                break;
+            case 12:
+                // swing
+                //if(!robot.intake.getCurrentColor().equals(IntakeSubsystem.Color.NONE)) {
+                if(pathTimer.getElapsedTime() > 1000) {
+                    CommandScheduler.getInstance().schedule(new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.HOLD));
+
+                    follower.followPath(dropSpike3);
+                    setPathState(13);
+                }
+                break;
+            case 13:
+                // throw !!!
+                if(!follower.isBusy()) {
+                    CommandScheduler.getInstance().schedule(new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.REVERSING));
+
+                    setPathState(14);
+                }
+                break;
+            case 14:
+                if(pathTimer.getElapsedTime() > 1000) {
+                    CommandScheduler.getInstance().schedule(new CompactForHangCommand(robot.extension, robot.intake, robot.deposit, robot.lift, robot.specimen));
+
+                    setPathState(15);
                 }
                 break;
         }
     }
 
-    /** These change the states of the paths and actions
-     * It will also reset the timers of the individual switches **/
     public void setPathState(int pState) {
         pathState = pState;
         pathTimer.resetTimer();
     }
 
-    /** This is the main loop of the OpMode, it will run repeatedly after clicking "Play". **/
     @Override
     public void loop() {
-
         // These loop the movements of the robot
         follower.update();
         autonomousPathUpdate();
@@ -230,31 +250,24 @@ public class SpecimenAuto extends OpMode {
         telemetry.update();
     }
 
-    /** This method is called once at the init of the OpMode. **/
     @Override
     public void init() {
         pathTimer = new Timer();
-        opmodeTimer = new Timer();
-        opmodeTimer.resetTimer();
 
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
         follower.setStartingPose(startPose);
-        follower.setMaxPower(1);
         buildPaths();
 
         CommandScheduler.getInstance().reset();
+
         //It doesn't matter which team it is due to symmetry :)
-        robot = new Robot(hardwareMap, Team.BLUE, Subsystems.SPECIMEN);
-        CommandScheduler.getInstance().schedule(new SpecimenSetGripperPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenGripperState.CLOSED));
+        robot = new Robot(hardwareMap, Team.BLUE, Subsystems.INTAKE, Subsystems.DEPOSIT, Subsystems.EXTENSION, Subsystems.SPECIMEN);
     }
 
-    /** This method is called once at the start of the OpMode.
-     * It runs all the setup actions, including building paths and starting the path system **/
     @Override
     public void start() {
-        opmodeTimer.resetTimer();
+        pathTimer.resetTimer();
         setPathState(0);
     }
 }
-

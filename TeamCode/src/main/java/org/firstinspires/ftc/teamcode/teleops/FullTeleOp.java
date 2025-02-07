@@ -9,15 +9,21 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
+import com.pedropathing.follower.Follower;
+import com.pedropathing.localization.Pose;
+import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.CompactForHangCommand;
+import org.firstinspires.ftc.teamcode.common.commands.complexCommands.HumanPlayerDepositCommand;
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.ReadySampleDepositCommand;
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.RejectSampleCommand;
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.RetractAndTransferCommand;
+import org.firstinspires.ftc.teamcode.common.commands.complexCommands.SampleDepositCommand;
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.TransferSampleCommand;
 import org.firstinspires.ftc.teamcode.common.commands.deposit.DepositSetPosition_INST;
+import org.firstinspires.ftc.teamcode.common.commands.deposit.DepositTrapdoorPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.extension.ExtensionSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.hang.HangCommand_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeArmSetPosition_INST;
@@ -26,6 +32,7 @@ import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetMotorState
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeTrapdoorSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeWristSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.lift.LiftSetPosition_INST;
+import org.firstinspires.ftc.teamcode.common.commands.lift.ZeroLift;
 import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetArmPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetGripperPosition_INST;
 import org.firstinspires.ftc.teamcode.common.robot.Drive;
@@ -38,15 +45,17 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
+import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
+import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
 @TeleOp
 public class FullTeleOp extends CommandOpMode {
     private final Team team = Team.RED;
-    private boolean acceptYellow = false;
-    private boolean liftEnabled = false;
+    private boolean acceptYellow = true;
+    private boolean liftEnabled = true;
 
     private Robot robot;
-    private Drive drive;
+    //private Drive drive;
 
     private GamepadEx gamepad_1;
     private GamepadEx gamepad_2;
@@ -54,6 +63,10 @@ public class FullTeleOp extends CommandOpMode {
     public IntakeSubsystem.IntakeMotorState previousIntakingState = IntakeSubsystem.IntakeMotorState.DISABLED;
 
     private double previousPower = 0;
+    private double previousLeftY = 0;
+
+    private Follower follower;
+    private final Pose startPose = new Pose(0,0,0);
 
     public void runOpMode() throws InterruptedException {
         waitForStart();
@@ -70,8 +83,12 @@ public class FullTeleOp extends CommandOpMode {
     public void initialize() {
         robot = new Robot(hardwareMap, team, acceptYellow, Subsystems.ALL);
 
-        drive = new Drive(hardwareMap);
-        drive.setBreakMode(DcMotor.ZeroPowerBehavior.BRAKE);
+//        drive = new Drive(hardwareMap);
+  //      drive.setBreakMode(DcMotor.ZeroPowerBehavior.BRAKE);
+        Constants.setConstants(FConstants.class, LConstants.class);
+        follower = new Follower(hardwareMap);
+        follower.setStartingPose(startPose);
+        follower.startTeleopDrive();
 
         gamepad_1 = new GamepadEx(gamepad1);
         gamepad_2 = new GamepadEx(gamepad2);
@@ -152,22 +169,35 @@ public class FullTeleOp extends CommandOpMode {
                         new ScheduleCommand(
                                 new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.MOVING),
                                 new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.MOVING),
-                                new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.ACTIVE)
+                                new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.HOLD)
                         ),
                         () -> !robot.intake.getIntakeArmState().equals(IntakeSubsystem.IntakeArmState.PICK_UP)
                 )
         );
 
-        // Reversing Intake
+        // Deposit button kinda idk
+        // TODO ADD MANUAL REVERSE
+        // nesting conditional commands what the fuck ftclib
         gamepad_1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
-                () -> {
-                    previousIntakingState = robot.intake.getIntakeRollerState();
-                    schedule(
-                            new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.REVERSING)
-                    );
-                }
-        ).whenReleased(
-                new IntakeSetMotorState_INST(robot.intake, previousIntakingState)
+                new ConditionalCommand(
+                        new ConditionalCommand(
+                                new SequentialCommandGroup(
+                                        new ReadySampleDepositCommand(robot.deposit),
+                                        new WaitCommand(1000),
+                                        new SampleDepositCommand(robot.deposit)
+                                ),
+                                new SequentialCommandGroup(
+                                        new SampleDepositCommand(robot.deposit),
+                                        new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.TRANSFER)
+                                ),
+                                () -> robot.lift.getLiftState().equals(LiftSubsystem.LiftState.TRANSFER)
+                        ),
+                        new SequentialCommandGroup(
+                                new HumanPlayerDepositCommand(robot.deposit, robot.lift),
+                                new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.TRANSFER)
+                        ),
+                        () -> !robot.lift.getLiftState().equals(LiftSubsystem.LiftState.HUMAN_PLAYER_DEPOSIT)
+                )
         );
 
 
@@ -355,6 +385,11 @@ public class FullTeleOp extends CommandOpMode {
             robot.specimen.manualAdjustWrist(Math.cbrt(gamepad_2.getRightY() / 100));
         }
 
+        if (gamepad_1.getRightY() != previousLeftY) {
+            robot.intake.adjustWristPosition(gamepad_1.getRightY() / 10);
+            previousLeftY = gamepad_1.getRightY();
+        }
+
         // Extension Triggers
         double power = Math.pow(gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) - gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER), 3);
 
@@ -375,6 +410,7 @@ public class FullTeleOp extends CommandOpMode {
                             new SequentialCommandGroup(
                                     new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
                                     new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM),
+                                    new ZeroLift(robot.lift),
                                     new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET),
                                     new ReadySampleDepositCommand(robot.deposit),
                                     new InstantCommand(() -> robot.setTransferringState(false))
@@ -386,15 +422,16 @@ public class FullTeleOp extends CommandOpMode {
                             new SequentialCommandGroup(
                                     new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
                                     new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM),
+                                    new ZeroLift(robot.lift),
                                     new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HUMAN_PLAYER_DEPOSIT),
-                                    new InstantCommand(() -> robot.setTransferringState(false))
+                                    new InstantCommand(() -> robot.setTransferringState(false)),
+                                    new DepositTrapdoorPosition_INST(robot.deposit, DepositSubsystem.DepositTrapdoorState.CLOSED)
                             )
                     );
                 }
             }
             else {
                 gamepad1.rumbleBlips(2);
-                previousIntakingState = robot.intake.getIntakeRollerState();
                 schedule(
                         new SequentialCommandGroup(
                                 new RejectSampleCommand(robot.intake)
@@ -412,7 +449,9 @@ public class FullTeleOp extends CommandOpMode {
         telemetry.addData("LIFT STATE", robot.lift.getLiftState());
         telemetry.update();
 
-        drive.robotCentricDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
+        //drive.robotCentricDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
+        follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
+        follower.update();
     }
 }
 

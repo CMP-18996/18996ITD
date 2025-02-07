@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 public class HumanPlayerDepositCommand extends SequentialCommandGroup {
     public HumanPlayerDepositCommand(DepositSubsystem depositSubsystem, LiftSubsystem liftSubsystem) {
         addCommands(
+                new DepositTrapdoorPosition_INST(depositSubsystem, DepositSubsystem.DepositTrapdoorState.CLOSED),
                 new LiftSetPosition(liftSubsystem, LiftSubsystem.LiftState.HUMAN_PLAYER_DEPOSIT),
                 new DepositSetPosition_INST(depositSubsystem, DepositSubsystem.BucketState.HUMAN_PLAYER_DEPOSIT),
                 new WaitCommand(500),

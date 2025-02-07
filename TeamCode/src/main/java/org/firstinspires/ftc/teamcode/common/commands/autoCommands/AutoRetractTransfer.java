@@ -36,10 +36,16 @@ public class AutoRetractTransfer extends SequentialCommandGroup {
                 ),
                 new WaitCommand(300),
 
-                new IntakeArmSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeArmState.MOVING),
-                new IntakeWristSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeWristState.MOVING),
+                new IntakeArmSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeArmState.REST),
+                new IntakeWristSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeWristState.REST),
                 new IntakeSetMotorState_INST(intakeSubsystem, IntakeSubsystem.IntakeMotorState.DISABLED),
-                new IntakeTrapdoorSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeTrapdoorState.CLOSED)
+                new IntakeTrapdoorSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeTrapdoorState.CLOSED),
+
+                new WaitCommand(300),
+                new LiftSetPosition_INST(liftSubsystem, LiftSubsystem.LiftState.HIGH_BUCKET),
+
+                new WaitCommand(100),
+                new DepositSetPosition_INST(depositSubsystem, DepositSubsystem.BucketState.DEPOSIT)
         );
     }
 }

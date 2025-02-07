@@ -117,7 +117,7 @@ public class ExtensionSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         if (extensionState == ExtensionState.ZEROING) {
-            extensionMotor.setPower(1);
+            extensionMotor.setPower(0.2);
         }
         else if (!extensionState.equals(ExtensionState.CUSTOM)) {
             int error = getError();

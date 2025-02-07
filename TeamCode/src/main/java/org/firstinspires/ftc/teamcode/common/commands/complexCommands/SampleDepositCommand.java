@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 public class SampleDepositCommand extends SequentialCommandGroup {
     public SampleDepositCommand(DepositSubsystem depositSubsystem) {
         addCommands(
+                new DepositSetPosition_INST(depositSubsystem, DepositSubsystem.BucketState.DEPOSIT),
                 new DepositTrapdoorPosition_INST(depositSubsystem, DepositSubsystem.DepositTrapdoorState.TOP_OPEN),
                 new WaitCommand(1000),
                 new DepositSetPosition_INST(depositSubsystem, DepositSubsystem.BucketState.TRANSFER)

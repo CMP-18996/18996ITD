@@ -5,6 +5,7 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -13,23 +14,23 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 @Config
 public class IntakeSubsystem extends SubsystemBase {
     public static double ARM_TRANSFER_POS = 0.0; // max and min rotation used as what arm is actually being rotated to, subject to change
-    public static double ARM_PICK_UP_POS = 0.82;
-    public static double ARM_MOVING_POS = 0.58;
+    public static double ARM_PICK_UP_POS = 1.0;
+    public static double ARM_MOVING_POS = 0.7;
     public static double ARM_REST_POS = 0.15;
     public static double ARM_REJECT_POS = 0.6;
 
-    public static double WRIST_TRANSFER_POS = 0.875/5;
-    public static double WRIST_PICK_UP_POS = 0.6/5;
-    public static double WRIST_MOVING_POS = 0.7/5;
-    public static double WRIST_REST_POS = 1.0/5;
-    public static double WRIST_REJECT_POS = 0.6/5;
+    public static double WRIST_TRANSFER_POS = 0.2;
+    public static double WRIST_PICK_UP_POS = 1.0;
+    public static double WRIST_MOVING_POS = 0.65;
+    public static double WRIST_REST_POS = 0.2;
+    public static double WRIST_REJECT_POS = 0.6;
 
-    public static double TRAPDOOR_CLOSED_POS = 0.8;
-    public static double TRAPDOOR_OPEN_POS = 0.3;
+    public static double TRAPDOOR_CLOSED_POS = 0.3;
+    public static double TRAPDOOR_OPEN_POS = 0.8;
 
     public static double ROLLER_ACTIVE = 1.0;
     public static double ROLLER_DISABLED = 0.0;
-    public static double ROLLER_HOLD = 0.2;
+    public static double ROLLER_HOLD = 0.4;
     public static double ROLLER_REVERSING = -1.0;
 
     public static double ALPHA_CUTOFF = 300;
@@ -158,8 +159,10 @@ public class IntakeSubsystem extends SubsystemBase {
         trapdoorServo.setDirection(Servo.Direction.FORWARD);
         intakeArmServo.setDirection(Servo.Direction.FORWARD);
         intakeWristServo.setDirection(Servo.Direction.FORWARD);
-        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
+        intakeMotor.setDirection(DcMotor.Direction.FORWARD);
         colorSensor.enableLed(true);
+
+        intakeWristServo.scaleRange(0.0, 0.8);
 
         this.setTrapdoorState(IntakeTrapdoorState.CLOSED);
         this.setIntakeArmState(IntakeArmState.REST);
@@ -185,6 +188,10 @@ public class IntakeSubsystem extends SubsystemBase {
     public void setIntakeWristState(IntakeWristState intakeWristState) {
         this.intakeWristState = intakeWristState;
         intakeWristServo.setPosition(intakeWristState.getValue());
+    }
+
+    public void adjustWristPosition(double delta) {
+        intakeWristServo.setPosition(intakeWristState.getValue() + delta);
     }
 
     public void setIntakeMotorState(IntakeMotorState intakeMotorState) {

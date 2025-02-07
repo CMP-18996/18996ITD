@@ -10,12 +10,12 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 @Config
 public class DepositSubsystem extends SubsystemBase {
     public static double HUMAN_PLAYER_DEPOSIT_POS = 0;
-    public static double TRANSFER_POS = 0.2;
+    public static double TRANSFER_POS = 0.3;
     public static double DEPOSIT_POS = 1.0;
 
-    public static double TOP_OPEN_POS = 0.1;
-    public static double BOTTOM_OPEN_POS = 0.4;
-    public static double CLOSED_POS = 0.9;
+    public static double TOP_OPEN_POS = 0.9;
+    public static double BOTTOM_OPEN_POS = 0.3;
+    public static double CLOSED_POS = 0.5;
 
     private final Servo bucketServo;
     private final Servo depositTrapdoorServo;
@@ -68,7 +68,7 @@ public class DepositSubsystem extends SubsystemBase {
         depositTrapdoorServo.setDirection(Servo.Direction.FORWARD);
 
         setBucketState(BucketState.TRANSFER);
-        setDepositTrapdoorState(DepositTrapdoorState.TOP_OPEN);
+        setDepositTrapdoorState(DepositTrapdoorState.CLOSED);
     }
 
     public void setBucketState(BucketState bucketState) {

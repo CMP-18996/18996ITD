@@ -68,6 +68,7 @@ public class LocalizationTest extends OpMode {
 
         //poseUpdater.setStartingPose(localizer.measureSpecimenStartPose());
         poseUpdater.setStartingPose(new Pose(7.5625, 55.3125, Math.toRadians(0)));
+        //poseUpdater.setStartingPose(new Pose(8.375, 144 - 24 - 7.5, Math.toRadians(270)));
 
         //telemetryA.addData("start x", poseUpdater.getPose().getX());
         //telemetryA.addData("start y", poseUpdater.getPose().getY());

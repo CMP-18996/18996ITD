@@ -9,11 +9,14 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 @TeleOp(name = "Intake Servos Test")
 public class IntakeServosTest extends LinearOpMode {
 
-    private Servo intakeArm = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_BOTTOM_PIVOT);
-    private Servo intakeWrist = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_TOP_PIVOT);
+    private Servo intakeArm;
+    private Servo intakeWrist;
 
     @Override
     public void runOpMode() {
+
+        intakeArm = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_BOTTOM_PIVOT);
+        intakeWrist = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_TOP_PIVOT);
 
         waitForStart();
 
