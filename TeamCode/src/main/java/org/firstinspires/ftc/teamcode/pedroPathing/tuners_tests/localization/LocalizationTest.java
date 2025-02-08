@@ -70,13 +70,6 @@ public class LocalizationTest extends OpMode {
         poseUpdater.setStartingPose(new Pose(7.5625, 55.3125, Math.toRadians(0)));
         //poseUpdater.setStartingPose(new Pose(8.375, 144 - 24 - 7.5, Math.toRadians(270)));
 
-        //telemetryA.addData("start x", poseUpdater.getPose().getX());
-        //telemetryA.addData("start y", poseUpdater.getPose().getY());
-        //telemetryA.addData("start heading", poseUpdater.getPose().getHeading());
-        //telemetryA.addData("localizer x", localizer.getPose().getX());
-        //telemetryA.addData("localizer y", localizer.getPose().getY());
-        //telemetryA.addData("localizer heading", localizer.getPose().getHeading());
-
         dashboardPoseTracker = new DashboardPoseTracker(poseUpdater);
 
         leftFront = hardwareMap.get(DcMotorEx.class, leftFrontMotorName);
@@ -140,6 +133,8 @@ public class LocalizationTest extends OpMode {
         telemetryA.addData("y", poseUpdater.getPose().getY());
         telemetryA.addData("heading", poseUpdater.getPose().getHeading());
         telemetryA.addData("total heading", poseUpdater.getTotalHeading());
+        telemetryA.addData("SIDE", STATICLocalizer.getDistanceFromVoltage(localizer.rightSideUltrasonic.getVoltage()));
+        telemetryA.addData("BACK", STATICLocalizer.getDistanceFromVoltage(localizer.backSideUltrasonic.getVoltage()));
         telemetryA.update();
 
         Drawing.drawPoseHistory(dashboardPoseTracker, "#4CAF50");

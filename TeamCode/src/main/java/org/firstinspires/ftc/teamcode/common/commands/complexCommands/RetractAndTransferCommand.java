@@ -33,6 +33,8 @@ public class RetractAndTransferCommand extends SequentialCommandGroup {
                         new DepositTrapdoorPosition_INST(depositSubsystem, DepositSubsystem.DepositTrapdoorState.TOP_OPEN)
                 ),
 
+                new WaitCommand(500),
+
                 new TransferSampleCommand(intakeSubsystem)
         );
     }

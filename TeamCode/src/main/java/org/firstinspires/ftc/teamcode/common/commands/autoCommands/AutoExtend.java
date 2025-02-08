@@ -18,15 +18,15 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 
 public class AutoExtend extends SequentialCommandGroup {
-    public AutoExtend(ExtensionSubsystem extensionSubsystem, IntakeSubsystem intakeSubsystem, LiftSubsystem liftSubsystem) {
+    public AutoExtend(ExtensionSubsystem extensionSubsystem, IntakeSubsystem intakeSubsystem) {
         addCommands(
-                new InstantCommand(() -> extensionSubsystem.setMaxExtensionSpeed(0.6)),
+                new InstantCommand(() -> extensionSubsystem.setMaxExtensionSpeed(0.8)),
+
+                new ExtensionSetPosition_INST(extensionSubsystem, ExtensionSubsystem.ExtensionState.EXTENDED),
 
                 new IntakeArmSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeArmState.PICK_UP),
                 new IntakeWristSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeWristState.PICK_UP),
-                new IntakeSetMotorState_INST(intakeSubsystem, IntakeSubsystem.IntakeMotorState.ACTIVE),
-
-                new ExtensionSetPosition_INST(extensionSubsystem, ExtensionSubsystem.ExtensionState.EXTENDED)
+                new IntakeSetMotorState_INST(intakeSubsystem, IntakeSubsystem.IntakeMotorState.ACTIVE)
         );
     }
 }

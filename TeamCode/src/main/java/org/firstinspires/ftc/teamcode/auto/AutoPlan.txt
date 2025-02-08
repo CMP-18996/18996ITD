@@ -28,3 +28,32 @@ Spec two in: (22, 12, 0)
 Behind spec three: (65, 7, 0)
 
 Spec three: (22, 7, 0)
+
+
+
+YELLOW:
+r 410
+b 145
+g 630
+a 403
+
+BLUE
+r 83
+b 323
+g 178
+a 194
+
+RED:
+r 285
+b 95
+g 192
+a 191
+
+ALPHA CUTOFF 100
+IF GREEN > 400 ITS YELLOW
+IF RED > 200 ITS RED
+IF BLUE > 100 ITS BLUE
+ELSE IDFK ITS NONE
+
+
+

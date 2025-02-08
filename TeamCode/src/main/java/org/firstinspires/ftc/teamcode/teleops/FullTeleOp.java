@@ -11,10 +11,16 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierLine;
+import com.pedropathing.pathgen.PathChain;
+import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
+import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoSpecimenDeposit;
+import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoSpecimenGrab;
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.CompactForHangCommand;
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.HumanPlayerDepositCommand;
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.ReadySampleDepositCommand;
@@ -55,12 +61,17 @@ public class FullTeleOp extends CommandOpMode {
     private boolean liftEnabled = true;
 
     private Robot robot;
-    //private Drive drive;
+    private int pathState = 0;
+    private Timer pathTimer;
 
     private GamepadEx gamepad_1;
     private GamepadEx gamepad_2;
 
     public IntakeSubsystem.IntakeMotorState previousIntakingState = IntakeSubsystem.IntakeMotorState.DISABLED;
+
+    private final Pose chamberPose = new Pose(38, 66, Math.toRadians(0));
+
+    private final Pose wallPose = new Pose(7.5, 28, 0);
 
     private double previousPower = 0;
     private double previousLeftY = 0;
@@ -68,10 +79,16 @@ public class FullTeleOp extends CommandOpMode {
     private Follower follower;
     private final Pose startPose = new Pose(0,0,0);
 
+    private boolean isCycling = false;
+
+    private PathChain wallToChamber, chamberToWall;
+
     public void runOpMode() throws InterruptedException {
         waitForStart();
         reset();
         initialize();
+
+        pathTimer.resetTimer();
 
         // run the scheduler
         while (!isStopRequested() && opModeIsActive()) {
@@ -83,12 +100,26 @@ public class FullTeleOp extends CommandOpMode {
     public void initialize() {
         robot = new Robot(hardwareMap, team, acceptYellow, Subsystems.ALL);
 
+        pathTimer = new Timer();
+
 //        drive = new Drive(hardwareMap);
   //      drive.setBreakMode(DcMotor.ZeroPowerBehavior.BRAKE);
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
         follower.setStartingPose(startPose);
         follower.startTeleopDrive();
+
+        wallToChamber = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(wallPose), new Point(chamberPose)))
+                .setConstantHeadingInterpolation(chamberPose.getHeading())
+                .setZeroPowerAccelerationMultiplier(3)
+                .build();
+
+        chamberToWall = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(chamberPose), new Point(wallPose)))
+                .setConstantHeadingInterpolation(wallPose.getHeading())
+                .setZeroPowerAccelerationMultiplier(2)
+                .build();
 
         gamepad_1 = new GamepadEx(gamepad1);
         gamepad_2 = new GamepadEx(gamepad2);
@@ -143,18 +174,25 @@ public class FullTeleOp extends CommandOpMode {
                 }
         );
 
-        // Deposit
+        // AUTO SPECIMEN CYCLE
         gamepad_1.getGamepadButton(GamepadKeys.Button.A).whenPressed(
                 () -> {
-                    schedule(
-                            new SequentialCommandGroup(
-                                    new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.DEPOSIT),
-                                    new WaitCommand(600),
-                                    new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.TRANSFER),
-                                    new WaitCommand(600),
-                                    new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.TRANSFER)
-                            )
-                    );
+                    if(!isCycling) {
+                        follower.setPose(new Pose(7.5, 28, 0));
+                        follower.followPath(chamberToWall);
+                        setPathState(1);
+
+                        /*
+                        schedule(
+                                new InstantCommand(() -> )),
+                                new InstantCommand(() -> setPathState(1))
+                        );
+
+                         */
+                    } else {
+                        follower.startTeleopDrive();
+                        setPathState(0);
+                    }
                 }
         );
 
@@ -236,14 +274,7 @@ public class FullTeleOp extends CommandOpMode {
                 }
         );
 
-        gamepad_1.getGamepadButton(GamepadKeys.Button.B).whenPressed(
-                () -> {
-                    schedule(
-                            new CompactForHangCommand(robot.extension, robot.intake, robot.deposit, robot.lift, robot.specimen)
-                    );
-                }
-        );
-
+        // TODO FIX
         // EMERGENCY RESET
         gamepad_1.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
                 () -> {
@@ -371,19 +402,19 @@ public class FullTeleOp extends CommandOpMode {
 
                 }
         );
+
+        gamepad_2.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
+                () -> {
+                    schedule(
+                            new CompactForHangCommand(robot.extension, robot.intake, robot.deposit, robot.lift, robot.specimen)
+                    );
+                }
+        );
     }
 
     @Override
     public void run() {
         CommandScheduler.getInstance().run();
-
-        // Manual Specimen Adjustments
-        if (gamepad_2.getLeftY() != 0) {
-            robot.specimen.manualAdjustArm((int) (Math.cbrt(gamepad_2.getLeftY() * 2)));
-        }
-        if (gamepad_2.getRightY() != 0) {
-            robot.specimen.manualAdjustWrist(Math.cbrt(gamepad_2.getRightY() / 100));
-        }
 
         if (gamepad_1.getRightY() != previousLeftY) {
             robot.intake.adjustWristPosition(gamepad_1.getRightY() / 10);
@@ -449,9 +480,45 @@ public class FullTeleOp extends CommandOpMode {
         telemetry.addData("LIFT STATE", robot.lift.getLiftState());
         telemetry.update();
 
-        //drive.robotCentricDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
-        follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
+        if((-gamepad1.left_stick_y == 0 || -gamepad1.left_stick_x == 0 || gamepad1.right_stick_x == 0) && pathState != 0) {
+            updateAutoCycle();
+        } else {
+            follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
+        }
         follower.update();
     }
+
+    private void updateAutoCycle() {
+        switch(pathState) {
+            case 1:
+                if (follower.getCurrentTValue() > 0.92) {
+                    CommandScheduler.getInstance().schedule(new AutoSpecimenGrab(robot.specimen));
+
+                    setPathState(2);
+                }
+                break;
+            case 2:
+                if (pathTimer.getElapsedTime() > 300) {
+
+                    follower.followPath(wallToChamber);
+                    setPathState(3);
+                }
+                break;
+
+            case 3:
+                if (follower.getCurrentTValue() > 0.97) {
+                    CommandScheduler.getInstance().schedule(new AutoSpecimenDeposit(robot.specimen));
+                    follower.followPath(chamberToWall);
+                    setPathState(1);
+                }
+                break;
+        }
+    }
+
+    public void setPathState(int pState) {
+        pathState = pState;
+        pathTimer.resetTimer();
+    }
+
 }
 

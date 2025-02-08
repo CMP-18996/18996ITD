@@ -16,24 +16,24 @@ public class IntakeSubsystem extends SubsystemBase {
     public static double ARM_TRANSFER_POS = 0.0; // max and min rotation used as what arm is actually being rotated to, subject to change
     public static double ARM_PICK_UP_POS = 1.0;
     public static double ARM_MOVING_POS = 0.7;
-    public static double ARM_REST_POS = 0.15;
-    public static double ARM_REJECT_POS = 0.6;
+    public static double ARM_REST_POS = 0.3;
+    public static double ARM_REJECT_POS = 0.9;
 
-    public static double WRIST_TRANSFER_POS = 0.2;
-    public static double WRIST_PICK_UP_POS = 1.0;
-    public static double WRIST_MOVING_POS = 0.65;
+    public static double WRIST_TRANSFER_POS = 0.3;
+    public static double WRIST_PICK_UP_POS = 0.9;
+    public static double WRIST_MOVING_POS = 0.4;
     public static double WRIST_REST_POS = 0.2;
-    public static double WRIST_REJECT_POS = 0.6;
+    public static double WRIST_REJECT_POS = 1.0;
 
     public static double TRAPDOOR_CLOSED_POS = 0.3;
     public static double TRAPDOOR_OPEN_POS = 0.8;
 
     public static double ROLLER_ACTIVE = 1.0;
     public static double ROLLER_DISABLED = 0.0;
-    public static double ROLLER_HOLD = 0.4;
+    public static double ROLLER_HOLD = 0.5;
     public static double ROLLER_REVERSING = -1.0;
 
-    public static double ALPHA_CUTOFF = 300;
+    public static double ALPHA_CUTOFF = 200;
 
     private final DcMotorEx intakeMotor;
     private final Servo trapdoorServo;
@@ -159,7 +159,7 @@ public class IntakeSubsystem extends SubsystemBase {
         trapdoorServo.setDirection(Servo.Direction.FORWARD);
         intakeArmServo.setDirection(Servo.Direction.FORWARD);
         intakeWristServo.setDirection(Servo.Direction.FORWARD);
-        intakeMotor.setDirection(DcMotor.Direction.FORWARD);
+        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
         colorSensor.enableLed(true);
 
         intakeWristServo.scaleRange(0.0, 0.8);
@@ -222,6 +222,11 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     private void updateCurrentColor() {
+        int a = colorSensor.alpha();
+        int r = colorSensor.red();
+        int g = colorSensor.green();
+        int b = colorSensor.blue();
+
         if(colorSensorStatus.equals(IntakeSubsystem.ColorSensorStatus.DISABLED)) {
             currentColor = Color.NONE;
         }
@@ -229,14 +234,14 @@ public class IntakeSubsystem extends SubsystemBase {
             currentColor = Color.NONE;
         }
         // DO NOT CHANGE THE ORDER OF THESE IF STATEMENTS, COLOR DETECTION WILL BREAK
-        else if(colorSensor.blue() > 500) {
-            currentColor = Color.BLUE;
-        }
-        else if(colorSensor.green() > 600) {
+        else if(g > r && g > b) {
             currentColor = Color.YELLOW;
         }
-        else if(colorSensor.red() > 600) {
+        else if(r > g && r > b) {
             currentColor = Color.RED;
+        }
+        else if(b > g && b > r) {
+            currentColor = Color.BLUE;
         }
         else {
             currentColor = IntakeSubsystem.Color.NONE;

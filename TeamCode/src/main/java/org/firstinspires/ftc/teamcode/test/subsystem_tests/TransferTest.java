@@ -8,11 +8,14 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.ExtendAndBeginIntakeCommand;
+import org.firstinspires.ftc.teamcode.common.commands.complexCommands.ReadySampleDepositCommand;
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.RetractAndTransferCommand;
+import org.firstinspires.ftc.teamcode.common.commands.complexCommands.SampleDepositCommand;
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.WaitForColorCommand;
 import org.firstinspires.ftc.teamcode.common.commands.deposit.DepositSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.lift.LiftSetPosition;
 import org.firstinspires.ftc.teamcode.common.commands.lift.LiftSetPosition_INST;
+import org.firstinspires.ftc.teamcode.common.commands.lift.ZeroLift;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
@@ -37,9 +40,12 @@ public class TransferTest extends CommandOpMode {
                     new WaitForColorCommand(robot.intake, IntakeSubsystem.Color.YELLOW),
                     new WaitCommand(600),
                     new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
+                    new ZeroLift(robot.lift),
                     new LiftSetPosition(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET),
                     new WaitCommand(500),
-                    new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.DEPOSIT)
+                    new ReadySampleDepositCommand(robot.deposit),
+                    new WaitCommand(1000),
+                    new SampleDepositCommand(robot.deposit)
                 )
         );
     }

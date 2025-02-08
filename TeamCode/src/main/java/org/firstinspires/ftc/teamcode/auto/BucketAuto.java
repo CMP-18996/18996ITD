@@ -124,7 +124,7 @@ public class BucketAuto extends OpMode {
                 break;
             case 3:
                 if(!follower.isBusy()) {
-                    CommandScheduler.getInstance().schedule(new AutoExtend(robot.extension, robot.intake, robot.lift));
+                    CommandScheduler.getInstance().schedule(new AutoExtend(robot.extension, robot.intake));
 
                     setPathState(4);
                 }
@@ -156,7 +156,7 @@ public class BucketAuto extends OpMode {
                 break;
             case 7:
                 if(!follower.isBusy()) {
-                    CommandScheduler.getInstance().schedule(new AutoExtend(robot.extension, robot.intake, robot.lift));
+                    CommandScheduler.getInstance().schedule(new AutoExtend(robot.extension, robot.intake));
 
                     setPathState(8);
                 }
@@ -188,7 +188,7 @@ public class BucketAuto extends OpMode {
                 break;
             case 11:
                 if(!follower.isBusy()) {
-                    CommandScheduler.getInstance().schedule(new AutoExtend(robot.extension, robot.intake, robot.lift));
+                    CommandScheduler.getInstance().schedule(new AutoExtend(robot.extension, robot.intake));
 
                     setPathState(12);
                 }

@@ -8,11 +8,13 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.common.commands.deposit.DepositTrapdoorPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeArmSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetMotorState_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeTrapdoorSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeWristSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
+import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
@@ -25,8 +27,12 @@ public class IntakeTest extends CommandOpMode {
     @Override
     public void initialize() {
         CommandScheduler.getInstance().reset();
-        robot = new Robot(hardwareMap, subsystems);
+        robot = new Robot(hardwareMap, Subsystems.INTAKE, Subsystems.DEPOSIT);
         gamepad = new GamepadEx(gamepad1);
+
+        schedule(
+                new DepositTrapdoorPosition_INST(robot.deposit, DepositSubsystem.DepositTrapdoorState.TOP_OPEN)
+        );
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 new ScheduleCommand(

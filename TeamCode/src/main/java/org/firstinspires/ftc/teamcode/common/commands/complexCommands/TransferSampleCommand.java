@@ -21,7 +21,7 @@ public class TransferSampleCommand extends SequentialCommandGroup {
                 new IntakeWristSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeWristState.TRANSFER),
                 new WaitCommand(200),
                 new IntakeTrapdoorSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeTrapdoorState.OPEN),
-                new IntakeSetMotorState_INST(intakeSubsystem, IntakeSubsystem.IntakeMotorState.HOLD),
+                new IntakeSetMotorState_INST(intakeSubsystem, IntakeSubsystem.IntakeMotorState.ACTIVE),
 
                 // wait until no sample is detected
                 new ParallelRaceGroup(
