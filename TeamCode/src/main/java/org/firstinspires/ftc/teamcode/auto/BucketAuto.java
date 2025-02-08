@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.auto;
 
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.BezierCurve;
@@ -131,22 +132,18 @@ public class BucketAuto extends OpMode {
                 break;
             case 4:
                 if(robot.intake.getCurrentColor().equals(IntakeSubsystem.Color.YELLOW)) {
-                    CommandScheduler.getInstance().schedule(new AutoRetractTransfer(robot.extension, robot.intake, robot.deposit, robot.lift));
+                    CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
+                            new AutoRetractTransfer(robot.extension, robot.intake, robot.deposit, robot.lift),
+                            new SampleDepositCommand(robot.deposit)
+                    ));
 
                     follower.followPath(scoreSpike1);
-                    setPathState(5);
-                }
-                break;
-            case 5:
-                if(!follower.isBusy()) {
-                    CommandScheduler.getInstance().schedule(new SampleDepositCommand(robot.deposit));
-
                     setPathState(6);
                 }
                 break;
             case 6:
                 // RETRACT AND MOVE TO SPIKE 2
-                if(pathTimer.getElapsedTime() > 1400) {
+                if(pathTimer.getElapsedTime() > 5000) {
                     CommandScheduler.getInstance().schedule(new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.TRANSFER));
                     CommandScheduler.getInstance().schedule(new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.TRANSFER));
 
