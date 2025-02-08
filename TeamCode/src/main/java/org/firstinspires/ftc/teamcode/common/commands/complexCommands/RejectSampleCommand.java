@@ -18,10 +18,13 @@ public class RejectSampleCommand extends SequentialCommandGroup {
                 new WaitCommand(500),
                 new IntakeSetMotorState_INST(intakeSubsystem, IntakeSubsystem.IntakeMotorState.REVERSING),
 
+                /*
                 new ParallelRaceGroup(
                     new WaitForColorCommand(intakeSubsystem, IntakeSubsystem.Color.NONE),
                     new WaitCommand(1000)
                 ),
+
+                 */
                 new WaitCommand(500),
 
                 new IntakeSetMotorState_INST(intakeSubsystem, IntakeSubsystem.IntakeMotorState.DISABLED)

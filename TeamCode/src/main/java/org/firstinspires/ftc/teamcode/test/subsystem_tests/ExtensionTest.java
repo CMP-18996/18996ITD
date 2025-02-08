@@ -37,7 +37,7 @@ public class ExtensionTest extends CommandOpMode {
                 new ConditionalCommand(
                         new SequentialCommandGroup(
                                 new ZeroExtension(robot.extension),
-                                new ExtensionSetPosition(robot.extension, ExtensionSubsystem.ExtensionState.EXTENDED)
+                                new ExtensionSetPosition(robot.extension, ExtensionSubsystem.ExtensionState.INSPECTION)
                         ),
                         new ScheduleCommand(
                                 new ExtensionSetPosition(robot.extension, ExtensionSubsystem.ExtensionState.TRANSFER)

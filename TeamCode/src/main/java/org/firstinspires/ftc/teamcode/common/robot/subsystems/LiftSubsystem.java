@@ -15,12 +15,12 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 public class LiftSubsystem extends SubsystemBase {
     public static double Kp = 0.04;
     public static double Ki = 0.00;
-    public static double Kd = 0.00008;
+    public static double Kd = 0.001;
     public static double Kf = 0.4;
     public static int INTEGRAL_ENABLE_POINT = 20;
 
     public static int TRANSFER_POS = 0;
-    public static int HUMAN_PLAYER_DEPOSIT_POS = 200;
+    public static int HUMAN_PLAYER_DEPOSIT_POS = 50;
     public static int LOW_BASKET_POS = 420;
     public static int HIGH_BASKET_POS = 850;
 

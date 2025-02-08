@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 public class IntakeSubsystem extends SubsystemBase {
     public static double ARM_TRANSFER_POS = 0.0; // max and min rotation used as what arm is actually being rotated to, subject to change
     public static double ARM_PICK_UP_POS = 1.0;
-    public static double ARM_MOVING_POS = 0.7;
+    public static double ARM_MOVING_POS = 0.68;
     public static double ARM_REST_POS = 0.3;
     public static double ARM_REJECT_POS = 0.9;
 
@@ -30,7 +30,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public static double ROLLER_ACTIVE = 1.0;
     public static double ROLLER_DISABLED = 0.0;
-    public static double ROLLER_HOLD = 0.5;
+    public static double ROLLER_HOLD = 1.0;
     public static double ROLLER_REVERSING = -1.0;
 
     public static double ALPHA_CUTOFF = 200;
@@ -240,7 +240,7 @@ public class IntakeSubsystem extends SubsystemBase {
         else if(r > g && r > b) {
             currentColor = Color.RED;
         }
-        else if(b > g && b > r) {
+        else if(b > g && b > r && r > 300) {
             currentColor = Color.BLUE;
         }
         else {

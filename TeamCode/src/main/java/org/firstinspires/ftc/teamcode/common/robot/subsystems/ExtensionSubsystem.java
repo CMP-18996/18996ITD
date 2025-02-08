@@ -23,7 +23,7 @@ public class ExtensionSubsystem extends SubsystemBase {
     public static int EXTENDED_POS = 620;
 
     public static double MAX_EXTENSION_SPEED = 1.0;
-    public static double MAX_RETRACTION_SPEED = 1.0;
+    public static double MAX_RETRACTION_SPEED = 0.8;
 
     public final DcMotorEx extensionMotor;
 

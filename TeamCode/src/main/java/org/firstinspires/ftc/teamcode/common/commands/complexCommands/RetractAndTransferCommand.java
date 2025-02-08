@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.common.commands.complexCommands;
 
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
+import com.arcrobotics.ftclib.command.ParallelDeadlineGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 
@@ -21,21 +22,26 @@ public class RetractAndTransferCommand extends SequentialCommandGroup {
         addCommands(
                 // raise the intake to clear submersible wall
                 new IntakeSetMotorState_INST(intakeSubsystem, IntakeSubsystem.IntakeMotorState.HOLD),
-                new IntakeArmSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeArmState.REST),
-                new IntakeWristSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeWristState.REST),
+                new IntakeArmSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeArmState.TRANSFER),
+                new IntakeWristSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeWristState.TRANSFER),
+                new DepositSetPosition_INST(depositSubsystem, DepositSubsystem.BucketState.TRANSFER),
+                new DepositTrapdoorPosition_INST(depositSubsystem, DepositSubsystem.DepositTrapdoorState.TOP_OPEN),
                 new WaitCommand(100),
 
                 // bring lift and extension into position
-                new ParallelCommandGroup(
+                new ParallelDeadlineGroup(
+                        new WaitCommand(1000),
                         new LiftSetPosition(liftSubsystem, LiftSubsystem.LiftState.TRANSFER),
-                        new ExtensionSetPosition(extensionSubsystem, ExtensionSubsystem.ExtensionState.TRANSFER),
-                        new DepositSetPosition_INST(depositSubsystem, DepositSubsystem.BucketState.TRANSFER),
-                        new DepositTrapdoorPosition_INST(depositSubsystem, DepositSubsystem.DepositTrapdoorState.TOP_OPEN)
+                        new ExtensionSetPosition(extensionSubsystem, ExtensionSubsystem.ExtensionState.TRANSFER)
                 ),
 
                 new WaitCommand(500),
 
-                new TransferSampleCommand(intakeSubsystem)
+                new TransferSampleCommand(intakeSubsystem),
+
+                new WaitCommand(300),
+
+                new DepositTrapdoorPosition_INST(depositSubsystem, DepositSubsystem.DepositTrapdoorState.CLOSED)
         );
     }
 }

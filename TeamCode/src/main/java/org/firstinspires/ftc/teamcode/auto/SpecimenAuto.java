@@ -75,7 +75,7 @@ public class SpecimenAuto extends OpMode {
         scorePreloadedSpecimen = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(startPose), new Point(chamberPose)))
                 .setConstantHeadingInterpolation(chamberPose.getHeading())
-                .setZeroPowerAccelerationMultiplier(3)
+                .setZeroPowerAccelerationMultiplier(2)
                 .build();
 
         pickupSpike1 = follower.pathBuilder()
