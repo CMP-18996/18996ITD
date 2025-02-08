@@ -21,7 +21,12 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 public class AutoRetractTransfer extends SequentialCommandGroup {
     public AutoRetractTransfer(ExtensionSubsystem extensionSubsystem, IntakeSubsystem intakeSubsystem, DepositSubsystem depositSubsystem, LiftSubsystem liftSubsystem) {
         addCommands(
-                new RetractAndTransferCommand(extensionSubsystem, intakeSubsystem, depositSubsystem, liftSubsystem)
+                new RetractAndTransferCommand(extensionSubsystem, intakeSubsystem, depositSubsystem, liftSubsystem),
+
+                new IntakeArmSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeArmState.MOVING),
+                new IntakeWristSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeWristState.MOVING),
+                new IntakeTrapdoorSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeTrapdoorState.CLOSED),
+                new IntakeSetMotorState_INST(intakeSubsystem, IntakeSubsystem.IntakeMotorState.DISABLED)
         );
     }
 }
