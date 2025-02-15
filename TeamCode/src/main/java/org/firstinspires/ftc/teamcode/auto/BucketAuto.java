@@ -112,9 +112,8 @@ public class BucketAuto extends OpMode {
                 if(!follower.isBusy()) {
                     CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
                             new SampleDepositCommand(robot.deposit),
-                            new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.TRANSFER),
                             new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.TRANSFER),
-                            new WaitCommand(200),
+                            new WaitCommand(300),
                             new InstantCommand(() -> setPathState(2))
                             ));
                 }
@@ -131,24 +130,29 @@ public class BucketAuto extends OpMode {
                 }
                 break;
             case 4:
-                if(robot.intake.getCurrentColor().equals(IntakeSubsystem.Color.YELLOW) || pathTimer.getElapsedTime() > 4000) {
+                if (robot.intake.getCurrentColor().equals(IntakeSubsystem.Color.YELLOW) || pathTimer.getElapsedTime() > 4000) {
+                    follower.followPath(scoreSpike1, true);
                     CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
                             new AutoRetractTransfer(robot.extension, robot.intake, robot.deposit, robot.lift),
-                            new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET),
-                            new SampleDepositCommand(robot.deposit),
-                            new WaitCommand(300),
-                            new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.TRANSFER),
-                            new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.TRANSFER),
-                            new InstantCommand(() -> setPathState(6))
+                            new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET)
                     ));
-                    follower.followPath(scoreSpike1, true);
+                    setPathState(5);
+                }
+                break;
+            case 5:
+                if (!follower.isBusy() && pathTimer.getElapsedTime() > 4000) {
+                    CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
+                            new SampleDepositCommand(robot.deposit),
+                            new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.TRANSFER)
+                    ));
+                    setPathState(6);
                 }
                 break;
             case 6:
-                // RETRACT AND MOVE TO SPIKE 2
-
-                follower.followPath(pickupSpike2,true);
-                setPathState(7);
+                if (pathTimer.getElapsedTime() > 1000) {
+                    follower.followPath(pickupSpike2,true);
+                    setPathState(1434);
+                }
                 break;
             case 7:
                 if(!follower.isBusy()) {
