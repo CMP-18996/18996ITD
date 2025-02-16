@@ -110,21 +110,24 @@ public class BucketAuto extends OpMode {
             case 1:
                 // DEPOSIT PRELOAD
                 if(!follower.isBusy()) {
-                    CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
-                            new SampleDepositCommand(robot.deposit),
-                            new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.TRANSFER),
-                            new WaitCommand(300),
-                            new InstantCommand(() -> setPathState(2))
-                            ));
+                    CommandScheduler.getInstance().schedule(
+                            new SampleDepositCommand(robot.deposit)
+                    );
+                    setPathState(2);
                 }
                 break;
             case 2:
-                follower.followPath(pickupSpike1,true);
-                setPathState(3);
+                if (pathTimer.getElapsedTime() > 1000) {
+                    follower.followPath(pickupSpike1,true);
+                    setPathState(3);
+                }
                 break;
             case 3:
                 if(!follower.isBusy()) {
-                    CommandScheduler.getInstance().schedule(new AutoExtend(robot.extension, robot.intake));
+                    CommandScheduler.getInstance().schedule(
+                            new AutoExtend(robot.extension, robot.intake),
+                            new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.TRANSFER)
+                    );
 
                     setPathState(4);
                 }
