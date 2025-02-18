@@ -2,9 +2,7 @@ package org.firstinspires.ftc.teamcode.common.robot.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -13,43 +11,36 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 @Config
 public class IntakeSubsystem extends SubsystemBase {
-    public static double ARM_TRANSFER_POS = 0.0; // max and min rotation used as what arm is actually being rotated to, subject to change
-    public static double ARM_PICK_UP_POS = 1.0;
-    public static double ARM_MOVING_POS = 0.68;
-    public static double ARM_REST_POS = 0.3;
-    public static double ARM_REJECT_POS = 0.9;
+    public static double ARM_PICK_UP_POS = 0.75;
+    public static double ARM_MOVING_POS = 0.6;
+    public static double ARM_REST_POS = 0.2;
+    public static double ARM_EJECT_POS = 0.65;
 
-    public static double WRIST_TRANSFER_POS = 0.3;
-    public static double WRIST_PICK_UP_POS = 0.9;
-    public static double WRIST_MOVING_POS = 0.4;
-    public static double WRIST_REST_POS = 0.2;
-    public static double WRIST_REJECT_POS = 1.0;
+    public static double WRIST_PICK_UP_POS = 0.55;
+    public static double WRIST_MOVING_POS = 0.37;
+    public static double WRIST_REST_POS = 0.4;
+    public static double WRIST_EJECT_POS = 0.9;
 
-    public static double TRAPDOOR_CLOSED_POS = 0.3;
-    public static double TRAPDOOR_OPEN_POS = 0.8;
+    public static double PIVOT_0_POS = 0;
+    public static double PIVOT_45_POS = 0.28;
+    public static double PIVOT_90_POS = 0.56;
 
     public static double ROLLER_ACTIVE = 1.0;
+    public static double ROLLER_HOLD = 0.02;
     public static double ROLLER_DISABLED = 0.0;
-    public static double ROLLER_HOLD = 1.0;
     public static double ROLLER_REVERSING = -1.0;
 
-    public static double ALPHA_CUTOFF = 200;
-
-    private final DcMotorEx intakeMotor;
-    private final Servo trapdoorServo;
+    private final CRServo intakeRollerServo;
+    private final Servo intakePivotServo;
     private final Servo intakeArmServo;
     private final Servo intakeWristServo;
-    private final ColorSensor colorSensor;
 
-    private IntakeTrapdoorState intakeTrapdoorState;
-    private IntakeMotorState intakeMotorState;
+    private IntakeRollerState intakeRollerState;
+    private IntakePivotState intakePivotState;
     private IntakeArmState intakeArmState;
     private IntakeWristState intakeWristState;
 
-    private Color currentColor;
-    private ColorSensorStatus colorSensorStatus;
-
-    public enum IntakeMotorState {
+    public enum IntakeRollerState {
         ACTIVE,
         HOLD,
         DISABLED,
@@ -72,24 +63,21 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public enum IntakeArmState {
-        TRANSFER,
         REST,
         MOVING,
         PICK_UP,
-        REJECT;
+        EJECT;
 
         public double getValue() {
             switch (this) {
-                case TRANSFER:
-                    return ARM_TRANSFER_POS;
                 case REST:
                     return ARM_REST_POS;
                 case MOVING:
                     return ARM_MOVING_POS;
                 case PICK_UP:
                     return ARM_PICK_UP_POS;
-                case REJECT:
-                    return ARM_REJECT_POS;
+                case EJECT:
+                    return ARM_EJECT_POS;
                 default:
                     throw new IllegalArgumentException();
             }
@@ -97,87 +85,71 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public enum IntakeWristState {
-        TRANSFER,
         REST,
         MOVING,
         PICK_UP,
-        REJECT;
+        EJECT;
 
         public double getValue() {
             switch (this) {
-                case TRANSFER:
-                    return WRIST_TRANSFER_POS;
                 case REST:
                     return WRIST_REST_POS;
                 case MOVING:
                     return WRIST_MOVING_POS;
                 case PICK_UP:
                     return WRIST_PICK_UP_POS;
-                case REJECT:
-                    return WRIST_REJECT_POS;
+                case EJECT:
+                    return WRIST_EJECT_POS;
                 default:
                     throw new IllegalArgumentException();
             }
         }
     }
 
-    public enum IntakeTrapdoorState {
-        CLOSED,
-        OPEN;
+    public enum IntakePivotState {
+        PIVOT_0,
+        PIVOT_45,
+        PIVOT_90;
 
         public double getValue() {
             switch (this) {
-                case CLOSED:
-                    return TRAPDOOR_CLOSED_POS;
-                case OPEN:
-                    return TRAPDOOR_OPEN_POS;
+                case PIVOT_0:
+                    return PIVOT_0_POS;
+                case PIVOT_45:
+                    return PIVOT_45_POS;
+                case PIVOT_90:
+                    return PIVOT_90_POS;
                 default:
                     throw new IllegalArgumentException();
             }
         }
     }
 
-    public enum Color {
-        NONE,
-        YELLOW,
-        RED,
-        BLUE
-    }
-
-    public enum ColorSensorStatus {
-        ENABLED,
-        DISABLED
-    }
-
     public IntakeSubsystem(HardwareMap hardwareMap) {
-        trapdoorServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_TRAPDOOR);
+        intakeRollerServo = hardwareMap.get(CRServo.class, HardwareMapNames.INTAKE_ROLLER);
+        intakePivotServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_PIVOT);
         intakeArmServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_BOTTOM_PIVOT);
         intakeWristServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_TOP_PIVOT);
-        intakeMotor = hardwareMap.get(DcMotorEx.class, HardwareMapNames.INTAKE_MOTOR);
-        colorSensor = hardwareMap.get(ColorSensor.class, HardwareMapNames.INTAKE_COLOR_SENSOR);
 
-        trapdoorServo.setDirection(Servo.Direction.FORWARD);
+        intakeRollerServo.setDirection(DcMotorSimple.Direction.FORWARD);
+        intakePivotServo.setDirection(Servo.Direction.FORWARD);
         intakeArmServo.setDirection(Servo.Direction.FORWARD);
         intakeWristServo.setDirection(Servo.Direction.FORWARD);
-        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
-        colorSensor.enableLed(true);
 
-        intakeWristServo.scaleRange(0.0, 0.8);
-
-        this.setTrapdoorState(IntakeTrapdoorState.CLOSED);
+        this.setIntakeRollerState(IntakeRollerState.DISABLED);
+        this.setIntakePivotState(IntakePivotState.PIVOT_0);
         this.setIntakeArmState(IntakeArmState.REST);
         this.setIntakeWristState(IntakeWristState.REST);
-        this.setIntakeMotorState(IntakeMotorState.DISABLED);
-        this.setColorSensorStatus(ColorSensorStatus.ENABLED);
     }
 
-    public void setColorSensorStatus(ColorSensorStatus colorSensorStatus) {
-        this.colorSensorStatus = colorSensorStatus;
+    public void setIntakeRollerState(IntakeRollerState intakeRollerState) {
+        this.intakeRollerState = intakeRollerState;
+        intakeRollerServo.setPower(intakeRollerState.getValue());
     }
 
-    public void setTrapdoorState(IntakeTrapdoorState intakeTrapdoorState) {
-        this.intakeTrapdoorState = intakeTrapdoorState;
-        trapdoorServo.setPosition(intakeTrapdoorState.getValue());
+    public void setIntakePivotState(IntakePivotState intakePivotState) {
+        this.intakePivotState = intakePivotState;
+        intakePivotServo.setPosition(intakePivotState.getValue());
     }
 
     public void setIntakeArmState(IntakeArmState intakeArmState) {
@@ -190,22 +162,7 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeWristServo.setPosition(intakeWristState.getValue());
     }
 
-    public void adjustWristPosition(double delta) {
-        intakeWristServo.setPosition(intakeWristState.getValue() + delta);
-    }
-
-    public void setIntakeMotorState(IntakeMotorState intakeMotorState) {
-        this.intakeMotorState = intakeMotorState;
-        intakeMotor.setPower(intakeMotorState.getValue());
-    }
-
-    public ColorSensorStatus getColorSensorStatus() {
-        return colorSensorStatus;
-    }
-
-    public IntakeTrapdoorState getTrapdoorState() {
-        return intakeTrapdoorState;
-    }
+    public IntakePivotState getIntakePivotState() { return intakePivotState; }
 
     public IntakeArmState getIntakeArmState() { return intakeArmState; }
 
@@ -213,43 +170,7 @@ public class IntakeSubsystem extends SubsystemBase {
         return intakeWristState;
     }
 
-    public IntakeMotorState getIntakeRollerState() {
-        return intakeMotorState;
-    }
-
-    public Color getCurrentColor() {
-        return currentColor;
-    }
-
-    private void updateCurrentColor() {
-        int a = colorSensor.alpha();
-        int r = colorSensor.red();
-        int g = colorSensor.green();
-        int b = colorSensor.blue();
-
-        if(colorSensorStatus.equals(IntakeSubsystem.ColorSensorStatus.DISABLED)) {
-            currentColor = Color.NONE;
-        }
-        else if(colorSensor.alpha() < ALPHA_CUTOFF) {
-            currentColor = Color.NONE;
-        }
-        // DO NOT CHANGE THE ORDER OF THESE IF STATEMENTS, COLOR DETECTION WILL BREAK
-        else if(g > r && g > b) {
-            currentColor = Color.YELLOW;
-        }
-        else if(r > g && r > b) {
-            currentColor = Color.RED;
-        }
-        else if(b > g && b > r && r > 300) {
-            currentColor = Color.BLUE;
-        }
-        else {
-            currentColor = IntakeSubsystem.Color.NONE;
-        }
-    }
-
-    @Override
-    public void periodic() {
-        updateCurrentColor();
+    public IntakeRollerState getIntakeRollerState() {
+        return intakeRollerState;
     }
 }

@@ -12,8 +12,11 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 public class ColorSensorTuner extends LinearOpMode {
 
     private RevColorSensorV3 colorSensor;
+    /*
     private IntakeSubsystem.Color currentColor;
     private IntakeSubsystem.ColorSensorStatus colorSensorStatus = IntakeSubsystem.ColorSensorStatus.DISABLED;
+
+     */
     private static int ALPHA_CUTOFF = 170;
     private int r, g, b, a, argb;
     private int color;
@@ -31,7 +34,7 @@ public class ColorSensorTuner extends LinearOpMode {
             telemetry.addData("GREEN", g);
             telemetry.addData("ALPHA", a);
             telemetry.addData("ARGD", argb);
-            telemetry.addData("COLOR", currentColor);
+            //telemetry.addData("COLOR", currentColor);
             telemetry.addData("color", color);
             telemetry.update();
         }
