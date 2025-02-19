@@ -11,6 +11,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.BezierLine;
 import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
@@ -69,9 +70,12 @@ public class FullTeleOp extends CommandOpMode {
 
     public IntakeSubsystem.IntakeMotorState previousIntakingState = IntakeSubsystem.IntakeMotorState.DISABLED;
 
+    private final Pose wallPose = new Pose(7.5, 28, Math.toRadians(0));
+
     private final Pose chamberPose = new Pose(38, 68, Math.toRadians(0));
 
-    private final Pose wallPose = new Pose(7.5, 28, 0);
+    private final Pose specControl1 = new Pose(23.21, 73.87);
+    private final Pose specControl2 = new Pose(24.46, 42.18);
 
     private double previousPower = 0;
     private double previousLeftY = 0;
@@ -108,7 +112,7 @@ public class FullTeleOp extends CommandOpMode {
         follower.startTeleopDrive();
 
         wallToChamber = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(wallPose), new Point(chamberPose)))
+                .addPath(new BezierCurve(new Point(wallPose), new Point(specControl1), new Point(specControl2), new Point(chamberPose)))
                 .setConstantHeadingInterpolation(chamberPose.getHeading())
                 .setZeroPowerAccelerationMultiplier(3)
                 .build();
@@ -503,7 +507,7 @@ public class FullTeleOp extends CommandOpMode {
     private void updateAutoCycle() {
         switch(pathState) {
             case 1:
-                if (follower.getCurrentTValue() > 0.92) {
+                if (follower.getCurrentTValue() > 0.9) {
                     CommandScheduler.getInstance().schedule(new AutoSpecimenGrab(robot.specimen));
 
                     setPathState(2);
