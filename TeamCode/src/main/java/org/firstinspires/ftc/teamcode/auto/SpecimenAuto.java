@@ -1,36 +1,5 @@
 package org.firstinspires.ftc.teamcode.auto;
 
-import com.arcrobotics.ftclib.command.CommandScheduler;
-import com.pedropathing.follower.Follower;
-import com.pedropathing.localization.Pose;
-import com.pedropathing.pathgen.BezierLine;
-import com.pedropathing.pathgen.PathChain;
-import com.pedropathing.pathgen.Point;
-import com.pedropathing.util.Constants;
-import com.pedropathing.util.Timer;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-
-import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoExtend;
-import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoHoldSampleToMove;
-import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoSpecimenDeposit;
-import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoSpecimenGrab;
-import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoTossToHumanPlayer;
-import org.firstinspires.ftc.teamcode.common.commands.extension.ExtensionSetPosition_INST;
-import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeArmSetPosition_INST;
-import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetRollerState_INST;
-import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeWristSetPosition_INST;
-import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetArmPosition_INST;
-import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetGripperPosition_INST;
-import org.firstinspires.ftc.teamcode.common.robot.Robot;
-import org.firstinspires.ftc.teamcode.common.robot.Team;
-import org.firstinspires.ftc.teamcode.common.robot.subsystems.ExtensionSubsystem;
-import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
-import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
-import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
-import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
-
 /*
 @Autonomous(name = "Specimen auto :(")
 public class SpecimenAuto extends OpMode {

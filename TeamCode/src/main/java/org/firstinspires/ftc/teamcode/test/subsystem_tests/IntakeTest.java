@@ -8,7 +8,8 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeArmSetPosition_INST;
-import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetRollerState_INST;
+import org.firstinspires.ftc.teamcode.common.commands.intake.IntakePivotSetPosition_INST;
+import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeRollerSetState_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeWristSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
@@ -16,7 +17,6 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
 @TeleOp(name = "Intake Test")
 public class IntakeTest extends CommandOpMode {
-    Subsystems subsystems = Subsystems.INTAKE;
     Robot robot;
     GamepadEx gamepad;
 
@@ -25,6 +25,19 @@ public class IntakeTest extends CommandOpMode {
         CommandScheduler.getInstance().reset();
         robot = new Robot(hardwareMap, Subsystems.INTAKE, Subsystems.DEPOSIT);
         gamepad = new GamepadEx(gamepad1);
+
+        gamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
+                new ScheduleCommand(
+                )
+        );
+
+        gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
+                new ScheduleCommand(
+                        new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.REST),
+                        new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.REST),
+                        new IntakePivotSetPosition_INST(robot.intake, IntakeSubsystem.IntakePivotState.PIVOT_0)
+                )
+        );
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
                 new ScheduleCommand(
@@ -40,28 +53,33 @@ public class IntakeTest extends CommandOpMode {
                 )
         );
 
-        gamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
-                new ScheduleCommand(
-                        new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.REST),
-                        new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.REST)
-                )
-        );
-
         gamepad.getGamepadButton(GamepadKeys.Button.X).whenPressed(
                 new ScheduleCommand(
-                        new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.ACTIVE)
+                        new IntakeRollerSetState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.ACTIVE)
                 )
         );
 
         gamepad.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
                 new ScheduleCommand(
-                        new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.DISABLED)
+                        new IntakeRollerSetState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.DISABLED)
                 )
         );
 
         gamepad.getGamepadButton(GamepadKeys.Button.B).whenPressed(
                 new ScheduleCommand(
-                        new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.REVERSING)
+                        new IntakeRollerSetState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.REVERSING)
+                )
+        );
+
+        gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
+                new ScheduleCommand(
+                        new IntakePivotSetPosition_INST(robot.intake, IntakeSubsystem.IntakePivotState.PIVOT_90)
+                )
+        );
+
+        gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+                new ScheduleCommand(
+                        new IntakePivotSetPosition_INST(robot.intake, IntakeSubsystem.IntakePivotState.PIVOT_0)
                 )
         );
 
