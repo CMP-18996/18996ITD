@@ -66,6 +66,7 @@ public class ExtensionTest extends CommandOpMode {
         }
 
         telemetry.addData("STATE", robot.extension.getExtensionState());
+        telemetry.addData("Power", power);
         telemetry.addData("ERROR", robot.extension.getError());
         telemetry.update();
     }

@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.teleops;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
-import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ScheduleCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
@@ -18,33 +17,21 @@ import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoSpecimenDeposit;
 import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoSpecimenGrab;
-import org.firstinspires.ftc.teamcode.common.commands.complexCommands.CompactForHangCommand;
-import org.firstinspires.ftc.teamcode.common.commands.complexCommands.HumanPlayerDepositCommand;
-import org.firstinspires.ftc.teamcode.common.commands.complexCommands.ReadySampleDepositCommand;
-import org.firstinspires.ftc.teamcode.common.commands.complexCommands.RejectSampleCommand;
-import org.firstinspires.ftc.teamcode.common.commands.complexCommands.RetractAndTransferCommand;
-import org.firstinspires.ftc.teamcode.common.commands.complexCommands.SampleDepositCommand;
-import org.firstinspires.ftc.teamcode.common.commands.complexCommands.TransferSampleCommand;
 import org.firstinspires.ftc.teamcode.common.commands.deposit.DepositSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.deposit.DepositTrapdoorPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.extension.ExtensionSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.hang.HangCommand_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeArmSetPosition_INST;
-import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetColorSensorStatus_INST;
-import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetMotorState_INST;
-import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeTrapdoorSetPosition_INST;
+import org.firstinspires.ftc.teamcode.common.commands.intake.IntakePivotSetPosition_INST;
+import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeRollerSetState_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeWristSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.lift.LiftSetPosition_INST;
-import org.firstinspires.ftc.teamcode.common.commands.lift.ZeroLift;
 import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetArmPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetGripperPosition_INST;
-import org.firstinspires.ftc.teamcode.common.robot.Drive;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
-import org.firstinspires.ftc.teamcode.common.robot.Team;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.ExtensionSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.HangSubsystem;
@@ -57,18 +44,12 @@ import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
 @TeleOp
 public class FullTeleOp extends CommandOpMode {
-    private final Team team = Team.RED;
-    private boolean acceptYellow = false;
-    private boolean liftEnabled = false;
-
     private Robot robot;
     private int pathState = 0;
     private Timer pathTimer;
 
     private GamepadEx gamepad_1;
     private GamepadEx gamepad_2;
-
-    public IntakeSubsystem.IntakeMotorState previousIntakingState = IntakeSubsystem.IntakeMotorState.DISABLED;
 
     private final Pose wallPose = new Pose(7.5, 28, Math.toRadians(0));
 
@@ -78,12 +59,10 @@ public class FullTeleOp extends CommandOpMode {
     private final Pose specControl2 = new Pose(24.46, 42.18);
 
     private double previousPower = 0;
-    private double previousLeftY = 0;
 
     private Follower follower;
-    private final Pose startPose = new Pose(0,0,0);
 
-    private boolean isCycling = false;
+    private final Pose startPose = new Pose(0,0,0);
 
     private PathChain wallToChamber, chamberToWall;
 
@@ -102,13 +81,16 @@ public class FullTeleOp extends CommandOpMode {
 
     @Override
     public void initialize() {
-        robot = new Robot(hardwareMap, team, acceptYellow, Subsystems.ALL);
+        robot = new Robot(hardwareMap, Subsystems.ALL);
+
+        robot.specimen.setSpecimenArmState(SpecimenSubsystem.SpecimenArmState.WALL);
 
         pathTimer = new Timer();
 
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
         follower.setStartingPose(startPose);
+
         follower.startTeleopDrive();
 
         wallToChamber = follower.pathBuilder()
@@ -164,9 +146,6 @@ public class FullTeleOp extends CommandOpMode {
         gamepad_1.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
                 () -> {
                     schedule(
-                            new InstantCommand(() -> CommandScheduler.getInstance().reset()),
-                            new InstantCommand(() -> robot.setTransferringState(false)),
-                            new TransferSampleCommand(robot.intake)
                     );
                 }
         );
@@ -174,9 +153,6 @@ public class FullTeleOp extends CommandOpMode {
         gamepad_1.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
                 () -> {
                     schedule(
-                            new RejectSampleCommand(robot.intake),
-                            new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.PICK_UP),
-                            new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.PICK_UP)
                     );
                 }
         );
@@ -184,19 +160,9 @@ public class FullTeleOp extends CommandOpMode {
         // AUTO SPECIMEN CYCLE
         gamepad_1.getGamepadButton(GamepadKeys.Button.A).whenPressed(
                 () -> {
-                    //if(!isCycling) {
-                        follower.setPose(new Pose(7.5, 28, 0));
-                        follower.followPath(chamberToWall);
-                        setPathState(1);
-
-                        /*
-                        schedule(
-                                new InstantCommand(() -> )),
-                                new InstantCommand(() -> setPathState(1))
-                        );
-
-                         */
-                    //}
+                    follower.setPose(new Pose(7.5, 28, 0));
+                    follower.followPath(chamberToWall);
+                    setPathState(1);
                 }
         );
 
@@ -207,45 +173,75 @@ public class FullTeleOp extends CommandOpMode {
                 }
         );
 
-        // Enable/Disable Intake
+        // Intake el block 🥸🥸 !!!!!!
         gamepad_1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
-                new ConditionalCommand(
-                        new ScheduleCommand(
-                                new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.PICK_UP),
-                                new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.PICK_UP),
-                                new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.ACTIVE)
-                        ),
-                        new ScheduleCommand(
-                                new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.MOVING),
-                                new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.MOVING),
-                                new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.HOLD)
-                        ),
-                        () -> !robot.intake.getIntakeArmState().equals(IntakeSubsystem.IntakeArmState.PICK_UP)
+                new SequentialCommandGroup(
+                        new IntakeRollerSetState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.ACTIVE),
+                        new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.PICK_UP),
+                        new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.PICK_UP),
+
+                        new WaitCommand(500),
+
+                        new IntakeRollerSetState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.HOLD),
+                        new IntakePivotSetPosition_INST(robot.intake, IntakeSubsystem.IntakePivotState.PIVOT_0),
+                        new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.EJECT),
+                        new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.EJECT)
                 )
         );
 
-        // Deposit button kinda idk
-        // TODO ADD MANUAL REVERSE
-        // nesting conditional commands what the fuck ftclib
+
+        /*
         gamepad_1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
                 new ConditionalCommand(
+                    new ConditionalCommand(
+                            new IntakeSetPivotState_INST(robot.intake, IntakeSubsystem.IntakePivotState.PIVOT_90),
+                            new IntakeSetPivotState_INST(robot.intake, IntakeSubsystem.IntakePivotState.PIVOT_0),
+                            () -> !robot.intake.getIntakePivotState().equals(IntakeSubsystem.IntakePivotState.PIVOT_90)
+                    ),
+                    new SequentialCommandGroup(
+                            new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.EJECT),
+                            new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.EJECT),
+                            new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.REVERSING),
+
+                            new WaitCommand(500),
+
+                            new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.DISABLED),
+                            new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.MOVING),
+                            new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.MOVING)
+                    ),
+                    () -> !robot.intake.getIntakeWristState().equals(IntakeSubsystem.IntakeWristState.EJECT)
+                )
+        */
+
+        // fuck ftclib
+        // INTAKE PIVOT
+        gamepad_1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+                new ConditionalCommand(
+                    new IntakePivotSetPosition_INST(robot.intake, IntakeSubsystem.IntakePivotState.PIVOT_45),
+                    new SequentialCommandGroup(
+                            new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.EJECT),
+                            new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.EJECT),
+                            new IntakeRollerSetState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.REVERSING),
+
+                            new WaitCommand(500),
+
+                            new IntakeRollerSetState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.DISABLED),
+                            new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.MOVING),
+                            new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.MOVING)
+                    ),
+                    () -> !robot.intake.getIntakeWristState().equals(IntakeSubsystem.IntakeWristState.EJECT)
+                )
+        ).whenReleased(
+                new ConditionalCommand(
                         new ConditionalCommand(
-                                new SequentialCommandGroup(
-                                        new ReadySampleDepositCommand(robot.deposit),
-                                        new WaitCommand(1000),
-                                        new SampleDepositCommand(robot.deposit)
-                                ),
-                                new SequentialCommandGroup(
-                                        new SampleDepositCommand(robot.deposit),
-                                        new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.TRANSFER)
-                                ),
-                                () -> robot.lift.getLiftState().equals(LiftSubsystem.LiftState.TRANSFER)
+                                new IntakePivotSetPosition_INST(robot.intake, IntakeSubsystem.IntakePivotState.PIVOT_90),
+                                new IntakePivotSetPosition_INST(robot.intake, IntakeSubsystem.IntakePivotState.PIVOT_0),
+                                () -> !robot.intake.getIntakePivotState().equals(IntakeSubsystem.IntakePivotState.PIVOT_90)
                         ),
                         new SequentialCommandGroup(
-                                new HumanPlayerDepositCommand(robot.deposit, robot.lift),
-                                new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.TRANSFER)
+
                         ),
-                        () -> !robot.lift.getLiftState().equals(LiftSubsystem.LiftState.HUMAN_PLAYER_DEPOSIT)
+                        () -> !robot.intake.getIntakeWristState().equals(IntakeSubsystem.IntakeWristState.EJECT)
                 )
         );
 
@@ -264,24 +260,19 @@ public class FullTeleOp extends CommandOpMode {
 
         // Set Intake to Rest
         gamepad_1.getGamepadButton(GamepadKeys.Button.LEFT_STICK_BUTTON).whenPressed(
-                () -> {
-                    schedule(
-                            new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.REST),
-                            new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.REST),
-                            new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.DISABLED)
-                    );
-                }
+                () -> schedule(
+                        new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.REST),
+                        new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.REST),
+                        new IntakePivotSetPosition_INST(robot.intake, IntakeSubsystem.IntakePivotState.PIVOT_0)
+                )
         );
 
         // Set Intake to Moving
         gamepad_1.getGamepadButton(GamepadKeys.Button.RIGHT_STICK_BUTTON).whenPressed(
-                () -> {
-                    schedule(
-                            new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.MOVING),
-                            new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.MOVING),
-                            new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.HOLD)
-                    );
-                }
+                () -> schedule(
+                        new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.MOVING),
+                        new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.MOVING)
+                )
         );
 
         // TODO FIX
@@ -297,8 +288,7 @@ public class FullTeleOp extends CommandOpMode {
                                 new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.TRANSFER),
                                 new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.REST),
                                 new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.REST),
-                                new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.DISABLED),
-                                new IntakeTrapdoorSetPosition_INST(robot.intake, IntakeSubsystem.IntakeTrapdoorState.CLOSED)
+                                new IntakeRollerSetState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.DISABLED)
                             )
                     );
                 }
@@ -333,21 +323,6 @@ public class FullTeleOp extends CommandOpMode {
                 )
         );
 
-        // Enable/Disable Color Sensor
-        gamepad_2.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
-                new ScheduleCommand(
-                        new ConditionalCommand(
-                                new ScheduleCommand(
-                                        new IntakeSetColorSensorStatus_INST(robot.intake, IntakeSubsystem.ColorSensorStatus.DISABLED)
-                                ),
-                                new ScheduleCommand(
-                                        new IntakeSetColorSensorStatus_INST(robot.intake, IntakeSubsystem.ColorSensorStatus.ENABLED)
-                                ),
-                                () -> robot.intake.getColorSensorStatus().equals(IntakeSubsystem.ColorSensorStatus.ENABLED)
-                        )
-                )
-        );
-
         gamepad_2.getGamepadButton(GamepadKeys.Button.X).whenPressed(
                 () -> {
                     schedule(
@@ -373,134 +348,31 @@ public class FullTeleOp extends CommandOpMode {
                             new HangCommand_INST(robot.hang, HangSubsystem.HangState.HOLD)
                     );
                 });
-
-        gamepad_2.getGamepadButton(GamepadKeys.Button.RIGHT_STICK_BUTTON).whenPressed(
-                () -> {
-                    acceptYellow = !acceptYellow;
-                    robot.setAcceptYellow(acceptYellow);
-                }
-        );
-
-        gamepad_2.getGamepadButton(GamepadKeys.Button.LEFT_STICK_BUTTON).whenPressed(
-                () -> {
-                    liftEnabled = !liftEnabled;
-                }
-        );
-
-        gamepad_2.getGamepadButton(GamepadKeys.Button.A).whenPressed(
-                () -> {
-                    robot.setTransferringState(true);
-                    if (liftEnabled) {
-                        schedule(
-                                new SequentialCommandGroup(
-                                        new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
-                                        new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM),
-                                        new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET),
-                                        new InstantCommand(() -> robot.setTransferringState(false))
-                                )
-                        );
-                    }
-                    else {
-                        schedule(
-                                new SequentialCommandGroup(
-                                        new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
-                                        new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM),
-                                        new InstantCommand(() -> robot.setTransferringState(false))
-                                )
-                        );
-                    }
-
-                }
-        );
-
-        gamepad_2.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
-                () -> {
-                    schedule(
-                            new CompactForHangCommand(robot.extension, robot.intake, robot.deposit, robot.lift, robot.specimen)
-                    );
-                }
-        );
     }
 
     @Override
     public void run() {
         CommandScheduler.getInstance().run();
 
-        if (gamepad_1.getRightY() != previousLeftY) {
-            robot.intake.adjustWristPosition(gamepad_1.getRightY() / 10);
-            previousLeftY = gamepad_1.getRightY();
-        }
-
         // Extension Triggers
-        double power = Math.pow(gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) - gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER), 3);
+        double power = 0.85 * Math.pow(gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) - gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER), 3) + 0.;
 
         if(power != previousPower) {
             robot.extension.setExtensionMotorPower(power);
             previousPower = power;
         }
 
-        // Auto Transfer
-        IntakeSubsystem.Color detectedColor = robot.intake.getCurrentColor();
-
-        if(!detectedColor.equals(IntakeSubsystem.Color.NONE) && !robot.isTransferring()) {
-            if(robot.acceptColor(detectedColor)) {
-                gamepad1.rumbleBlips(1);
-                robot.setTransferringState(true);
-                if (liftEnabled) {
-                    schedule(
-                            new SequentialCommandGroup(
-                                    new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
-                                    new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM),
-                                    new ZeroLift(robot.lift),
-                                    new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET),
-                                    new ReadySampleDepositCommand(robot.deposit),
-                                    new InstantCommand(() -> robot.setTransferringState(false))
-                            )
-                    );
-                }
-                else {
-                    schedule(
-                            new SequentialCommandGroup(
-                                    new RetractAndTransferCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
-                                    new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM),
-                                    new ZeroLift(robot.lift),
-                                    new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HUMAN_PLAYER_DEPOSIT),
-                                    new InstantCommand(() -> robot.setTransferringState(false)),
-                                    new DepositTrapdoorPosition_INST(robot.deposit, DepositSubsystem.DepositTrapdoorState.CLOSED),
-                                    new WaitCommand(300),
-                                    new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.DEPOSIT)
-                            )
-                    );
-                }
-            }
-            else {
-                gamepad1.rumbleBlips(2);
-                schedule(
-                        new SequentialCommandGroup(
-                                new RejectSampleCommand(robot.intake),
-                                new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.MOVING),
-                                new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.MOVING),
-                                new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.HOLD)
-                        )
-                );
-            }
-        }
-
-        telemetry.addData("COLOR", detectedColor);
-        telemetry.addData("COLOR SENSOR STATUS", robot.intake.getColorSensorStatus());
-        telemetry.addData("ACCEPT YELLOW", acceptYellow);
-        telemetry.addData("LIFT ENABLED", liftEnabled);
-        telemetry.addData("TRANSFERRING STATE", robot.isTransferring());
-        telemetry.addData("Accept Color", robot.acceptColor(detectedColor));
-        telemetry.addData("LIFT STATE", robot.lift.getLiftState());
         telemetry.addData("PATH STATE", pathState);
         telemetry.update();
 
-        if((-gamepad1.left_stick_y == 0 || -gamepad1.left_stick_x == 0 || gamepad1.right_stick_x == 0) && pathState != 0) {
+        if(pathState != 0) {
             updateAutoCycle();
         } else {
             follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
+
+            //follower.setTeleOpMovementVectors(Math.pow(-gamepad1.left_stick_y, 1), Math.pow(-gamepad1.left_stick_x, 1), Math.pow(-gamepad1.right_stick_x, 1), true);
         }
+
         follower.update();
     }
 

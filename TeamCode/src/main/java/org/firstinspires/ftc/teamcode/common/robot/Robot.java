@@ -29,6 +29,7 @@ public class Robot {
     public Robot(HardwareMap hardwareMap, Subsystems... subsystems) {
         this.hardwareMap = hardwareMap;
         this.team = null;
+
         for (Subsystems subsystem : subsystems) {
             if (subsystem == Subsystems.ALL) {
                 extension = new ExtensionSubsystem(hardwareMap);
@@ -36,6 +37,7 @@ public class Robot {
                 lift = new LiftSubsystem(hardwareMap);
                 intake = new IntakeSubsystem(hardwareMap);
                 specimen = new SpecimenSubsystem(hardwareMap);
+                hang = new HangSubsystem(hardwareMap);
             }
             else if (subsystem == Subsystems.EXTENSION) {
                 extension = new ExtensionSubsystem(hardwareMap);
@@ -58,14 +60,15 @@ public class Robot {
     public Robot(HardwareMap hardwareMap, Team team, Subsystems... subsystems) {
         this.hardwareMap = hardwareMap;
         this.team = team;
+
         for (Subsystems subsystem : subsystems) {
             if (subsystem == Subsystems.ALL) {
                 extension = new ExtensionSubsystem(hardwareMap);
                 deposit = new DepositSubsystem(hardwareMap);
                 lift = new LiftSubsystem(hardwareMap);
-                hang = new HangSubsystem(hardwareMap);
                 intake = new IntakeSubsystem(hardwareMap);
                 specimen = new SpecimenSubsystem(hardwareMap);
+                hang = new HangSubsystem(hardwareMap);
             }
             else if (subsystem == Subsystems.EXTENSION) {
                 extension = new ExtensionSubsystem(hardwareMap);
@@ -136,6 +139,7 @@ public class Robot {
         this.acceptYellow = acceptYellow;
     }
 
+    /*
     public boolean acceptColor(IntakeSubsystem.Color color) {
         if(color.equals(IntakeSubsystem.Color.NONE)) {
             return false;
@@ -160,6 +164,8 @@ public class Robot {
             return acceptYellow;
         }
     }
+
+     */
 
     public Team getTeam() {
         return team;

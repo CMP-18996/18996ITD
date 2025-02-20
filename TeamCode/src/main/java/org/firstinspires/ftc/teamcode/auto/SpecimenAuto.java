@@ -1,40 +1,6 @@
 package org.firstinspires.ftc.teamcode.auto;
 
-import com.arcrobotics.ftclib.command.CommandScheduler;
-import com.pedropathing.follower.Follower;
-import com.pedropathing.localization.Localizer;
-import com.pedropathing.localization.Pose;
-import com.pedropathing.pathgen.BezierCurve;
-import com.pedropathing.pathgen.BezierLine;
-import com.pedropathing.pathgen.PathChain;
-import com.pedropathing.pathgen.Point;
-import com.pedropathing.util.Constants;
-import com.pedropathing.util.Timer;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-
-import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoExtend;
-import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoHoldSampleToMove;
-import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoSpecimenDeposit;
-import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoSpecimenGrab;
-import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoTossToHumanPlayer;
-import org.firstinspires.ftc.teamcode.common.commands.complexCommands.CompactForHangCommand;
-import org.firstinspires.ftc.teamcode.common.commands.extension.ExtensionSetPosition_INST;
-import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeArmSetPosition_INST;
-import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetMotorState_INST;
-import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeWristSetPosition_INST;
-import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetArmPosition_INST;
-import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetGripperPosition_INST;
-import org.firstinspires.ftc.teamcode.common.odo.STATICLocalizer;
-import org.firstinspires.ftc.teamcode.common.robot.Robot;
-import org.firstinspires.ftc.teamcode.common.robot.Team;
-import org.firstinspires.ftc.teamcode.common.robot.subsystems.ExtensionSubsystem;
-import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
-import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
-import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
-import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
-
+/*
 @Autonomous(name = "Specimen auto :(")
 public class SpecimenAuto extends OpMode {
     private Follower follower;
@@ -247,7 +213,7 @@ public class SpecimenAuto extends OpMode {
                     robot.extension.setExtendedEncoderValue(200);
                     CommandScheduler.getInstance().schedule(new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.REST));
                     CommandScheduler.getInstance().schedule(new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.REST));
-                    CommandScheduler.getInstance().schedule(new IntakeSetMotorState_INST(robot.intake, IntakeSubsystem.IntakeMotorState.DISABLED));
+                    CommandScheduler.getInstance().schedule(new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.DISABLED));
 
                     CommandScheduler.getInstance().schedule(new SpecimenSetArmPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenArmState.WALL));
                     CommandScheduler.getInstance().schedule(new SpecimenSetGripperPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenGripperState.OPEN));
@@ -332,3 +298,5 @@ public class SpecimenAuto extends OpMode {
         setPathState(0);
     }
 }
+
+ */
