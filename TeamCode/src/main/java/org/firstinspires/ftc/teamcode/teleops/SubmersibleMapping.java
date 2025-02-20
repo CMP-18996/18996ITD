@@ -2,13 +2,10 @@ package org.firstinspires.ftc.teamcode.teleops;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
-import org.firstinspires.ftc.teamcode.common.robot.PreMatchData;
-import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.common.robot.MatchDataStorage;
 
 @TeleOp(name = "Submersible Mapping")
 public class SubmersibleMapping extends LinearOpMode {
@@ -66,9 +63,9 @@ public class SubmersibleMapping extends LinearOpMode {
             if(h < -90) {h = -90;}
             if(h > 90) {h = 90;}
 
-            PreMatchData.sampleX = x / 2.54;
-            PreMatchData.sampleY = y / 2.54;
-            PreMatchData.sampleH = h / Math.toRadians(h);
+            MatchDataStorage.sampleX = x / 2.54;
+            MatchDataStorage.sampleY = y / 2.54;
+            MatchDataStorage.sampleH = h / Math.toRadians(h);
 
             telemetry.addLine("COORDINATES FROM BOTTOM RIGHT SUB CORNER");
             telemetry.addLine("X IS FORWARD, Y IS LEFT-RIGHT");

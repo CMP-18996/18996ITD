@@ -1,11 +1,11 @@
 package org.firstinspires.ftc.teamcode.common.robot;
 
-public class PreMatchData {
+import com.pedropathing.localization.Pose;
+
+public class MatchDataStorage {
     public static double sampleX;
     public static double sampleY;
     public static double sampleH;
 
-    public static double robotX;
-    public static double robotY;
-    public static double robotH;
+    public static Pose robotPose = new Pose(7.5625, 55.3125, Math.toRadians(0));
 }
