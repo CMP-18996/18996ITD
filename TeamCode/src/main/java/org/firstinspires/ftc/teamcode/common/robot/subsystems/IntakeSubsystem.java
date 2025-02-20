@@ -15,11 +15,13 @@ public class IntakeSubsystem extends SubsystemBase {
     public static double ARM_MOVING_POS = 0.6;
     public static double ARM_REST_POS = 0.2;
     public static double ARM_EJECT_POS = 0.65;
+    public static double ARM_FLOOR_POS = 1.0;
 
     public static double WRIST_PICK_UP_POS = 0.55;
     public static double WRIST_MOVING_POS = 0.37;
     public static double WRIST_REST_POS = 0.4;
     public static double WRIST_EJECT_POS = 0.9;
+    public static double WRIST_FLOOR_POS = 1.0;
 
     public static double PIVOT_0_POS = 0;
     public static double PIVOT_45_POS = 0.28;
@@ -66,7 +68,8 @@ public class IntakeSubsystem extends SubsystemBase {
         REST,
         MOVING,
         PICK_UP,
-        EJECT;
+        EJECT,
+        FLOOR;
 
         public double getValue() {
             switch (this) {
@@ -78,6 +81,8 @@ public class IntakeSubsystem extends SubsystemBase {
                     return ARM_PICK_UP_POS;
                 case EJECT:
                     return ARM_EJECT_POS;
+                case FLOOR:
+                    return ARM_FLOOR_POS;
                 default:
                     throw new IllegalArgumentException();
             }
@@ -88,7 +93,8 @@ public class IntakeSubsystem extends SubsystemBase {
         REST,
         MOVING,
         PICK_UP,
-        EJECT;
+        EJECT,
+        FLOOR;
 
         public double getValue() {
             switch (this) {
@@ -100,6 +106,8 @@ public class IntakeSubsystem extends SubsystemBase {
                     return WRIST_PICK_UP_POS;
                 case EJECT:
                     return WRIST_EJECT_POS;
+                case FLOOR:
+                    return WRIST_FLOOR_POS;
                 default:
                     throw new IllegalArgumentException();
             }
