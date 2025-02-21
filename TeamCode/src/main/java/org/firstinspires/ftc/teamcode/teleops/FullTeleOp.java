@@ -1,4 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleops;
+import android.util.Size;
+
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
@@ -19,6 +21,7 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoSpecimenDeposit;
 import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoSpecimenGrab;
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.CompactForHangCommand;
@@ -51,8 +54,14 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
+import org.firstinspires.ftc.teamcode.common.vision.Color;
+import org.firstinspires.ftc.teamcode.common.vision.ColorPipeline;
+import org.firstinspires.ftc.teamcode.common.vision.ColorPipelineBuilder;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.VisionProcessor;
+
 
 @TeleOp
 public class FullTeleOp extends CommandOpMode {
