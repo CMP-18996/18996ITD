@@ -1,104 +1,55 @@
 package org.firstinspires.ftc.teamcode.common.robot;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-
-import org.jetbrains.annotations.NotNull;
 
 @Config
 public class Drive {
-    private final HardwareMap hardwareMap;
+    public static double X_MAX_RATE = 64.68235; // in/s
+    public static double Y_MAX_RATE = 49.777325;
+    public static double H_HAX_RATE = 5; //rad/s
 
-    private final DcMotor leftFrontDrive;
-    private final DcMotor leftBackDrive;
-    private final DcMotor rightFrontDrive;
-    private final DcMotor rightBackDrive;
+    public static double X_CENTER_RATE = 10; // in/s
+    public static double Y_CENTER_RATE = 10;
+    public static double H_CENTER_RATE = 1; //rad/s
 
-    private DcMotor.ZeroPowerBehavior breakMode = DcMotor.ZeroPowerBehavior.BRAKE;
+    public static double X_EXPO = 1; // in/s
+    public static double Y_EXPO = 1;
+    public static double H_EXPO = 1; //rad/s
 
-    public Drive(HardwareMap hardwareMap) {
-        this.hardwareMap = hardwareMap;
+    public static double kX = 0.01;
+    public static double kY = 0.01;
+    public static double kH = 0.01;
 
-        leftFrontDrive = hardwareMap.get(DcMotor.class, HardwareMapNames.LEFT_FRONT);
-        leftBackDrive = hardwareMap.get(DcMotor.class, HardwareMapNames.LEFT_BACK);
-        rightFrontDrive = hardwareMap.get(DcMotor.class, HardwareMapNames.RIGHT_FRONT);
-        rightBackDrive = hardwareMap.get(DcMotor.class, HardwareMapNames.RIGHT_BACK);
-
-        configureMotors();
+    public static double calculateXRate(double stickValue) {
+        return (X_CENTER_RATE * stickValue) +
+                (X_MAX_RATE - X_CENTER_RATE) *
+                (Math.pow(stickValue, 6) + Math.pow(stickValue, 2) * (1 - X_EXPO));
     }
 
-    public void robotCentricDrive(double x, double y, double turn) {
-        calculateMotorPowers(x, y, turn);
+    public static double calculateYRate(double stickValue) {
+        return (Y_CENTER_RATE * stickValue) +
+                (Y_MAX_RATE - Y_CENTER_RATE) *
+                        (Math.pow(stickValue, 6) + Math.pow(stickValue, 2) * (1 - Y_EXPO));
     }
 
-    private void calculateMotorPowers(double x, double y, double turn) {
-        /*
-        double theta = Math.atan2(y, x);
-        double power = Math.hypot(x, y);
-
-        double sin = Math.sin(theta - Math.PI/4);
-        double cos = Math.cos(theta - Math.PI/4);
-        double max = Math.max(Math.abs(sin), Math.abs(cos));
-
-        double leftFrontPower  = power * cos/max + turn;
-        double rightFrontPower = power * sin/max - turn;
-        double leftBackPower   = power * sin/max + turn;
-        double rightBackPower  = power * cos/max - turn;
-
-        if ((power + Math.abs(turn)) > 1) {
-            leftFrontPower  /= power + turn;
-            rightFrontPower /= power + turn;
-            leftBackPower   /= power + turn;
-            rightBackPower  /= power + turn;
-        }
-         */
-
-        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(turn), 1);
-        double leftFrontPower = (y + x + turn) / denominator;
-        double leftBackPower = (y - x + turn) / denominator;
-        double rightFrontPower = (y - x - turn) / denominator;
-        double rightBackPower = (y + x - turn) / denominator;
-
-
-        setMotorPowers(leftFrontPower, leftBackPower, rightFrontPower, rightBackPower);
+    public static double calculateHRate(double stickValue) {
+        return (H_CENTER_RATE * stickValue) +
+                (H_HAX_RATE - H_CENTER_RATE) *
+                        (Math.pow(stickValue, 6) + Math.pow(stickValue, 2) * (1 - H_EXPO));
     }
 
-    public void setMotorPowers(double lF, double lB, double rF, double rB) {
-        leftFrontDrive.setPower(lF);
-        rightFrontDrive.setPower(rF);
-        leftBackDrive.setPower(lB);
-        rightBackDrive.setPower(rB);
+    public static double calculateXVectorComponent(double currentRate, double setRate) {
+        double error = setRate - currentRate;
+        return error * kX;
     }
 
-    private void configureMotors() {
-        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+    public static double calculateYVectorComponent(double currentRate, double setRate) {
+        double error = setRate - currentRate;
 
-        leftFrontDrive.setZeroPowerBehavior(breakMode);
-        leftBackDrive.setZeroPowerBehavior(breakMode);
-        rightFrontDrive.setZeroPowerBehavior(breakMode);
-        rightBackDrive.setZeroPowerBehavior(breakMode);
-
-        leftFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        return error * kY;
     }
-
-    public void setBreakMode(@NotNull DcMotor.ZeroPowerBehavior breakMode) {
-        this.breakMode = breakMode;
-
-        leftFrontDrive.setZeroPowerBehavior(breakMode);
-        leftBackDrive.setZeroPowerBehavior(breakMode);
-        rightFrontDrive.setZeroPowerBehavior(breakMode);
-        rightBackDrive.setZeroPowerBehavior(breakMode);
-
-    }
-
-    public DcMotor.ZeroPowerBehavior getBrakeMode() {
-        return breakMode;
+    public static double calculateHVectorComponent(double currentRate, double setRate) {
+        double error = setRate - currentRate;
+        return error * kH;
     }
 }
