@@ -13,6 +13,10 @@ public class DriveTest extends LinearOpMode {
 
     private Follower follower;
 
+    public double xVector = 0;
+    public double yVector = 0;
+    public double hVector = 0;
+
     @Override
     public void runOpMode() {
         follower = new Follower(hardwareMap);
@@ -33,9 +37,13 @@ public class DriveTest extends LinearOpMode {
             double yCurrentRate = follower.getVelocity().getYComponent();
             double hCurrentRate = follower.poseUpdater.getAngularVelocity();
 
-            double xVector = Drive.calculateXVectorComponent(xCurrentRate, xSetRate);
-            double yVector = Drive.calculateYVectorComponent(yCurrentRate, ySetRate);
-            double hVector = Drive.calculateHVectorComponent(hCurrentRate, hSetRate);
+            double xDelta = Drive.calculateXVectorDelta(xCurrentRate, xSetRate);
+            double yDelta = Drive.calculateYVectorDelta(yCurrentRate, ySetRate);
+            double hDelta = Drive.calculateHVectorDelta(hCurrentRate, hSetRate);
+
+            xVector += xDelta;
+            yVector += yDelta;
+            hVector += hDelta;
 
             follower.setTeleOpMovementVectors(xVector, yVector, hVector, true);
 
@@ -50,6 +58,10 @@ public class DriveTest extends LinearOpMode {
             telemetry.addData("xCurr", xCurrentRate);
             telemetry.addData("yCurr", yCurrentRate);
             telemetry.addData("hCurr", hCurrentRate);
+
+            telemetry.addData("xDelta", xDelta);
+            telemetry.addData("yDelta", yDelta);
+            telemetry.addData("hDelta", hDelta);
 
             telemetry.addData("xVector", xVector);
             telemetry.addData("yVector", yVector);

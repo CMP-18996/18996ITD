@@ -21,34 +21,39 @@ public class Drive {
     public static double kH = 0.01;
 
     public static double calculateXRate(double stickValue) {
-        return (X_CENTER_RATE * stickValue) +
+        double x = Math.abs(stickValue);
+        return stickValue / Math.abs(stickValue) *
+                (X_CENTER_RATE * x) +
                 (X_MAX_RATE - X_CENTER_RATE) *
-                (Math.pow(stickValue, 6) + Math.pow(stickValue, 2) * (1 - X_EXPO));
+                (Math.pow(x, 6) + Math.pow(x, 2) * (1 - X_EXPO));
     }
 
     public static double calculateYRate(double stickValue) {
-        return (Y_CENTER_RATE * stickValue) +
+        double x = Math.abs(stickValue);
+        return stickValue / Math.abs(stickValue) *
+                (Y_CENTER_RATE * x) +
                 (Y_MAX_RATE - Y_CENTER_RATE) *
-                        (Math.pow(stickValue, 6) + Math.pow(stickValue, 2) * (1 - Y_EXPO));
+                (Math.pow(x, 6) + Math.pow(x, 2) * (1 - Y_EXPO));
     }
 
     public static double calculateHRate(double stickValue) {
-        return (H_CENTER_RATE * stickValue) +
+        double x = Math.abs(stickValue);
+        return stickValue / Math.abs(stickValue) *
+                (H_CENTER_RATE * x) +
                 (H_HAX_RATE - H_CENTER_RATE) *
-                        (Math.pow(stickValue, 6) + Math.pow(stickValue, 2) * (1 - H_EXPO));
+                (Math.pow(x, 6) + Math.pow(x, 2) * (1 - H_EXPO));
     }
 
-    public static double calculateXVectorComponent(double currentRate, double setRate) {
+    public static double calculateXVectorDelta(double currentRate, double setRate) {
         double error = setRate - currentRate;
         return error * kX;
     }
 
-    public static double calculateYVectorComponent(double currentRate, double setRate) {
+    public static double calculateYVectorDelta(double currentRate, double setRate) {
         double error = setRate - currentRate;
-
         return error * kY;
     }
-    public static double calculateHVectorComponent(double currentRate, double setRate) {
+    public static double calculateHVectorDelta(double currentRate, double setRate) {
         double error = setRate - currentRate;
         return error * kH;
     }
