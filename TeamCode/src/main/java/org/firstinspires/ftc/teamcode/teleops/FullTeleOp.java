@@ -3,14 +3,12 @@ package org.firstinspires.ftc.teamcode.teleops;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
-import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ScheduleCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
-import com.google.gson.internal.bind.SqlDateTypeAdapter;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.BezierCurve;
@@ -23,6 +21,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoSpecimenDeposit;
 import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoSpecimenGrab;
+import org.firstinspires.ftc.teamcode.common.commands.complexCommands.HoldSampleCommand;
+import org.firstinspires.ftc.teamcode.common.commands.complexCommands.IdleIntakeCommand;
+import org.firstinspires.ftc.teamcode.common.commands.complexCommands.PickupSampleCommand;
+import org.firstinspires.ftc.teamcode.common.commands.complexCommands.TransferSampleCommand;
 import org.firstinspires.ftc.teamcode.common.commands.deposit.DepositSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.deposit.DepositTrapdoorPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.extension.ExtensionSetPosition;
@@ -39,7 +41,6 @@ import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetGrippe
 import org.firstinspires.ftc.teamcode.common.robot.Color;
 import org.firstinspires.ftc.teamcode.common.robot.MatchDataStorage;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
-import org.firstinspires.ftc.teamcode.common.robot.Team;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.ExtensionSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.HangSubsystem;
@@ -155,9 +156,7 @@ public class FullTeleOp extends CommandOpMode {
 
                         new WaitCommand(1000),
 
-                        new IntakeRollerSetState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.DISABLED),
-                        new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.MOVING),
-                        new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.MOVING)
+                        new IdleIntakeCommand(robot.intake)
                 )
         );
 
@@ -172,8 +171,9 @@ public class FullTeleOp extends CommandOpMode {
                 new SequentialCommandGroup(
                         new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.DEPOSIT),
                         new WaitCommand(500),
-                        // open depposit gate
+                        new DepositTrapdoorPosition_INST(robot.deposit, DepositSubsystem.DepositTrapdoorState.TOP_OPEN),
                         new WaitCommand(500),
+                        new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.TRANSFER),
                         new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.TRANSFER)
                 )
         );
@@ -216,21 +216,11 @@ public class FullTeleOp extends CommandOpMode {
 
         // Intake el block 🥸🥸 !!!!!!
         gamepad_1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
-                new SequentialCommandGroup(
-                        new IntakeRollerSetState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.ACTIVE),
-                        new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.PICK_UP),
-                        new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.PICK_UP)
-                )
+                new PickupSampleCommand(robot.intake)
         ).whenReleased(
                 () -> {
                     if(robot.intake.getCurrentColor().equals(Color.NONE)) {
-                        schedule(
-                            new SequentialCommandGroup(
-                                    new IntakeRollerSetState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.DISABLED),
-                                    new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.MOVING),
-                                    new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.MOVING)
-                            )
-                        );
+                        schedule(new IdleIntakeCommand(robot.intake));
                     }
                 }
         );
@@ -246,7 +236,7 @@ public class FullTeleOp extends CommandOpMode {
                     }
                     else if(!robot.lift.getLiftState().equals(LiftSubsystem.LiftState.TRANSFER)) {
                         schedule(
-                                // open deposit gate
+                               new DepositTrapdoorPosition_INST(robot.deposit, DepositSubsystem.DepositTrapdoorState.TOP_OPEN)
                         );
                     }
                     else {
@@ -262,16 +252,12 @@ public class FullTeleOp extends CommandOpMode {
         ).whenReleased(
                 () -> {
                     if(robot.intake.getIntakeWristState().equals(IntakeSubsystem.IntakeWristState.EJECT)) {
-                        schedule(
-                                new IntakeRollerSetState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.DISABLED),
-                                new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.MOVING),
-                                new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.MOVING)
-                        );
+                        schedule(new IdleIntakeCommand(robot.intake));
                     }
                     else if(!robot.lift.getLiftState().equals(LiftSubsystem.LiftState.TRANSFER)) {
                         schedule(
-                                new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.TRANSFER)
-                                //reset deposit
+                                new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.TRANSFER),
+                                new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.TRANSFER)
                         );
                     }
                     else {
@@ -295,15 +281,14 @@ public class FullTeleOp extends CommandOpMode {
                         new IntakePivotSetPosition_INST(robot.intake, IntakeSubsystem.IntakePivotState.PIVOT_0),
                         new IntakeRollerSetState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.ACTIVE),
                         new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.FLOOR),
-                        new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.FLOOR),
-
-                        new WaitCommand(500),
-
-                        new IntakeRollerSetState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.HOLD),
-                        new IntakePivotSetPosition_INST(robot.intake, IntakeSubsystem.IntakePivotState.PIVOT_0),
-                        new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.EJECT),
-                        new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.EJECT)
+                        new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.FLOOR)
                 )
+        ).whenReleased(
+                () -> {
+                    if(robot.intake.getCurrentColor().equals(Color.NONE)) {
+                        schedule(new IdleIntakeCommand(robot.intake));
+                    }
+                }
         );
 
         //  SECOND DRIVER
@@ -378,36 +363,16 @@ public class FullTeleOp extends CommandOpMode {
         }
 
         if(!robot.intake.getCurrentColor().equals(Color.NONE) &&
-                !robot.intake.getCurrentColor().equals(robot.intake.getPreviousColor())) {
+            !robot.intake.getCurrentColor().equals(robot.intake.getPreviousColor())) {
 
             if (robot.intake.getCurrentColor().equals(Color.YELLOW)) {
                 if (transferYellow) {
-                    //trasnfer
+                    schedule(new TransferSampleCommand(robot.extension, robot.intake, robot.deposit, robot.lift));
                 } else {
-                    schedule(
-                            new SequentialCommandGroup(
-                                    new IntakePivotSetPosition_INST(robot.intake, IntakeSubsystem.IntakePivotState.PIVOT_0),
-                                    new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.EJECT),
-                                    new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.EJECT),
-
-                                    new WaitCommand(500),
-
-                                    new IntakeRollerSetState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.HOLD)
-                            )
-                    );
+                    schedule(new HoldSampleCommand(robot.intake));
                 }
             } else if (robot.intake.getCurrentColor().equals(specimenColor)) {
-                schedule(
-                        new SequentialCommandGroup(
-                                new IntakePivotSetPosition_INST(robot.intake, IntakeSubsystem.IntakePivotState.PIVOT_0),
-                                new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.EJECT),
-                                new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.EJECT),
-
-                                new WaitCommand(500),
-
-                                new IntakeRollerSetState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.HOLD)
-                        )
-                );
+                schedule(new HoldSampleCommand(robot.intake));
             } else {
                 schedule(
                         new SequentialCommandGroup(
@@ -416,9 +381,7 @@ public class FullTeleOp extends CommandOpMode {
 
                                 new WaitCommand(100),
 
-                                new IntakeRollerSetState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.DISABLED),
-                                new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.MOVING),
-                                new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.MOVING)
+                                new IdleIntakeCommand(robot.intake)
                         )
                 );
             }
@@ -480,9 +443,7 @@ public class FullTeleOp extends CommandOpMode {
 
                                 new WaitCommand(500),
 
-                                new IntakeRollerSetState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.DISABLED),
-                                new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.MOVING),
-                                new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.MOVING),
+                                new IdleIntakeCommand(robot.intake),
 
                                 new ExtensionSetPosition(robot.extension, ExtensionSubsystem.ExtensionState.TRANSFER),
                                 new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)

@@ -1,8 +1,35 @@
 package org.firstinspires.ftc.teamcode.auto;
 
-/*
-@Autonomous(name = "Specimen auto :(")
-public class SpecimenAuto extends OpMode {
+import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierLine;
+import com.pedropathing.pathgen.PathChain;
+import com.pedropathing.pathgen.Point;
+import com.pedropathing.util.Constants;
+import com.pedropathing.util.Timer;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+
+import org.firstinspires.ftc.teamcode.common.commands.complexCommands.ExtendToIntakeCommand;
+import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoSpecimenDeposit;
+import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoSpecimenGrab;
+import org.firstinspires.ftc.teamcode.common.commands.complexCommands.HoldSampleCommand;
+import org.firstinspires.ftc.teamcode.common.commands.complexCommands.IdleIntakeCommand;
+import org.firstinspires.ftc.teamcode.common.commands.complexCommands.PickupSampleCommand;
+import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetArmPosition_INST;
+import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetGripperPosition_INST;
+import org.firstinspires.ftc.teamcode.common.robot.Color;
+import org.firstinspires.ftc.teamcode.common.robot.Robot;
+import org.firstinspires.ftc.teamcode.common.robot.subsystems.ExtensionSubsystem;
+import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
+import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
+import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
+import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
+
+@Autonomous(name = "5 Specimen auto :(")
+public class FiveSpecimenAuto extends OpMode {
     private Follower follower;
 
     //private Localizer localizer;
@@ -47,6 +74,7 @@ public class SpecimenAuto extends OpMode {
         pickupSpike1 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(chamberPose), new Point(spikePickup1)))
                 .setLinearHeadingInterpolation(chamberPose.getHeading(), spikePickup1.getHeading())
+                .addParametricCallback(0.5, () -> CommandScheduler.getInstance().schedule(new ExtendToIntakeCommand(robot.extension, robot.intake)))
                 .build();
 
         pickupSpike2 = follower.pathBuilder()
@@ -81,6 +109,7 @@ public class SpecimenAuto extends OpMode {
                 .addPath(new BezierLine(new Point(chamberPose), new Point(parkPose)))
                 .setTangentHeadingInterpolation()
                 .setZeroPowerAccelerationMultiplier(4)
+                .addParametricCallback(0.5, () -> CommandScheduler.getInstance().schedule(new ExtendToIntakeCommand(robot.extension, robot.intake)))
                 .build();
     }
 
@@ -112,16 +141,16 @@ public class SpecimenAuto extends OpMode {
                 break;
             case 3:
                 // GET BLOCK
-                if(follower.getCurrentTValue() > 0.9) {
-                    CommandScheduler.getInstance().schedule(new AutoExtend(robot.extension, robot.intake));
+                if(!follower.isBusy()) {
+                    CommandScheduler.getInstance().schedule(new PickupSampleCommand(robot.intake));
 
                     setPathState(4);
                 }
                 break;
             case 4:
                 // swing
-                if(!robot.intake.getCurrentColor().equals(IntakeSubsystem.Color.NONE) || pathTimer.getElapsedTime() > 1000) {
-                    CommandScheduler.getInstance().schedule(new AutoHoldSampleToMove(robot.extension, robot.intake));
+                if(!robot.intake.getCurrentColor().equals(Color.NONE) || pathTimer.getElapsedTime() > 1000) {
+                    CommandScheduler.getInstance().schedule(new HoldSampleCommand(robot.intake));
 
                     follower.turnDegrees(80, false);
                     setPathState(5);
@@ -130,7 +159,7 @@ public class SpecimenAuto extends OpMode {
             case 5:
                 // throw !!!
                 if(pathTimer.getElapsedTime() > 1000) {
-                    CommandScheduler.getInstance().schedule(new AutoTossToHumanPlayer(robot.intake));
+                    robot.intake.setIntakeRollerState(IntakeSubsystem.IntakeRollerState.REVERSING);
 
                     setPathState(6);
                 }
@@ -138,7 +167,7 @@ public class SpecimenAuto extends OpMode {
             case 6:
                 // RETRACT AND MOVE TO SPIKE 2
                 if(pathTimer.getElapsedTime() > 300) {
-                    robot.extension.setExtendedEncoderValue(400);
+                    CommandScheduler.getInstance().schedule(new IdleIntakeCommand(robot.intake));
 
                     follower.followPath(pickupSpike2,true);
                     setPathState(7);
@@ -146,19 +175,16 @@ public class SpecimenAuto extends OpMode {
                 break;
             case 7:
                 // GET BLOCK
-                if(follower.getCurrentTValue() > 0.9) {
-                    CommandScheduler.getInstance().schedule(new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.PICK_UP));
-                    CommandScheduler.getInstance().schedule(new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.PICK_UP));
-
-                    robot.extension.setExtendedEncoderValue(620);
+                if(!follower.isBusy()) {
+                    CommandScheduler.getInstance().schedule(new PickupSampleCommand(robot.intake));
 
                     setPathState(8);
                 }
                 break;
             case 8:
                 // swing
-                if(!robot.intake.getCurrentColor().equals(IntakeSubsystem.Color.NONE) || pathTimer.getElapsedTime() > 1000) {
-                    CommandScheduler.getInstance().schedule(new AutoHoldSampleToMove(robot.extension, robot.intake));
+                if(!robot.intake.getCurrentColor().equals(Color.NONE) || pathTimer.getElapsedTime() > 1000) {
+                    CommandScheduler.getInstance().schedule(new HoldSampleCommand(robot.intake));
 
                     follower.turnDegrees(80, false);
                     setPathState(9);
@@ -167,7 +193,7 @@ public class SpecimenAuto extends OpMode {
             case 9:
                 // throw !!!
                 if(pathTimer.getElapsedTime() > 1000) {
-                    CommandScheduler.getInstance().schedule(new AutoTossToHumanPlayer(robot.intake));
+                    robot.intake.setIntakeRollerState(IntakeSubsystem.IntakeRollerState.REVERSING);
 
                     setPathState(10);
                 }
@@ -175,26 +201,23 @@ public class SpecimenAuto extends OpMode {
             case 10:
                 // RETRACT AND MOVE TO SPIKE 3
                 if(pathTimer.getElapsedTime() > 300) {
-                    robot.extension.setExtendedEncoderValue(400);
+                    CommandScheduler.getInstance().schedule(new IdleIntakeCommand(robot.intake));
 
                     follower.followPath(pickupSpike3,true);
                     setPathState(11);
                 }
                 break;
             case 11:
-                // GET BLOCK
-                if(follower.getCurrentTValue() > 0.9) {
-                    robot.extension.setExtendedEncoderValue(620);
-                    CommandScheduler.getInstance().schedule(new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.PICK_UP));
-                    CommandScheduler.getInstance().schedule(new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.PICK_UP));
+                if(!follower.isBusy()) {
+                    CommandScheduler.getInstance().schedule(new PickupSampleCommand(robot.intake));
 
                     setPathState(12);
                 }
                 break;
             case 12:
                 // swing
-                if(!robot.intake.getCurrentColor().equals(IntakeSubsystem.Color.NONE) || pathTimer.getElapsedTime() > 1000) {
-                    CommandScheduler.getInstance().schedule(new AutoHoldSampleToMove(robot.extension, robot.intake));
+                if(!robot.intake.getCurrentColor().equals(Color.NONE) || pathTimer.getElapsedTime() > 1000) {
+                    CommandScheduler.getInstance().schedule(new HoldSampleCommand(robot.intake));
 
                     follower.turnDegrees(80, false);
                     setPathState(13);
@@ -203,20 +226,15 @@ public class SpecimenAuto extends OpMode {
             case 13:
                 // throw !!!
                 if(pathTimer.getElapsedTime() > 1000) {
-                    CommandScheduler.getInstance().schedule(new AutoTossToHumanPlayer(robot.intake));
+                    robot.intake.setIntakeRollerState(IntakeSubsystem.IntakeRollerState.REVERSING);
 
                     setPathState(14);
                 }
                 break;
             case 14:
                 if(pathTimer.getElapsedTime() > 300) {
-                    robot.extension.setExtendedEncoderValue(200);
-                    CommandScheduler.getInstance().schedule(new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.REST));
-                    CommandScheduler.getInstance().schedule(new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.REST));
-                    CommandScheduler.getInstance().schedule(new IntakeSetRollerState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.DISABLED));
-
-                    CommandScheduler.getInstance().schedule(new SpecimenSetArmPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenArmState.WALL));
-                    CommandScheduler.getInstance().schedule(new SpecimenSetGripperPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenGripperState.OPEN));
+                    CommandScheduler.getInstance().schedule(new IdleIntakeCommand(robot.intake));
+                    robot.extension.setExtensionState(ExtensionSubsystem.ExtensionState.TRANSFER);
 
                     follower.followPath(spike3toSpecimen);
                     setPathState(15);
@@ -232,7 +250,6 @@ public class SpecimenAuto extends OpMode {
 
             case 16:
                 if(pathTimer.getElapsedTime() > 300) {
-                    CommandScheduler.getInstance().schedule(new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.TRANSFER));
 
                     follower.followPath(wallToChamber);
                     setPathState(17);
@@ -289,7 +306,7 @@ public class SpecimenAuto extends OpMode {
         CommandScheduler.getInstance().reset();
 
         //It doesn't matter which team it is due to symmetry :)
-        robot = new Robot(hardwareMap, Team.BLUE, Subsystems.INTAKE, Subsystems.DEPOSIT, Subsystems.EXTENSION, Subsystems.SPECIMEN);
+        robot = new Robot(hardwareMap, Subsystems.INTAKE, Subsystems.DEPOSIT, Subsystems.EXTENSION, Subsystems.SPECIMEN);
     }
 
     @Override
@@ -298,5 +315,3 @@ public class SpecimenAuto extends OpMode {
         setPathState(0);
     }
 }
-
- */
