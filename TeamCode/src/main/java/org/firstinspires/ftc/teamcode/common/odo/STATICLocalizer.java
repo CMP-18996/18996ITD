@@ -54,37 +54,63 @@ public class STATICLocalizer extends Localizer {
 
     @Override
     public Pose getPose() {
+        if(pinpointLocalizer.isNAN()) {
+            return otosLocalizer.getPose();
+        }
         return pinpointLocalizer.getPose();
     }
 
     @Override
     public Pose getVelocity() {
+        if(pinpointLocalizer.isNAN()) {
+            return otosLocalizer.getVelocity();
+        }
         return pinpointLocalizer.getVelocity();
     }
 
     @Override
     public Vector getVelocityVector() {
+        if(pinpointLocalizer.isNAN()) {
+            return otosLocalizer.getVelocityVector();
+        }
         return pinpointLocalizer.getVelocityVector();
     }
 
     @Override
     public void setStartPose(Pose startPose) {
         pinpointLocalizer.setStartPose(startPose);
+        otosLocalizer.setStartPose(startPose);
     }
 
     @Override
     public void setPose(Pose setPose) {
         pinpointLocalizer.setPose(setPose);
+        otosLocalizer.setPose(setPose);
     }
 
     @Override
     public void update() {
-        pinpointLocalizer.update();
+        if(pinpointLocalizer.isNAN()) {
+            otosLocalizer.update();
+        }
+        else {
+            pinpointLocalizer.update();
+        }
     }
 
     @Override
     public double getTotalHeading() {
+        if(pinpointLocalizer.isNAN()) {
+            return otosLocalizer.getTotalHeading();
+        }
         return pinpointLocalizer.getTotalHeading();
+    }
+
+    @Override
+    public boolean isNAN() { return false; }
+
+    public boolean usingPinpoint() {
+        return !pinpointLocalizer.isNAN();
     }
 
     public void setLocalizationMode(LocalizationMode localizationMode) {
