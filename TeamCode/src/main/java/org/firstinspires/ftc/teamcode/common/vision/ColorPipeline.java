@@ -1,10 +1,9 @@
 package org.firstinspires.ftc.teamcode.common.vision;
 
 import android.graphics.Canvas;
-import android.graphics.Paint;
 
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
-import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.teamcode.common.robot.Color;
 import org.firstinspires.ftc.vision.VisionProcessor;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -14,7 +13,6 @@ import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
-import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
 

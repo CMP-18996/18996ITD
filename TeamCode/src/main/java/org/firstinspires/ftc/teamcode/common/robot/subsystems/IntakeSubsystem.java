@@ -2,11 +2,20 @@ package org.firstinspires.ftc.teamcode.common.robot.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.pedropathing.localization.Pose;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.checkerframework.checker.units.qual.C;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.teamcode.common.robot.Color;
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 @Config
@@ -32,15 +41,41 @@ public class IntakeSubsystem extends SubsystemBase {
     public static double ROLLER_DISABLED = 0.0;
     public static double ROLLER_REVERSING = -1.0;
 
+    public static double ALPHA_CUTOFF = 200; // change to distance
+
+    public static int colorUpdatePeriod = 1000;
+
+    private static final Position RED = colorMidpoint(
+            new Position(null, 1, 1, 1, 0),
+            new Position(null, 1, 1, 1, 0),
+            new Position(null, 1, 1, 1, 0));
+
+    private static final Position YELLOW = colorMidpoint(
+            new Position(null, 1, 1, 1, 0),
+            new Position(null, 1, 1, 1, 0),
+            new Position(null, 1, 1, 1, 0));
+
+    private static final Position BLUE = colorMidpoint(
+            new Position(null, 1, 1, 1, 0),
+            new Position(null, 1, 1, 1, 0),
+            new Position(null, 1, 1, 1, 0));
+
     private final CRServo intakeRollerServo;
     private final Servo intakePivotServo;
     private final Servo intakeArmServo;
     private final Servo intakeWristServo;
+    private final RevColorSensorV3 colorSensor;
 
     private IntakeRollerState intakeRollerState;
     private IntakePivotState intakePivotState;
     private IntakeArmState intakeArmState;
     private IntakeWristState intakeWristState;
+
+    private Color currentColor = Color.NONE;
+    private Color previousColor = Color.NONE;
+    private ColorSensorStatus colorSensorStatus;
+
+    private ElapsedTime elapsedTime = new ElapsedTime();
 
     public enum IntakeRollerState {
         ACTIVE,
@@ -133,21 +168,33 @@ public class IntakeSubsystem extends SubsystemBase {
         }
     }
 
+    public enum ColorSensorStatus {
+        ENABLED,
+        DISABLED
+    }
+
     public IntakeSubsystem(HardwareMap hardwareMap) {
         intakeRollerServo = hardwareMap.get(CRServo.class, HardwareMapNames.INTAKE_ROLLER);
         intakePivotServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_PIVOT);
         intakeArmServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_BOTTOM_PIVOT);
         intakeWristServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_TOP_PIVOT);
+        colorSensor = hardwareMap.get(RevColorSensorV3.class, HardwareMapNames.INTAKE_COLOR_SENSOR);
 
         intakeRollerServo.setDirection(DcMotorSimple.Direction.FORWARD);
         intakePivotServo.setDirection(Servo.Direction.FORWARD);
         intakeArmServo.setDirection(Servo.Direction.FORWARD);
         intakeWristServo.setDirection(Servo.Direction.FORWARD);
+        colorSensor.enableLed(true);
 
         this.setIntakeRollerState(IntakeRollerState.DISABLED);
         this.setIntakePivotState(IntakePivotState.PIVOT_0);
         this.setIntakeArmState(IntakeArmState.REST);
         this.setIntakeWristState(IntakeWristState.REST);
+        this.setColorSensorStatus(ColorSensorStatus.ENABLED);
+    }
+
+    public void setColorSensorStatus(ColorSensorStatus colorSensorStatus) {
+        this.colorSensorStatus = colorSensorStatus;
     }
 
     public void setIntakeRollerState(IntakeRollerState intakeRollerState) {
@@ -170,6 +217,10 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeWristServo.setPosition(intakeWristState.getValue());
     }
 
+    public ColorSensorStatus getColorSensorStatus() {
+        return colorSensorStatus;
+    }
+
     public IntakePivotState getIntakePivotState() { return intakePivotState; }
 
     public IntakeArmState getIntakeArmState() { return intakeArmState; }
@@ -180,5 +231,64 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public IntakeRollerState getIntakeRollerState() {
         return intakeRollerState;
+    }
+
+    public Color getCurrentColor() {
+        return currentColor;
+    }
+
+    public Color getPreviousColor() { return previousColor;}
+
+    private void updateCurrentColor() {
+        previousColor = currentColor;
+
+        if(colorSensorStatus.equals(ColorSensorStatus.ENABLED) && colorSensor.alpha() > ALPHA_CUTOFF) {
+            Position color = new Position(DistanceUnit.INCH, colorSensor.red(), colorSensor.green(), colorSensor.blue(), 0);
+            double r = colorDistance(color, RED);
+            double y = colorDistance(color, YELLOW);
+            double b = colorDistance(color, BLUE);
+
+            if(r < y & r < b) {
+                currentColor = Color.RED;
+            }
+            else if(y < r & y < b) {
+                currentColor = Color.YELLOW;
+            }
+            else if(b < y & b < r) {
+                currentColor = Color.BLUE;
+            }
+        }
+        else {
+            currentColor = Color.NONE;
+        }
+    }
+
+    @Override
+    public void periodic() {
+        if(elapsedTime.milliseconds() > colorUpdatePeriod) {
+            elapsedTime.reset();
+            updateCurrentColor();
+        }
+    }
+
+    // move these to another class
+    public static double colorDistance(Position p1, Position p2) {
+        double dx = p2.x - p1.x;
+        double dy = p2.y - p1.y;
+        double dz = p2.z - p1.z;
+        return Math.sqrt(dx * dx + dy * dy + dz * dz);
+    }
+
+    public static Position colorMidpoint(Position... points) {
+        double sumX = 0, sumY = 0, sumZ = 0;
+        int count = points.length;
+
+        for (Position p : points) {
+            sumX += p.x;
+            sumY += p.y;
+            sumZ += p.z;
+        }
+
+        return new Position(DistanceUnit.INCH, sumX / count, sumY / count, sumZ / count, 0);
     }
 }
