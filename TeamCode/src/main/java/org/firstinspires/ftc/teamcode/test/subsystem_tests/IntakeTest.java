@@ -8,6 +8,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeArmSetPosition_INST;
+import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeClawSetState_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakePivotSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeRollerSetState_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeWristSetPosition_INST;
@@ -28,6 +29,9 @@ public class IntakeTest extends CommandOpMode {
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
                 new ScheduleCommand(
+                        new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.FLOOR),
+                        new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.FLOOR),
+                        new IntakePivotSetPosition_INST(robot.intake, IntakeSubsystem.IntakePivotState.PIVOT_0)
                 )
         );
 
@@ -83,6 +87,18 @@ public class IntakeTest extends CommandOpMode {
                 )
         );
 
+        gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_STICK_BUTTON).whenPressed(
+                new ScheduleCommand(
+                        new IntakeClawSetState_INST(robot.intake, IntakeSubsystem.IntakeClawState.CLOSED)
+                )
+        );
+
+        gamepad.getGamepadButton(GamepadKeys.Button.LEFT_STICK_BUTTON).whenPressed(
+                new ScheduleCommand(
+                        new IntakeClawSetState_INST(robot.intake, IntakeSubsystem.IntakeClawState.OPEN)
+                )
+        );
+
     }
 
     @Override
@@ -93,6 +109,8 @@ public class IntakeTest extends CommandOpMode {
         telemetry.addData("WRIST STATE", robot.intake.getIntakeWristState());
         telemetry.addData("PIVOT STATE", robot.intake.getIntakePivotState());
         telemetry.addData("ROLLER STATE", robot.intake.getIntakeRollerState());
+        telemetry.addData("CLAW STATE", robot.intake.getIntakeClawState());
+        telemetry.addData("COLOR", robot.intake.getCurrentColor());
         telemetry.update();
     }
 }

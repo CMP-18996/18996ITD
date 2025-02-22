@@ -41,6 +41,7 @@ public class HardwareMapNames {
     public static String INTAKE_TOP_PIVOT = "intakeTopPivot";
     public static String INTAKE_ROLLER = "intakeRollers";
     public static String INTAKE_PIVOT = "intakePivot";
+    public static String INTAKE_CLAW = "intakeClaw";
 
     // Extension
     public static String EXTENSION_MOTOR = "extension";

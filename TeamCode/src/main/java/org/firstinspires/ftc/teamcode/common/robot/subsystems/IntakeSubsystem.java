@@ -41,6 +41,9 @@ public class IntakeSubsystem extends SubsystemBase {
     public static double ROLLER_DISABLED = 0.0;
     public static double ROLLER_REVERSING = -1.0;
 
+    public static double CLAW_OPEN_POS = 0.0;
+    public static double CLAW_CLOSED_POS = 0.2;
+
     public static double ALPHA_CUTOFF = 200; // change to distance
 
     public static int colorUpdatePeriod = 1000;
@@ -64,12 +67,14 @@ public class IntakeSubsystem extends SubsystemBase {
     private final Servo intakePivotServo;
     private final Servo intakeArmServo;
     private final Servo intakeWristServo;
+    public final Servo intakeClawServo;
     private final RevColorSensorV3 colorSensor;
 
     private IntakeRollerState intakeRollerState;
     private IntakePivotState intakePivotState;
     private IntakeArmState intakeArmState;
     private IntakeWristState intakeWristState;
+    private IntakeClawState intakeClawState;
 
     private Color currentColor = Color.NONE;
     private Color previousColor = Color.NONE;
@@ -168,6 +173,22 @@ public class IntakeSubsystem extends SubsystemBase {
         }
     }
 
+    public enum IntakeClawState {
+        OPEN,
+        CLOSED;
+
+        public double getValue() {
+            switch (this) {
+                case OPEN:
+                    return CLAW_OPEN_POS;
+                case CLOSED:
+                    return CLAW_CLOSED_POS;
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
+    }
+
     public enum ColorSensorStatus {
         ENABLED,
         DISABLED
@@ -178,18 +199,21 @@ public class IntakeSubsystem extends SubsystemBase {
         intakePivotServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_PIVOT);
         intakeArmServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_BOTTOM_PIVOT);
         intakeWristServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_TOP_PIVOT);
+        intakeClawServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_CLAW);
         colorSensor = hardwareMap.get(RevColorSensorV3.class, HardwareMapNames.INTAKE_COLOR_SENSOR);
 
         intakeRollerServo.setDirection(DcMotorSimple.Direction.FORWARD);
         intakePivotServo.setDirection(Servo.Direction.FORWARD);
         intakeArmServo.setDirection(Servo.Direction.FORWARD);
         intakeWristServo.setDirection(Servo.Direction.FORWARD);
+        intakeClawServo.setDirection(Servo.Direction.FORWARD);
         colorSensor.enableLed(true);
 
         this.setIntakeRollerState(IntakeRollerState.DISABLED);
         this.setIntakePivotState(IntakePivotState.PIVOT_0);
         this.setIntakeArmState(IntakeArmState.REST);
         this.setIntakeWristState(IntakeWristState.REST);
+        this.setIntakeClawState(IntakeClawState.CLOSED);
         this.setColorSensorStatus(ColorSensorStatus.ENABLED);
     }
 
@@ -217,6 +241,11 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeWristServo.setPosition(intakeWristState.getValue());
     }
 
+    public void setIntakeClawState(IntakeClawState intakeClawState) {
+        this.intakeClawState = intakeClawState;
+        intakeClawServo.setPosition(intakeClawState.getValue());
+    }
+
     public ColorSensorStatus getColorSensorStatus() {
         return colorSensorStatus;
     }
@@ -227,6 +256,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public IntakeWristState getIntakeWristState() {
         return intakeWristState;
+    }
+
+    public IntakeClawState getIntakeClawState() {
+        return intakeClawState;
     }
 
     public IntakeRollerState getIntakeRollerState() {
