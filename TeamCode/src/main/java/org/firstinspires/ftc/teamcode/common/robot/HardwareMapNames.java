@@ -39,7 +39,8 @@ public class HardwareMapNames {
     public static String INTAKE_BOTTOM_PIVOT = "intakeBottomPivot";
     public static String INTAKE_COLOR_SENSOR = "colorSensor";
     public static String INTAKE_TOP_PIVOT = "intakeTopPivot";
-    public static String INTAKE_ROLLER = "intakeRollers";
+    public static String INTAKE_ROLLER_1 = "intakeRoller1";
+    public static String INTAKE_ROLLER_2 = "intakeRoller2";
     public static String INTAKE_PIVOT = "intakePivot";
     public static String INTAKE_CLAW = "intakeClaw";
 

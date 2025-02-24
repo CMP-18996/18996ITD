@@ -1,12 +1,15 @@
 package org.firstinspires.ftc.teamcode.test.subsystem_tests;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.util.Constants;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.common.robot.Drive;
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
+import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
+import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
 @TeleOp(name = "Drive Test")
 public class DriveTest extends LinearOpMode {
@@ -19,6 +22,8 @@ public class DriveTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        Constants.setConstants(FConstants.class, LConstants.class);
+
         follower = new Follower(hardwareMap);
         follower.startTeleopDrive();
 
@@ -33,8 +38,8 @@ public class DriveTest extends LinearOpMode {
             double ySetRate = Drive.calculateYRate(yVal);
             double hSetRate = Drive.calculateHRate(hVal);
 
-            double xCurrentRate = follower.getVelocity().getXComponent();
-            double yCurrentRate = follower.getVelocity().getYComponent();
+            double xCurrentRate = follower.poseUpdater.getVelocity().getXComponent();
+            double yCurrentRate = follower.poseUpdater.getVelocity().getYComponent();
             double hCurrentRate = follower.poseUpdater.getAngularVelocity();
 
             double xDelta = Drive.calculateXVectorDelta(xCurrentRate, xSetRate);

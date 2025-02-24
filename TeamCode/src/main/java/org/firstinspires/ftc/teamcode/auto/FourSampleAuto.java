@@ -42,7 +42,6 @@ public class FourSampleAuto extends OpMode {
 
     private final Pose submersible = new Pose(72, 98, Math.toRadians(270));
 
-
     private PathChain scorePreloadedSample, pickupSpike1, pickupSpike2, pickupSpike3, scoreSpike1, scoreSpike2, scoreSpike3, park;
 
     private Robot robot;
@@ -100,7 +99,7 @@ public class FourSampleAuto extends OpMode {
                 break;
             case 1:
                 if(!follower.isBusy()) {
-                    robot.deposit.setDepositTrapdoorState(DepositSubsystem.DepositTrapdoorState.TOP_OPEN);
+                    robot.deposit.setDepositTrapdoorState(DepositSubsystem.DepositTrapdoorState.OPEN);
                     CommandScheduler.getInstance().schedule(new ExtendToIntakeCommand(robot.extension, robot.intake));
                     setPathState(2);
                 }
@@ -126,7 +125,7 @@ public class FourSampleAuto extends OpMode {
                 break;
             case 5:
                 if(!follower.isBusy()) {
-                    robot.deposit.setDepositTrapdoorState(DepositSubsystem.DepositTrapdoorState.TOP_OPEN);
+                    robot.deposit.setDepositTrapdoorState(DepositSubsystem.DepositTrapdoorState.OPEN);
                     CommandScheduler.getInstance().schedule(new ExtendToIntakeCommand(robot.extension, robot.intake));
                     setPathState(6);
                 }
@@ -152,7 +151,7 @@ public class FourSampleAuto extends OpMode {
                 break;
             case 9:
                 if(!follower.isBusy()) {
-                    robot.deposit.setDepositTrapdoorState(DepositSubsystem.DepositTrapdoorState.TOP_OPEN);
+                    robot.deposit.setDepositTrapdoorState(DepositSubsystem.DepositTrapdoorState.OPEN);
                     CommandScheduler.getInstance().schedule(new ExtendToIntakeCommand(robot.extension, robot.intake));
                     setPathState(10);
                 }
@@ -172,7 +171,7 @@ public class FourSampleAuto extends OpMode {
                 break;
             case 12:
                 if(!follower.isBusy()) {
-                    robot.deposit.setDepositTrapdoorState(DepositSubsystem.DepositTrapdoorState.TOP_OPEN);
+                    robot.deposit.setDepositTrapdoorState(DepositSubsystem.DepositTrapdoorState.OPEN);
                     CommandScheduler.getInstance().schedule(new ExtendToIntakeCommand(robot.extension, robot.intake));
                     setPathState(13);
                 }
@@ -204,7 +203,7 @@ public class FourSampleAuto extends OpMode {
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
-        telemetry.addData("COLRO", robot.intake.getCurrentColor());
+        telemetry.addData("COLOR", robot.intake.getCurrentColor());
         telemetry.update();
     }
 

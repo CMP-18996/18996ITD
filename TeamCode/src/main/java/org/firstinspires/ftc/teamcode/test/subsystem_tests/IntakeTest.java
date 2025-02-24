@@ -57,6 +57,13 @@ public class IntakeTest extends CommandOpMode {
                 )
         );
 
+        gamepad.getGamepadButton(GamepadKeys.Button.A).whenPressed(
+                new ScheduleCommand(
+                        new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.TRANSFER),
+                        new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.TRANSFER)
+                )
+        );
+
         gamepad.getGamepadButton(GamepadKeys.Button.X).whenPressed(
                 new ScheduleCommand(
                         new IntakeRollerSetState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.ACTIVE)
