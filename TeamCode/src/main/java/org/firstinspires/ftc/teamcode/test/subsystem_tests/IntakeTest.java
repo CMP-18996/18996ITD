@@ -118,6 +118,7 @@ public class IntakeTest extends CommandOpMode {
         telemetry.addData("ROLLER STATE", robot.intake.getIntakeRollerState());
         telemetry.addData("CLAW STATE", robot.intake.getIntakeClawState());
         telemetry.addData("COLOR", robot.intake.getCurrentColor());
+        telemetry.addData("Prev color", robot.intake.getPreviousColor());
         telemetry.update();
     }
 }

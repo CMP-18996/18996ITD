@@ -349,7 +349,7 @@ public class FullTeleOp extends CommandOpMode {
         CommandScheduler.getInstance().run();
 
         // Extension Triggers
-        double power = 0.85 * Math.pow(gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) - gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER), 3) + 0.1;
+        double power = 0.85 * Math.pow(gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER), 5) + 0.15;
 
         if(power != previousPower) {
             robot.extension.setExtensionMotorPower(power);
@@ -361,15 +361,15 @@ public class FullTeleOp extends CommandOpMode {
 
             gamepad1.rumbleBlips(2);
 
-            if (robot.intake.getCurrentColor().equals(Color.YELLOW)) {
+            if (robot.intake.getCurrentColor().equals(Color.YELLOW)) { // yellow!
                 if (transferYellow) {
                     schedule(new TransferSampleCommand(robot.extension, robot.intake, robot.deposit, robot.lift));
                 } else {
                     schedule(new HoldSampleCommand(robot.intake));
                 }
-            } else if (robot.intake.getCurrentColor().equals(specimenColor)) {
+            } else if (robot.intake.getCurrentColor().equals(specimenColor)) { // red or blue, the good one
                 schedule(new HoldSampleCommand(robot.intake));
-            } else {
+            } else { // bad
                 schedule(
                         new SequentialCommandGroup(
                                 new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.EJECT),

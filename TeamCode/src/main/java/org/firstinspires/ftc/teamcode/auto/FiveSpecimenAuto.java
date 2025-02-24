@@ -42,6 +42,8 @@ public class FiveSpecimenAuto extends OpMode {
 
     private final Pose startPose = new Pose(7.5625, 55.3125, Math.toRadians(0));
 
+    private final Pose preloadDepositPose = new Pose(38, 72, Math.toRadians(0));
+
     private final Pose chamberPose = new Pose(38, 66, Math.toRadians(0));
 
     private final Pose spikePickup1 = new Pose(30.59, 46.81, Math.toRadians(301));
@@ -66,7 +68,7 @@ public class FiveSpecimenAuto extends OpMode {
 
     public void buildPaths() {
         scorePreloadedSpecimen = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(startPose), new Point(chamberPose)))
+                .addPath(new BezierLine(new Point(startPose), new Point(preloadDepositPose)))
                 .setConstantHeadingInterpolation(chamberPose.getHeading())
                 .setZeroPowerAccelerationMultiplier(2)
                 .build();
@@ -135,6 +137,9 @@ public class FiveSpecimenAuto extends OpMode {
                 if(pathTimer.getElapsedTime() > 300) {
                     CommandScheduler.getInstance().schedule(new SpecimenSetArmPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenArmState.WALL));
 
+                    robot.intake.setIntakeLockAngle(spikePickup1.getHeading());
+                    robot.intake.setIntakePivotState(IntakeSubsystem.IntakePivotState.PIVOT_LOCK);
+
                     follower.followPath(pickupSpike1,true);
                     setPathState(3);
                 }
@@ -168,6 +173,8 @@ public class FiveSpecimenAuto extends OpMode {
                 // RETRACT AND MOVE TO SPIKE 2
                 if(pathTimer.getElapsedTime() > 300) {
                     CommandScheduler.getInstance().schedule(new IdleIntakeCommand(robot.intake));
+                    robot.intake.setIntakeLockAngle(spikePickup2.getHeading());
+                    robot.intake.setIntakePivotState(IntakeSubsystem.IntakePivotState.PIVOT_LOCK);
 
                     follower.followPath(pickupSpike2,true);
                     setPathState(7);
@@ -202,6 +209,8 @@ public class FiveSpecimenAuto extends OpMode {
                 // RETRACT AND MOVE TO SPIKE 3
                 if(pathTimer.getElapsedTime() > 300) {
                     CommandScheduler.getInstance().schedule(new IdleIntakeCommand(robot.intake));
+                    robot.intake.setIntakeLockAngle(spikePickup3.getHeading());
+                    robot.intake.setIntakePivotState(IntakeSubsystem.IntakePivotState.PIVOT_LOCK);
 
                     follower.followPath(pickupSpike3,true);
                     setPathState(11);

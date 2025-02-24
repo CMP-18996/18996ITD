@@ -14,7 +14,7 @@ public class ZeroExtension extends SequentialCommandGroup {
                         //new InstantCommand(() -> extensionSubsystem.setExtensionState(ExtensionSubsystem.ExtensionState.ZEROING)),
                         new ExtensionSetPosition_INST(extensionSubsystem, ExtensionSubsystem.ExtensionState.ZEROING),
                         new WaitCommand(100),
-                        new InstantCommand(extensionSubsystem::resetEncoders),
+                        new InstantCommand(extensionSubsystem::resetEncoder),
                         new ExtensionSetPosition_INST(extensionSubsystem, ExtensionSubsystem.ExtensionState.TRANSFER)
                 )
         );

@@ -1,18 +1,13 @@
 package org.firstinspires.ftc.teamcode.common.odo;
 
-import com.acmerobotics.roadrunner.ftc.SparkFunOTOSCorrected;
 import com.pedropathing.localization.Localizer;
 import com.pedropathing.localization.Pose;
-import com.pedropathing.localization.constants.OTOSConstants;
 import com.pedropathing.localization.localizers.OTOSLocalizer;
 import com.pedropathing.localization.localizers.PinpointLocalizer;
-import com.pedropathing.pathgen.MathFunctions;
 import com.pedropathing.pathgen.Vector;
-import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.AnalogInputController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
@@ -22,15 +17,21 @@ public class STATICLocalizer extends Localizer {
     private Localizer pinpointLocalizer;
     private Localizer otosLocalizer;
 
-    public AnalogInput rightSideUltrasonic;
-    public AnalogInput backSideUltrasonic;
-    public AnalogInput backLeftAngledUltrasonic;
-    public AnalogInput backRightAngledUltrasonic;
+    private AnalogInput rightSideUltrasonic;
+    private AnalogInput backSideUltrasonic;
+    private AnalogInput backLeftAngledUltrasonic;
+    private AnalogInput backRightAngledUltrasonic;
+
+    private Limelight3A limelight3A;
+
+    private Pose ultrasonicPose = new Pose();
+    private double distanceMod;
 
     private LocalizationMode localizationMode;
 
     public enum LocalizationMode {
         NORMAL,
+        SUBMERSIBLE_PICKUP,
         SAMPLE_DEPOSIT,
         SPECIMEN_PICKUP,
         SPECIMEN_DEPOSIT
@@ -90,11 +91,36 @@ public class STATICLocalizer extends Localizer {
 
     @Override
     public void update() {
+        double heading;
         if(pinpointLocalizer.isNAN()) {
             otosLocalizer.update();
+            heading = otosLocalizer.getPose().getHeading();
         }
         else {
             pinpointLocalizer.update();
+            heading = pinpointLocalizer.getPose().getHeading();
+        }
+
+        switch(localizationMode) {
+            case SPECIMEN_PICKUP:
+            case SPECIMEN_DEPOSIT:
+                distanceMod = Math.sin(Math.PI / 2 - Math.abs(heading));
+                ultrasonicPose = new Pose(
+                        (getDistanceFromVoltage(backSideUltrasonic.getVoltage()) + 8) * distanceMod,
+                        (getDistanceFromVoltage(rightSideUltrasonic.getVoltage()) + 8) * distanceMod,
+                        heading);
+                setPose(ultrasonicPose);
+                break;
+            case SAMPLE_DEPOSIT:
+                distanceMod = Math.sin(Math.PI - Math.abs(Math.PI / 4 + heading));
+                ultrasonicPose = new Pose(
+                        (getDistanceFromVoltage(backRightAngledUltrasonic.getVoltage()) + 10) * distanceMod,
+                        144 - (getDistanceFromVoltage(backRightAngledUltrasonic.getVoltage()) + 10) * distanceMod,
+                        heading);
+                setPose(ultrasonicPose);
+                break;
+            case SUBMERSIBLE_PICKUP:
+                // april tag
         }
     }
 

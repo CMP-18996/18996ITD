@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.common.robot.Color;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.Team;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
+import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
@@ -101,6 +102,9 @@ public class FourSampleAuto extends OpMode {
                 if(!follower.isBusy()) {
                     robot.deposit.setDepositTrapdoorState(DepositSubsystem.DepositTrapdoorState.OPEN);
                     CommandScheduler.getInstance().schedule(new ExtendToIntakeCommand(robot.extension, robot.intake));
+                    robot.intake.setIntakeLockAngle(spikePickup1.getHeading());
+                    robot.intake.setIntakePivotState(IntakeSubsystem.IntakePivotState.PIVOT_LOCK);
+
                     setPathState(2);
                 }
                 break;
@@ -127,6 +131,9 @@ public class FourSampleAuto extends OpMode {
                 if(!follower.isBusy()) {
                     robot.deposit.setDepositTrapdoorState(DepositSubsystem.DepositTrapdoorState.OPEN);
                     CommandScheduler.getInstance().schedule(new ExtendToIntakeCommand(robot.extension, robot.intake));
+                    robot.intake.setIntakeLockAngle(spikePickup2.getHeading());
+                    robot.intake.setIntakePivotState(IntakeSubsystem.IntakePivotState.PIVOT_LOCK);
+
                     setPathState(6);
                 }
                 break;
@@ -153,6 +160,9 @@ public class FourSampleAuto extends OpMode {
                 if(!follower.isBusy()) {
                     robot.deposit.setDepositTrapdoorState(DepositSubsystem.DepositTrapdoorState.OPEN);
                     CommandScheduler.getInstance().schedule(new ExtendToIntakeCommand(robot.extension, robot.intake));
+                    robot.intake.setIntakeLockAngle(spikePickup3.getHeading());
+                    robot.intake.setIntakePivotState(IntakeSubsystem.IntakePivotState.PIVOT_LOCK);
+
                     setPathState(10);
                 }
                 break;
@@ -219,7 +229,7 @@ public class FourSampleAuto extends OpMode {
         CommandScheduler.getInstance().reset();
 
         //It doesn't matter which team it is due to symmetry :)
-        robot = new Robot(hardwareMap, Team.BLUE, Subsystems.INTAKE, Subsystems.DEPOSIT, Subsystems.LIFT, Subsystems.EXTENSION);
+        robot = new Robot(hardwareMap, Subsystems.INTAKE, Subsystems.DEPOSIT, Subsystems.LIFT, Subsystems.EXTENSION);
     }
 
     @Override
