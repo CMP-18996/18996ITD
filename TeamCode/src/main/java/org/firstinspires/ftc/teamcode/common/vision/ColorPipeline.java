@@ -31,15 +31,15 @@ public class ColorPipeline implements VisionProcessor {
 
     // Auxiliary Variables
     // Do NOT initialize these in processFrame(), will cause memory leak unless you know what you're doing
-    Mat blurred;
-    Mat colorCorrected;
-    Mat postBlueThresh;
+    Mat blurred = new Mat();
+    Mat colorCorrected = new Mat();
+    Mat postBlueThresh = new Mat();
 
     ArrayList<MatOfPoint> contours = new ArrayList<>();
-    MatOfPoint contour;
-    MatOfPoint largestContourSeen;
-    MatOfPoint2f contour2f;
-    RotatedRect rect;
+    MatOfPoint contour = new MatOfPoint();
+    MatOfPoint largestContourSeen = new MatOfPoint();
+    MatOfPoint2f contour2f = new MatOfPoint2f();
+    RotatedRect rect = new RotatedRect();
     double preProcessingAngle;
     @Override
     public Mat processFrame(Mat frame, long captureTimeNanos) {
