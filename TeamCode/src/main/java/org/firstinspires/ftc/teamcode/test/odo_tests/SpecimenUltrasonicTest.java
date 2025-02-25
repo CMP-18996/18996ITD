@@ -49,8 +49,7 @@ public class SpecimenUltrasonicTest extends LinearOpMode {
             telemetry.addData("BACK SIDE", getDistanceFromVoltage(backSideUltrasonic.getVoltage()));
 
             Pose pose = new Pose(
-                    //getDistanceFromVoltage(backSideUltrasonic.getVoltage()) * Math.sin(Math.PI/2 - Math.abs(pinpoint.getHeading())),
-                    24,
+                    getDistanceFromVoltage(backSideUltrasonic.getVoltage()) * Math.sin(Math.PI/2 - Math.abs(pinpoint.getHeading())),
                     (getDistanceFromVoltage(rightSideUltrasonic.getVoltage()) + 8) * Math.sin(Math.PI/2 - Math.abs(pinpoint.getHeading())),
                     pinpoint.getHeading());
 

@@ -62,9 +62,8 @@ public class LocalizationTest extends OpMode {
     public void init() {
 
         Constants.setConstants(FConstants.class, LConstants.class);
-        poseUpdater = new PoseUpdater(hardwareMap);
-
         localizer = new STATICLocalizer(hardwareMap);
+        poseUpdater = new PoseUpdater(hardwareMap, localizer);
 
         //poseUpdater.setStartingPose(localizer.measureSpecimenStartPose());
         poseUpdater.setStartingPose(new Pose(7.5625, 55.3125, Math.toRadians(0)));

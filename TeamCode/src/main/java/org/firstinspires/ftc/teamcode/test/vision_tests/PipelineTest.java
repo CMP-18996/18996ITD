@@ -5,7 +5,7 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
-import org.firstinspires.ftc.teamcode.common.vision.Color;
+import org.firstinspires.ftc.teamcode.common.robot.Color;
 import org.firstinspires.ftc.teamcode.common.vision.ColorPipeline;
 import org.firstinspires.ftc.teamcode.common.vision.ColorPipelineBuilder;
 import org.firstinspires.ftc.vision.VisionPortal;

@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode.auto;
-/*
+
 import com.arcrobotics.ftclib.command.CommandScheduler;
-import com.arcrobotics.ftclib.command.InstantCommand;
-import com.arcrobotics.ftclib.command.SequentialCommandGroup;
-import com.arcrobotics.ftclib.command.WaitCommand;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.BezierCurve;
@@ -15,23 +12,23 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoExtend;
-import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoRetractTransfer;
-import org.firstinspires.ftc.teamcode.common.commands.deposit.DepositSetPosition_INST;
-import org.firstinspires.ftc.teamcode.common.commands.lift.LiftSetPosition_INST;
+import org.firstinspires.ftc.teamcode.common.commands.complexCommands.ExtendToIntakeCommand;
+import org.firstinspires.ftc.teamcode.common.commands.complexCommands.PickupSampleCommand;
+import org.firstinspires.ftc.teamcode.common.commands.complexCommands.TransferSampleCommand;
+import org.firstinspires.ftc.teamcode.common.robot.Color;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.Team;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
+import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
-@Autonomous(name = "Bucket auto :)")
-public class BucketAuto extends OpMode {
+@Autonomous(name = "4 Sample auto :)")
+public class FourSampleAuto extends OpMode {
     private Follower follower;
     private Timer pathTimer;
-
     private int pathState;
 
     private final Pose startPose = new Pose(9, 111, Math.toRadians(270));
@@ -45,7 +42,6 @@ public class BucketAuto extends OpMode {
     private final Pose spikePickup3 = new Pose(18.38, 129.7575, Math.toRadians(24));
 
     private final Pose submersible = new Pose(72, 98, Math.toRadians(270));
-
 
     private PathChain scorePreloadedSample, pickupSpike1, pickupSpike2, pickupSpike3, scoreSpike1, scoreSpike2, scoreSpike3, park;
 
@@ -90,26 +86,25 @@ public class BucketAuto extends OpMode {
         park = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(depositPose), new Point(submersible)))
                 .setTangentHeadingInterpolation()
-                .setZeroPowerAccelerationMultiplier(4)
                 .build();
     }
 
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                // RAISE STUFF
-                CommandScheduler.getInstance().schedule(new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET));
-                //CommandScheduler.getInstance().schedule(new ReadySampleDepositCommand(robot.deposit));
+                robot.lift.setLiftState(LiftSubsystem.LiftState.HIGH_BUCKET);
+                robot.deposit.setBucketState(DepositSubsystem.BucketState.DEPOSIT);
 
                 follower.followPath(scorePreloadedSample, true);
                 setPathState(1);
                 break;
             case 1:
-                // DEPOSIT PRELOAD
                 if(!follower.isBusy()) {
-                    CommandScheduler.getInstance().schedule(
-                            new SampleDepositCommand(robot.deposit)
-                    );
+                    robot.deposit.setDepositTrapdoorState(DepositSubsystem.DepositTrapdoorState.OPEN);
+                    CommandScheduler.getInstance().schedule(new ExtendToIntakeCommand(robot.extension, robot.intake));
+                    robot.intake.setIntakeLockAngle(spikePickup1.getHeading());
+                    robot.intake.setIntakePivotState(IntakeSubsystem.IntakePivotState.PIVOT_LOCK);
+
                     setPathState(2);
                 }
                 break;
@@ -121,90 +116,82 @@ public class BucketAuto extends OpMode {
                 break;
             case 3:
                 if(!follower.isBusy()) {
-                    CommandScheduler.getInstance().schedule(
-                            new AutoExtend(robot.extension, robot.intake),
-                            new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.TRANSFER)
-                    );
-
+                    CommandScheduler.getInstance().schedule(new PickupSampleCommand(robot.intake));
                     setPathState(4);
                 }
                 break;
             case 4:
-                //if (robot.intake.getCurrentColor().equals(IntakeSubsystem.Color.YELLOW) || pathTimer.getElapsedTime() > 4000) {
+                if (robot.intake.getCurrentColor().equals(Color.YELLOW) || pathTimer.getElapsedTime() > 2000) {
+                    CommandScheduler.getInstance().schedule(new TransferSampleCommand(robot.extension, robot.intake, robot.deposit, robot.lift));
                     follower.followPath(scoreSpike1, true);
-                    CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
-                            new AutoRetractTransfer(robot.extension, robot.intake, robot.deposit, robot.lift),
-                            new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET)
-                    ));
                     setPathState(5);
-                //}
+                }
                 break;
             case 5:
-                if (!follower.isBusy() && pathTimer.getElapsedTime() > 4000) {
-                    CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
-                            new SampleDepositCommand(robot.deposit),
-                            new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.TRANSFER)
-                    ));
+                if(!follower.isBusy()) {
+                    robot.deposit.setDepositTrapdoorState(DepositSubsystem.DepositTrapdoorState.OPEN);
+                    CommandScheduler.getInstance().schedule(new ExtendToIntakeCommand(robot.extension, robot.intake));
+                    robot.intake.setIntakeLockAngle(spikePickup2.getHeading());
+                    robot.intake.setIntakePivotState(IntakeSubsystem.IntakePivotState.PIVOT_LOCK);
+
                     setPathState(6);
                 }
                 break;
             case 6:
                 if (pathTimer.getElapsedTime() > 1000) {
                     follower.followPath(pickupSpike2,true);
-                    setPathState(1434);
+                    setPathState(7);
                 }
                 break;
             case 7:
                 if(!follower.isBusy()) {
-                    CommandScheduler.getInstance().schedule(new AutoExtend(robot.extension, robot.intake));
-
+                    CommandScheduler.getInstance().schedule(new PickupSampleCommand(robot.intake));
                     setPathState(8);
                 }
                 break;
             case 8:
-                //if(robot.intake.getCurrentColor().equals(IntakeSubsystem.Color.YELLOW) || pathTimer.getElapsedTime() > 4000) {
-                    CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
-                            new AutoRetractTransfer(robot.extension, robot.intake, robot.deposit, robot.lift),
-                            new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET),
-                            new SampleDepositCommand(robot.deposit),
-                            new WaitCommand(300),
-                            new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.TRANSFER),
-                            new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.TRANSFER),
-                            new InstantCommand(() -> setPathState(10))
-                    ));
+                if (robot.intake.getCurrentColor().equals(Color.YELLOW) || pathTimer.getElapsedTime() > 2000) {
+                    CommandScheduler.getInstance().schedule(new TransferSampleCommand(robot.extension, robot.intake, robot.deposit, robot.lift));
+                    follower.followPath(scoreSpike2, true);
+                    setPathState(9);
+                }
+                break;
+            case 9:
+                if(!follower.isBusy()) {
+                    robot.deposit.setDepositTrapdoorState(DepositSubsystem.DepositTrapdoorState.OPEN);
+                    CommandScheduler.getInstance().schedule(new ExtendToIntakeCommand(robot.extension, robot.intake));
+                    robot.intake.setIntakeLockAngle(spikePickup3.getHeading());
+                    robot.intake.setIntakePivotState(IntakeSubsystem.IntakePivotState.PIVOT_LOCK);
 
-                    follower.followPath(scoreSpike2);
-                //}
+                    setPathState(10);
+                }
                 break;
             case 10:
-                // RETRACT AND MOVE TO SPIKE 3
-
-                follower.followPath(pickupSpike3,true);
-                setPathState(11);
+                if (pathTimer.getElapsedTime() > 1000) {
+                    follower.followPath(pickupSpike3,true);
+                    setPathState(11);
+                }
                 break;
             case 11:
-                if(!follower.isBusy()) {
-                    CommandScheduler.getInstance().schedule(new AutoExtend(robot.extension, robot.intake));
-
+                if (robot.intake.getCurrentColor().equals(Color.YELLOW) || pathTimer.getElapsedTime() > 2000) {
+                    CommandScheduler.getInstance().schedule(new TransferSampleCommand(robot.extension, robot.intake, robot.deposit, robot.lift));
+                    follower.followPath(scoreSpike3, true);
                     setPathState(12);
                 }
                 break;
             case 12:
-                //if(robot.intake.getCurrentColor().equals(IntakeSubsystem.Color.YELLOW) || pathTimer.getElapsedTime() > 4000) {
-                    CommandScheduler.getInstance().schedule(new AutoRetractTransfer(robot.extension, robot.intake, robot.deposit, robot.lift),
-                            new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET),
-                            new SampleDepositCommand(robot.deposit),
-                            new WaitCommand(300),
-                            new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.TRANSFER),
-                            new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.TRANSFER),
-                            new InstantCommand(() -> setPathState(14))
-                    );
-                    follower.followPath(scoreSpike3);
-                //}
+                if(!follower.isBusy()) {
+                    robot.deposit.setDepositTrapdoorState(DepositSubsystem.DepositTrapdoorState.OPEN);
+                    CommandScheduler.getInstance().schedule(new ExtendToIntakeCommand(robot.extension, robot.intake));
+                    setPathState(13);
+                }
                 break;
-            case 14:
-                follower.followPath(park,true);
-                setPathState(-1434);
+            case 13:
+                if (pathTimer.getElapsedTime() > 1000) {
+                    follower.followPath(park,true);
+                    //CommandScheduler.getInstance().schedule(new AutoAscentCommand(robot.extension, robot.intake, robot.lift, robot.deposit));
+                    setPathState(13);
+                }
                 break;
         }
     }
@@ -226,7 +213,7 @@ public class BucketAuto extends OpMode {
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
-        //telemetry.addData("COLRO", robot.intake.getCurrentColor());
+        telemetry.addData("COLOR", robot.intake.getCurrentColor());
         telemetry.update();
     }
 
@@ -242,7 +229,7 @@ public class BucketAuto extends OpMode {
         CommandScheduler.getInstance().reset();
 
         //It doesn't matter which team it is due to symmetry :)
-        robot = new Robot(hardwareMap, Team.BLUE, Subsystems.INTAKE, Subsystems.DEPOSIT, Subsystems.LIFT, Subsystems.EXTENSION);
+        robot = new Robot(hardwareMap, Subsystems.INTAKE, Subsystems.DEPOSIT, Subsystems.LIFT, Subsystems.EXTENSION);
     }
 
     @Override
@@ -251,5 +238,3 @@ public class BucketAuto extends OpMode {
         setPathState(0);
     }
 }
-
- */

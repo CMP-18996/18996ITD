@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.common.vision;
 
+import org.firstinspires.ftc.teamcode.common.robot.Color;
+
 public class ColorPipelineBuilder {
     private final ColorPipeline built;
     public ColorPipeline build() {

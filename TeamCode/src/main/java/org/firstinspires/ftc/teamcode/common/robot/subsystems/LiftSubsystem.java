@@ -20,9 +20,8 @@ public class LiftSubsystem extends SubsystemBase {
     public static int INTEGRAL_ENABLE_POINT = 20;
 
     public static int TRANSFER_POS = 0;
-    public static int HUMAN_PLAYER_DEPOSIT_POS = 50;
     public static int LOW_BASKET_POS = 420;
-    public static int HIGH_BASKET_POS = 850;
+    public static int HIGH_BASKET_POS = 800;
 
     public static double MAX_UP_SPEED = 1.0;
     public static double MAX_DOWN_SPEED = 0.6;
@@ -37,7 +36,6 @@ public class LiftSubsystem extends SubsystemBase {
 
     public enum LiftState {
         TRANSFER,
-        HUMAN_PLAYER_DEPOSIT,
         LOW_BUCKET,
         HIGH_BUCKET,
         ZEROING;
@@ -46,8 +44,6 @@ public class LiftSubsystem extends SubsystemBase {
             switch (this) {
                 case TRANSFER:
                     return TRANSFER_POS;
-                case HUMAN_PLAYER_DEPOSIT:
-                    return HUMAN_PLAYER_DEPOSIT_POS;
                 case LOW_BUCKET:
                     return LOW_BASKET_POS;
                 case HIGH_BUCKET:
@@ -58,11 +54,6 @@ public class LiftSubsystem extends SubsystemBase {
                     throw new IllegalArgumentException();
             }
         }
-    }
-
-    public void resetEncoders() {
-        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public LiftSubsystem(HardwareMap hardwareMap) {

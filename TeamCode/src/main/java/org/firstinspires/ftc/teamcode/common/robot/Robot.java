@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.common.robot;
 
-import static org.firstinspires.ftc.teamcode.common.robot.Team.BLUE;
-import static org.firstinspires.ftc.teamcode.common.robot.Team.RED;
-
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.DepositSubsystem;
@@ -14,129 +11,40 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.SpecimenSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 
 public class Robot {
+    public HardwareMap hardwareMap;
     public DepositSubsystem deposit;
     public ExtensionSubsystem extension;
     public IntakeSubsystem intake;
     public LiftSubsystem lift;
     public SpecimenSubsystem specimen;
-    public HardwareMap hardwareMap;
     public HangSubsystem hang;
-    private boolean transferring = false;
-    private final Team team;
-    private boolean acceptYellow = false;
 
-    @Deprecated
     public Robot(HardwareMap hardwareMap, Subsystems... subsystems) {
         this.hardwareMap = hardwareMap;
-        this.team = null;
 
         for (Subsystems subsystem : subsystems) {
-            if (subsystem == Subsystems.ALL) {
-                extension = new ExtensionSubsystem(hardwareMap);
-                deposit = new DepositSubsystem(hardwareMap);
-                lift = new LiftSubsystem(hardwareMap);
-                intake = new IntakeSubsystem(hardwareMap);
-                specimen = new SpecimenSubsystem(hardwareMap);
-                hang = new HangSubsystem(hardwareMap);
-            }
-            else if (subsystem == Subsystems.EXTENSION) {
-                extension = new ExtensionSubsystem(hardwareMap);
-            }
-            else if (subsystem == Subsystems.DEPOSIT) {
-                deposit = new DepositSubsystem(hardwareMap);
-            }
-            else if (subsystem == Subsystems.LIFT) {
-                lift = new LiftSubsystem(hardwareMap);
-            }
-            else if (subsystem == Subsystems.SPECIMEN) {
-                specimen = new SpecimenSubsystem(hardwareMap);
-            }
-            else if (subsystem == Subsystems.INTAKE) {
-                intake = new IntakeSubsystem(hardwareMap);
+            switch(subsystem) {
+                case ALL:
+                    extension = new ExtensionSubsystem(hardwareMap);
+                    deposit = new DepositSubsystem(hardwareMap);
+                    lift = new LiftSubsystem(hardwareMap);
+                    intake = new IntakeSubsystem(hardwareMap);
+                    specimen = new SpecimenSubsystem(hardwareMap);
+                    hang = new HangSubsystem(hardwareMap);
+                case INTAKE:
+                    intake = new IntakeSubsystem(hardwareMap);
+                case HANG:
+                    hang = new HangSubsystem(hardwareMap);
+                case LIFT:
+                    lift = new LiftSubsystem(hardwareMap);
+                case DEPOSIT:
+                    deposit = new DepositSubsystem(hardwareMap);
+                case SPECIMEN:
+                    specimen = new SpecimenSubsystem(hardwareMap);
+                case EXTENSION:
+                    extension = new ExtensionSubsystem(hardwareMap);
             }
         }
-    }
-
-    public Robot(HardwareMap hardwareMap, Team team, Subsystems... subsystems) {
-        this.hardwareMap = hardwareMap;
-        this.team = team;
-
-        for (Subsystems subsystem : subsystems) {
-            if (subsystem == Subsystems.ALL) {
-                extension = new ExtensionSubsystem(hardwareMap);
-                deposit = new DepositSubsystem(hardwareMap);
-                lift = new LiftSubsystem(hardwareMap);
-                intake = new IntakeSubsystem(hardwareMap);
-                specimen = new SpecimenSubsystem(hardwareMap);
-                hang = new HangSubsystem(hardwareMap);
-            }
-            else if (subsystem == Subsystems.EXTENSION) {
-                extension = new ExtensionSubsystem(hardwareMap);
-            }
-            else if (subsystem == Subsystems.DEPOSIT) {
-                deposit = new DepositSubsystem(hardwareMap);
-            }
-            else if (subsystem == Subsystems.LIFT) {
-                lift = new LiftSubsystem(hardwareMap);
-            }
-            else if (subsystem == Subsystems.SPECIMEN) {
-                specimen = new SpecimenSubsystem(hardwareMap);
-            }
-            else if (subsystem == Subsystems.INTAKE) {
-                intake = new IntakeSubsystem(hardwareMap);
-            }
-            else if (subsystem == Subsystems.HANG) {
-                hang = new HangSubsystem(hardwareMap);
-            }
-        }
-    }
-
-    public Robot(HardwareMap hardwareMap, Team team, boolean acceptYellow, Subsystems... subsystems) {
-        this.hardwareMap = hardwareMap;
-        this.team = team;
-        this.acceptYellow = acceptYellow;
-
-        for (Subsystems subsystem : subsystems) {
-            if (subsystem == Subsystems.ALL) {
-                extension = new ExtensionSubsystem(hardwareMap);
-                deposit = new DepositSubsystem(hardwareMap);
-                lift = new LiftSubsystem(hardwareMap);
-                intake = new IntakeSubsystem(hardwareMap);
-                specimen = new SpecimenSubsystem(hardwareMap);
-                hang = new HangSubsystem(hardwareMap);
-            }
-            else if (subsystem == Subsystems.EXTENSION) {
-                extension = new ExtensionSubsystem(hardwareMap);
-            }
-            else if (subsystem == Subsystems.DEPOSIT) {
-                deposit = new DepositSubsystem(hardwareMap);
-            }
-            else if (subsystem == Subsystems.LIFT) {
-                lift = new LiftSubsystem(hardwareMap);
-            }
-            else if (subsystem == Subsystems.SPECIMEN) {
-                specimen = new SpecimenSubsystem(hardwareMap);
-            }
-            else if (subsystem == Subsystems.INTAKE) {
-                intake = new IntakeSubsystem(hardwareMap);
-            }
-            else if (subsystem == Subsystems.HANG) {
-                hang = new HangSubsystem(hardwareMap);
-            }
-        }
-    }
-
-    public void setTransferringState(boolean state) {
-        transferring = state;
-    }
-
-    public boolean isTransferring() {
-        return transferring;
-    }
-
-    public void setAcceptYellow(boolean acceptYellow)
-    {
-        this.acceptYellow = acceptYellow;
     }
 
     /*
@@ -164,12 +72,7 @@ public class Robot {
             return acceptYellow;
         }
     }
-
-     */
-
-    public Team getTeam() {
-        return team;
-    }
+    */
 }
 
 
