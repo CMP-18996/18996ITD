@@ -47,7 +47,7 @@ public class ColorPipeline implements VisionProcessor {
         frameDrawing(frame);
 
         // Can be changed to any auxiliary frame for testing
-        return frame;
+        return postBlueThresh;
     }
 
     private void imageProcessing(Mat frame) {
@@ -55,7 +55,7 @@ public class ColorPipeline implements VisionProcessor {
         Imgproc.GaussianBlur(frame, blurred, new Size(5, 5), 0);
 
         // TODO: Needs testing to see if should be RGB2HSV or BGR2HSV
-        Imgproc.cvtColor(blurred, colorCorrected, Imgproc.COLOR_RGB2HSV);
+        Imgproc.cvtColor(blurred, colorCorrected, Imgproc.COLOR_BGR2HSV);
         Core.inRange(colorCorrected, lowerBound, upperBound, postBlueThresh);
 
         Mat hierarchy = new Mat(); // unused but needed

@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?> <!--This is the xml declaration and can be copy-pasted-->
+
+<!--This declares the robot class, and can be copy-pasted.-->
+<Robot type="FirstInspires-FTC">
+
+    <!--This line declares the Control Hub Portal which contains both hubs. It can be copy-pasted-->
+    <LynxUsbDevice name="Control Hub Portal" serialNumber="(embedded)" parentModuleAddress="173">
+
+        <!--This line declares the Expansion Hub. We use RS485 connection, so we declare it with a port.-->
+        <LynxModule name="Expansion Hub 2" port="1">
+
+            <!--These are the Expansion Hub's motors. Change the ports and names of your motors.-->
+            <goBILDA5202SeriesMotor name="extension" port="0"/>
+            <goBILDA5202SeriesMotor name="lift" port="1"/>
+            <goBILDA5202SeriesMotor name="hang" port="3"/>
+
+            <!--These are the Expansion Hub's servos. Change the ports and names of your servos.-->
+            <Servo name="armClaw" port="0"/>
+            <Servo name="depositTrapdoor" port="1"/>
+            <Servo name="wristServo" port="2"/>
+            <ContinuousRotationServo name="intakeRoller2" port="3"/>
+            <Servo name="intakePivot" port="4"/>
+            <Servo name="intakeClaw" port="5"/>
+
+            <AnalogInput name="backLeftUltrasonic" port="3"/>
+
+            <!--This line signifies that the Expansion Hub configuration has ended.-->
+        </LynxModule>
+
+        <!--This line declares the Control Hub and can be copy-pasted.-->
+        <LynxModule name="Control Hub" port="173">
+
+            <!--These are the Control Hub's motors. Change the ports and names of your motors.-->
+            <goBILDA5202SeriesMotor name="leftFront" port="3" />
+            <goBILDA5202SeriesMotor name="rightFront" port="2" />
+            <goBILDA5202SeriesMotor name="leftBack" port="1" />
+            <goBILDA5202SeriesMotor name="rightBack" port="0" />
+
+            <!--This is a REV Color Sensor V3. Since this is an I^2C device, we require the type of device in the configuration as well.-->
+            <RevColorSensorV3 name="colorSensor" port="0" bus="0"/>
+
+            <SparkfunOTOSCorrected name="sensor_otos" port="0" bus="1"/>
+
+            <!--This is a GoBilda Pinpoint Computer. Use this to configure your pinpoint if you are using one of the pinpoint localizers.-->
+            <goBILDAPinpoint name="pinpoint" port="0" bus="2"/>
+            
+            <!--These are the Control Hub's servos. Change the ports and names of your servos.-->
+            <Servo name="armServo" port="0"/>
+            <Servo name="intakeBottomPivot" port="1"/>
+            <ContinuousRotationServo name="intakeRoller1" port="2"/>
+            <Servo name="intakeTopPivot" port="3"/>
+            <Servo name="bucket" port="4"/>
+
+            <AnalogInput name="rightUltrasonic" port="1"/>
+            <AnalogInput name="backRightUltrasonic" port="2"/>
+            <AnalogInput name="backUltrasonic" port="3"/>
+
+            <!--This line signifies that the Control Hub configuration has ended.-->
+        </LynxModule>
+        
+        <!--This line signifies that the Control Hub Portal configuration has ended.-->
+    </LynxUsbDevice>
+    
+    <!--This line signifies that the robot configuration has ended-->
+</Robot>

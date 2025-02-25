@@ -132,8 +132,8 @@ public class LocalizationTest extends OpMode {
         telemetryA.addData("y", poseUpdater.getPose().getY());
         telemetryA.addData("heading", poseUpdater.getPose().getHeading());
         telemetryA.addData("total heading", poseUpdater.getTotalHeading());
-        telemetryA.addData("SIDE", STATICLocalizer.getDistanceFromVoltage(localizer.rightSideUltrasonic.getVoltage()));
-        telemetryA.addData("BACK", STATICLocalizer.getDistanceFromVoltage(localizer.backSideUltrasonic.getVoltage()));
+        //telemetryA.addData("SIDE", STATICLocalizer.getDistanceFromVoltage(localizer.rightSideUltrasonic.getVoltage()));
+        //telemetryA.addData("BACK", STATICLocalizer.getDistanceFromVoltage(localizer.backSideUltrasonic.getVoltage()));
         telemetryA.update();
 
         Drawing.drawPoseHistory(dashboardPoseTracker, "#4CAF50");

@@ -139,7 +139,7 @@ public class FullTeleOp extends CommandOpMode {
                 new ConditionalCommand(
                         new SequentialCommandGroup(
                                 new DepositTrapdoorPosition_INST(robot.deposit, DepositSubsystem.DepositTrapdoorState.CLOSED),
-                                new ZeroLift(robot.lift),
+                                //new ZeroLift(robot.lift),
                                 new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET)
                         ),
                         new ScheduleCommand(
@@ -261,9 +261,6 @@ public class FullTeleOp extends CommandOpMode {
                                 new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.TRANSFER)
                         );
                     }
-                    else {
-                            // 45 logic, if needed
-                    }
                 }
         );
 
@@ -349,7 +346,7 @@ public class FullTeleOp extends CommandOpMode {
         CommandScheduler.getInstance().run();
 
         // Extension Triggers
-        double power = 0.85 * Math.pow(gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER), 5) + 0.15;
+        double power =  - 0.85 * Math.pow(gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER), 3) + 0.1;
 
         if(power != previousPower) {
             robot.extension.setExtensionMotorPower(power);
@@ -384,6 +381,7 @@ public class FullTeleOp extends CommandOpMode {
         }
 
         telemetry.addData("PATH STATE", pathState);
+        telemetry.addData("LIFT STATE", robot.lift.getLiftState());
         telemetry.addData("X VEL", follower.poseUpdater.getVelocity().getXComponent());
         telemetry.addData("Y VEL", follower.poseUpdater.getVelocity().getYComponent());
         telemetry.addData("H VEL", follower.poseUpdater.getAngularVelocity());

@@ -17,7 +17,7 @@ public class PipelineTest extends CommandOpMode {
     ColorPipeline redPipeline;
     ColorPipeline yellowPipeline;
     VisionPortal visionPortal;
-    public static double minSize = 1000;
+    public static double minSize = 10;
     public static double maxSize = 100000;
 
     @Override
@@ -39,9 +39,9 @@ public class PipelineTest extends CommandOpMode {
 
         visionPortal = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(CameraName.class, "Webcam 1"))
-                .addProcessor(bluePipeline)
+                //.addProcessor(bluePipeline)
                 .addProcessor(redPipeline)
-                .addProcessor(yellowPipeline)
+                //.addProcessor(yellowPipeline)
                 .setStreamFormat(VisionPortal.StreamFormat.YUY2)
                 .setAutoStopLiveView(true)
                 .build();
@@ -52,12 +52,12 @@ public class PipelineTest extends CommandOpMode {
         if (redPipeline.specimenDetected()) {
             telemetry.addData("Red Specimen Heading:", redPipeline.getAngle());
         }
-        else if (yellowPipeline.specimenDetected()) {
+       /* else if (yellowPipeline.specimenDetected()) {
             telemetry.addData("Yellow Specimen Heading:", yellowPipeline.getAngle());
         }
         else if (bluePipeline.specimenDetected()) {
             telemetry.addData("Blue Specimen Heading:", bluePipeline.getAngle());
-        }
+        } */
         telemetry.update();
         sleep(50);
     }

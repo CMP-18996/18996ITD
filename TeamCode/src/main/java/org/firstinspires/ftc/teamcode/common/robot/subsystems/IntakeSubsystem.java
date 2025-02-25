@@ -24,14 +24,14 @@ public class IntakeSubsystem extends SubsystemBase {
     public static double ARM_MOVING_POS = 0.5;
     public static double ARM_REST_POS = 0.0;
     public static double ARM_EJECT_POS = 0.75;
-    public static double ARM_FLOOR_POS = 0.77;
-    public static double ARM_TRANSFER_POS = 0.2;
+    public static double ARM_FLOOR_POS = 1.0;
+    public static double ARM_TRANSFER_POS = 0.25;
 
     public static double WRIST_PICK_UP_POS = 0.2;
     public static double WRIST_MOVING_POS = 0.1;
     public static double WRIST_REST_POS = 0.1;
     public static double WRIST_EJECT_POS = 0.6;
-    public static double WRIST_FLOOR_POS = 0.3;
+    public static double WRIST_FLOOR_POS = 0.8;
     public static double WRIST_TRANSFER_POS = 1.0;
 
     public static double PIVOT_0_POS = 0.56;

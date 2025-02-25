@@ -61,7 +61,7 @@ public class ExtensionSubsystem extends SubsystemBase {
     public ExtensionSubsystem(HardwareMap hardwareMap) {
         extensionMotor = hardwareMap.get(DcMotorEx.class, HardwareMapNames.EXTENSION_MOTOR);
 
-        extensionMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        extensionMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         extensionMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         extensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -117,7 +117,7 @@ public class ExtensionSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         if (extensionState == ExtensionState.ZEROING) {
-            extensionMotor.setPower(-0.2);
+            extensionMotor.setPower(0.2);
         }
         else if (!extensionState.equals(ExtensionState.CUSTOM)) {
             int error = getError();
@@ -141,7 +141,7 @@ public class ExtensionSubsystem extends SubsystemBase {
 
             double power = Range.clip(P + I + D + F, -MAX_RETRACTION_SPEED, MAX_EXTENSION_SPEED);
 
-            extensionMotor.setPower(power);
+            extensionMotor.setPower(-power);
         }
     }
 }
