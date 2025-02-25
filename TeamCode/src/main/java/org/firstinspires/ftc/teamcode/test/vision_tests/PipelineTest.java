@@ -13,21 +13,35 @@ import org.firstinspires.ftc.vision.VisionPortal;
 @TeleOp
 @Config
 public class PipelineTest extends CommandOpMode {
-    ColorPipeline colorPipeline;
+    ColorPipeline bluePipeline;
+    ColorPipeline redPipeline;
+    ColorPipeline yellowPipeline;
     VisionPortal visionPortal;
     public static double minSize = 1000;
     public static double maxSize = 100000;
 
     @Override
     public void initialize() {
-        colorPipeline = ColorPipelineBuilder.createBuilder(Color.BLUE)
+        bluePipeline = ColorPipelineBuilder.createBuilder(Color.BLUE)
+                .setMinSize(minSize)
+                .setMaxSize(maxSize)
+                .build();
+
+        redPipeline = ColorPipelineBuilder.createBuilder(Color.BLUE)
+                .setMinSize(minSize)
+                .setMaxSize(maxSize)
+                .build();
+
+        yellowPipeline = ColorPipelineBuilder.createBuilder(Color.BLUE)
                 .setMinSize(minSize)
                 .setMaxSize(maxSize)
                 .build();
 
         visionPortal = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(CameraName.class, "Webcam 1"))
-                .addProcessor(colorPipeline)
+                .addProcessor(bluePipeline)
+                .addProcessor(redPipeline)
+                .addProcessor(yellowPipeline)
                 .setStreamFormat(VisionPortal.StreamFormat.YUY2)
                 .setAutoStopLiveView(true)
                 .build();
@@ -35,11 +49,14 @@ public class PipelineTest extends CommandOpMode {
 
     @Override
     public void run() {
-        if (colorPipeline.specimenDetected()) {
-            telemetry.addData("Specimen Heading:", colorPipeline.getAngle());
+        if (redPipeline.specimenDetected()) {
+            telemetry.addData("Red Specimen Heading:", redPipeline.getAngle());
         }
-        else {
-            telemetry.addLine("No Specimen Detected");
+        else if (yellowPipeline.specimenDetected()) {
+            telemetry.addData("Yellow Specimen Heading:", yellowPipeline.getAngle());
+        }
+        else if (bluePipeline.specimenDetected()) {
+            telemetry.addData("Blue Specimen Heading:", bluePipeline.getAngle());
         }
         telemetry.update();
         sleep(50);
