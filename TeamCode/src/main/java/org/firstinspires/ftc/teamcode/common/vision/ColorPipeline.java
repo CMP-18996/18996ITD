@@ -5,6 +5,8 @@ import android.graphics.Canvas;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.teamcode.common.robot.Color;
 import org.firstinspires.ftc.vision.VisionProcessor;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -16,12 +18,29 @@ import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
 
+/*
+
+blue
+lower 92 52 114
+upper 132 255 255
+
+red
+lower 0 92 90
+upper 5 255 255
+
+yellow
+lower 12 75 110
+upper 37 255 255
+
+ */
+
 public class ColorPipeline implements VisionProcessor {
     // Constants and Scalars TODO: Tune min and max size
     Scalar lowerBound;
     Scalar upperBound;
-    double minSize = 100000.0;
-    double maxSize = 200000.0;
+    double minSize = 20000;
+    double maxSize = 200000000;
+    int maxPoint = 1;
 
     // State values
     boolean currentlyDetected = false;
@@ -43,18 +62,23 @@ public class ColorPipeline implements VisionProcessor {
     double preProcessingAngle;
     @Override
     public Mat processFrame(Mat frame, long captureTimeNanos) {
+        if (frame == null) return null;
         imageProcessing(frame);
         frameDrawing(frame);
 
         // Can be changed to any auxiliary frame for testing
-        return postBlueThresh;
+        return null;
     }
 
     private void imageProcessing(Mat frame) {
-        // remove if too slow
-        Imgproc.GaussianBlur(frame, blurred, new Size(5, 5), 0);
+        // Check if the frame has only 1 channel (grayscale)
+        // If needed, we can release Mats here before reusing them:
+        blurred.release();
+        colorCorrected.release();
+        postBlueThresh.release();
 
-        // TODO: Needs testing to see if should be RGB2HSV or BGR2HSV
+        // Processing the image
+        Imgproc.GaussianBlur(frame, blurred, new Size(7, 7), 0);
         Imgproc.cvtColor(blurred, colorCorrected, Imgproc.COLOR_BGR2HSV);
         Core.inRange(colorCorrected, lowerBound, upperBound, postBlueThresh);
 
@@ -64,7 +88,7 @@ public class ColorPipeline implements VisionProcessor {
         if (contours.isEmpty()) {
             currentlyDetected = false;
             return;
-        };
+        }
 
         contour = findLargestContour(contours);
         if (contour == null) {
@@ -75,13 +99,15 @@ public class ColorPipeline implements VisionProcessor {
         contour2f = new MatOfPoint2f(contour.toArray());
         rect = Imgproc.minAreaRect(contour2f);
         preProcessingAngle = rect.angle;
+
         if (rect.size.width > rect.size.height) {
             detectedAngle = preProcessingAngle - 90;
-        }
-        else {
+        } else {
             detectedAngle = preProcessingAngle;
         }
+
     }
+
 
     private void frameDrawing(Mat frame) {
 
@@ -108,6 +134,7 @@ public class ColorPipeline implements VisionProcessor {
     public double getAngle() {
         return detectedAngle;
     }
+
 
 
     public ColorPipeline(Color color) {
