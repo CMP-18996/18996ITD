@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoSpecimenG
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.HoldSampleCommand;
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.IdleIntakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.PickupSampleCommand;
+import org.firstinspires.ftc.teamcode.common.commands.complexCommands.RestIntakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.extension.ExtensionSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeArmSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakePivotSetPosition_INST;
@@ -50,7 +51,7 @@ public class FiveSpecimenAuto extends OpMode {
 
     private final Pose startPose = new Pose(7.5625, 55.3125, Math.toRadians(0));
 
-    private final Pose preloadDepositPose = new Pose(40, 72, Math.toRadians(0));
+    private final Pose preloadDepositPose = new Pose(39, 72, Math.toRadians(0));
 
     private final Pose chamberPose = new Pose(38, 66, Math.toRadians(0));
 
@@ -84,17 +85,20 @@ public class FiveSpecimenAuto extends OpMode {
         pickupSpike1 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(chamberPose), new Point(spikePickup1)))
                 .setLinearHeadingInterpolation(chamberPose.getHeading(), spikePickup1.getHeading())
+                .addParametricCallback(0.45, () -> CommandScheduler.getInstance().schedule(new RestIntakeCommand(robot.intake)))
                 .addParametricCallback(0.5, () -> CommandScheduler.getInstance().schedule(new ExtendToIntakeCommand(robot.extension, robot.intake)))
                 .build();
 
         pickupSpike2 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(chamberPose), new Point(spikePickup2)))
                 .setLinearHeadingInterpolation(chamberPose.getHeading(), spikePickup2.getHeading())
+                .addParametricCallback(0.45, () -> CommandScheduler.getInstance().schedule(new RestIntakeCommand(robot.intake)))
                 .build();
 
         pickupSpike3 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(chamberPose), new Point(spikePickup3)))
                 .setLinearHeadingInterpolation(chamberPose.getHeading(), spikePickup3.getHeading())
+                .addParametricCallback(0.45, () -> CommandScheduler.getInstance().schedule(new RestIntakeCommand(robot.intake)))
                 .build();
 
         spike3toSpecimen = follower.pathBuilder()
@@ -154,7 +158,7 @@ public class FiveSpecimenAuto extends OpMode {
                 break;
             case 3:
                 // GET BLOCK
-                if(!follower.isBusy()) {
+                if(follower.getCurrentTValue() > 0.975) {
                     CommandScheduler.getInstance().schedule(new PickupSampleCommand(robot.intake));
 
                     setPathState(4);
@@ -162,7 +166,7 @@ public class FiveSpecimenAuto extends OpMode {
                 break;
             case 4:
                 // swing
-                if(!robot.intake.getCurrentColor().equals(Color.NONE) || pathTimer.getElapsedTime() > 750) {
+                if(!robot.intake.getCurrentColor().equals(Color.NONE) || pathTimer.getElapsedTime() > 1000) {
                     CommandScheduler.getInstance().schedule(new HoldSampleCommand(robot.intake));
                     CommandScheduler.getInstance().schedule(new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.INSPECTION));
 
@@ -200,7 +204,7 @@ public class FiveSpecimenAuto extends OpMode {
                 break;
             case 8:
                 // swing
-                if(!robot.intake.getCurrentColor().equals(Color.NONE) || pathTimer.getElapsedTime() > 750) {
+                if(!robot.intake.getCurrentColor().equals(Color.NONE) || pathTimer.getElapsedTime() > 1000) {
                     CommandScheduler.getInstance().schedule(new HoldSampleCommand(robot.intake));
                     CommandScheduler.getInstance().schedule(new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.INSPECTION));
 
@@ -345,6 +349,17 @@ public class FiveSpecimenAuto extends OpMode {
 
         //It doesn't matter which team it is due to symmetry :)
         robot = new Robot(hardwareMap, Subsystems.INTAKE, Subsystems.DEPOSIT, Subsystems.EXTENSION, Subsystems.SPECIMEN, Subsystems.LIFT);
+
+        CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
+                new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.TRANSFER),
+                new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.TRANSFER),
+                new IntakePivotSetPosition_INST(robot.intake, IntakeSubsystem.IntakePivotState.PIVOT_TRANSFER),
+
+                new WaitCommand(500),
+
+                new IntakeRollerSetState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.DISABLED),
+                new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.BUCKET)
+        ));
     }
 
     @Override

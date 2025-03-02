@@ -16,7 +16,7 @@ public class ExtendToIntakeCommand extends SequentialCommandGroup {
         addCommands(
                 new ExtensionSetPosition_INST(extensionSubsystem, ExtensionSubsystem.ExtensionState.EXTENDED),
 
-                new IdleIntakeCommand(intakeSubsystem)
+                new RestIntakeCommand(intakeSubsystem)
         );
     }
 }

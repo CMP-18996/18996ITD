@@ -34,7 +34,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public static double WRIST_MOVING_POS = 0.1;
     public static double WRIST_REST_POS = 0.1;
     public static double WRIST_EJECT_POS = 0.6;
-    public static double WRIST_FLOOR_POS = 0.8;
+    public static double WRIST_FLOOR_POS = 0.4;
     public static double WRIST_TRANSFER_POS = 0.8;
     public static double WRIST_BUCKET_POS = 0.9;
 

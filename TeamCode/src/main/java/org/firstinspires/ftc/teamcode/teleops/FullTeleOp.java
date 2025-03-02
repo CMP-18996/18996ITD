@@ -421,6 +421,8 @@ public class FullTeleOp extends CommandOpMode {
         telemetry.addData("X VEL", follower.poseUpdater.getVelocity().getXComponent());
         telemetry.addData("Y VEL", follower.poseUpdater.getVelocity().getYComponent());
         telemetry.addData("H VEL", follower.poseUpdater.getAngularVelocity());
+
+        telemetry.addData("Lift power", robot.lift.getPower());
         telemetry.update();
 
         if(pathState != 0) {
