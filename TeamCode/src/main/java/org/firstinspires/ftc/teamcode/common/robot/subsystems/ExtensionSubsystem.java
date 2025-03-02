@@ -21,6 +21,7 @@ public class ExtensionSubsystem extends SubsystemBase {
 
     public static int TRANSFER_POS = 0;
     public static int EXTENDED_POS = 620;
+    public static int MIDDLE_POS = 200;
 
     public static double MAX_EXTENSION_SPEED = 1.0;
     public static double MAX_RETRACTION_SPEED = 1.0;
@@ -38,7 +39,8 @@ public class ExtensionSubsystem extends SubsystemBase {
         EXTENDED,
         CUSTOM,
         ZEROING,
-        INSPECTION;
+        INSPECTION,
+        MIDDLE;
 
         public int getValue() {
             switch (this) {
@@ -52,6 +54,8 @@ public class ExtensionSubsystem extends SubsystemBase {
                     return 0;
                 case INSPECTION:
                     return 500;
+                case MIDDLE:
+                    return MIDDLE_POS;
                 default:
                     throw new IllegalArgumentException();
             }
