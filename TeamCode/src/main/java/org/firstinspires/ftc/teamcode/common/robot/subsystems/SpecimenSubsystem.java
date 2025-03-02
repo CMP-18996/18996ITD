@@ -7,7 +7,9 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorImpl;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -23,15 +25,15 @@ public class SpecimenSubsystem extends SubsystemBase {
     public static double WRIST_WALL_POS = 0.3;
     public static double WRIST_REST_POS = 0.0;
 
-    public static double GRIPPER_OPEN_POS = 0.68;
-    public static double GRIPPER_CLOSED_POS = 0.13;
+    public static double GRIPPER_OPEN_POS = 0.65;
+    public static double GRIPPER_CLOSED_POS = 0.2;
 
     private double armValue;
     private double wristValue;
 
-    private final Servo wristServo;
-    private final Servo gripperServo;
-    private final Servo armServo;
+    private final ServoImplEx wristServo;
+    private final ServoImplEx gripperServo;
+    private final ServoImplEx armServo;
 
     private SpecimenArmState specimenArmState;
     private SpecimenGripperState specimenGripperState;
@@ -85,9 +87,13 @@ public class SpecimenSubsystem extends SubsystemBase {
     }
 
     public SpecimenSubsystem(HardwareMap hardwareMap) {
-        armServo = hardwareMap.get(Servo.class, HardwareMapNames.ARM_MOTOR);
-        wristServo = hardwareMap.get(Servo.class, HardwareMapNames.WRIST_SERVO);
-        gripperServo = hardwareMap.get(Servo.class, HardwareMapNames.GRIPPER_SERVO);
+        armServo = hardwareMap.get(ServoImplEx.class, HardwareMapNames.ARM_MOTOR);
+        wristServo = hardwareMap.get(ServoImplEx.class, HardwareMapNames.WRIST_SERVO);
+        gripperServo = hardwareMap.get(ServoImplEx.class, HardwareMapNames.GRIPPER_SERVO);
+
+        armServo.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        wristServo.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        gripperServo.setPwmRange(new PwmControl.PwmRange(500, 2500));
 
         armServo.setDirection(Servo.Direction.FORWARD);
         wristServo.setDirection(Servo.Direction.FORWARD);

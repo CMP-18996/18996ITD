@@ -13,9 +13,9 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 @Config
 public class LiftSubsystem extends SubsystemBase {
-    public static double Kp = 0.04;
-    public static double Ki = 0.00;
-    public static double Kd = 0.001;
+    public static double Kp = 0.09;
+    public static double Ki = 0.0;
+    public static double Kd = 0.0;
     public static double Kf = 0.4;
     public static int INTEGRAL_ENABLE_POINT = 20;
 
@@ -24,7 +24,7 @@ public class LiftSubsystem extends SubsystemBase {
     public static int HIGH_BASKET_POS = 800;
 
     public static double MAX_UP_SPEED = 1.0;
-    public static double MAX_DOWN_SPEED = 0.6;
+    public static double MAX_DOWN_SPEED = 1.0;
 
     private final DcMotorEx liftMotor;
 

@@ -7,20 +7,20 @@
     <LynxUsbDevice name="Control Hub Portal" serialNumber="(embedded)" parentModuleAddress="173">
 
         <!--This line declares the Expansion Hub. We use RS485 connection, so we declare it with a port.-->
-        <LynxModule name="Expansion Hub 2" port="1">
+        <LynxModule name="Expansion Hub" port="1">
 
             <!--These are the Expansion Hub's motors. Change the ports and names of your motors.-->
             <goBILDA5202SeriesMotor name="extension" port="0"/>
-            <goBILDA5202SeriesMotor name="lift" port="1"/>
-            <goBILDA5202SeriesMotor name="hang" port="3"/>
+            <goBILDA5202SeriesMotor name="lift" port="3"/>
+            <goBILDA5202SeriesMotor name="hang" port="1"/>
 
             <!--These are the Expansion Hub's servos. Change the ports and names of your servos.-->
             <Servo name="armClaw" port="0"/>
-            <Servo name="depositTrapdoor" port="1"/>
+            <Servo name="intakeClaw" port="1"/>
             <Servo name="wristServo" port="2"/>
             <ContinuousRotationServo name="intakeRoller2" port="3"/>
             <Servo name="intakePivot" port="4"/>
-            <Servo name="intakeClaw" port="5"/>
+            <Servo name="depositTrapdoor" port="5"/>
 
             <AnalogInput name="backLeftUltrasonic" port="3"/>
 
@@ -37,7 +37,7 @@
             <goBILDA5202SeriesMotor name="rightBack" port="0" />
 
             <!--This is a REV Color Sensor V3. Since this is an I^2C device, we require the type of device in the configuration as well.-->
-            <RevColorSensorV3 name="colorSensor" port="0" bus="0"/>
+            <RevColorSensorV3 name="colorSensor" port="1" bus="0"/>
 
             <SparkfunOTOSCorrected name="sensor_otos" port="0" bus="1"/>
 

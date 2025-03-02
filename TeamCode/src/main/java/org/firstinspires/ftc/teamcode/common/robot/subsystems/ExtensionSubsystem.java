@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 @Config
 public class ExtensionSubsystem extends SubsystemBase {
-    public static double Kp = 0.011;
+    public static double Kp = 0.016;
     public static double Ki = 0.000000;
     public static double Kd = 0.0003;
     public static double Kf = 0.0;

@@ -51,29 +51,37 @@ public class TransferSampleCommand extends SequentialCommandGroup {
                         new SequentialCommandGroup(
                                 new IntakeArmSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeArmState.TRANSFER),
                                 new IntakeWristSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeWristState.TRANSFER),
+                                new IntakePivotSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakePivotState.PIVOT_TRANSFER),
 
-                                new WaitCommand(500),
+                                new WaitCommand(2000),
 
                                 new IntakeRollerSetState_INST(intakeSubsystem, IntakeSubsystem.IntakeRollerState.DISABLED),
+                                new IntakeWristSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeWristState.BUCKET),
 
-                                new WaitCommand(100),
+                                new WaitCommand(1000),
 
-                                //new IntakeClawSetState_INST(intakeSubsystem, IntakeSubsystem.IntakeClawState.OPEN),
-                                new IntakeRollerSetState_INST(intakeSubsystem, IntakeSubsystem.IntakeRollerState.REVERSING),
+                                new IntakeClawSetState_INST(intakeSubsystem, IntakeSubsystem.IntakeClawState.OPEN),
+                                new IntakeRollerSetState_INST(intakeSubsystem, IntakeSubsystem.IntakeRollerState.TRANSFER),
+
+                                new WaitCommand(1000),
+
+                                new IntakeClawSetState_INST(intakeSubsystem, IntakeSubsystem.IntakeClawState.CLOSED),
 
                                 new WaitCommand(1000),
 
                                 new IdleIntakeCommand(intakeSubsystem),
+                                new IntakePivotSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakePivotState.PIVOT_0),
                                 new DepositTrapdoorPosition_INST(depositSubsystem, DepositSubsystem.DepositTrapdoorState.CLOSED),
-                                new ExtensionSetPosition_INST(extensionSubsystem, ExtensionSubsystem.ExtensionState.CUSTOM),
+                                new ExtensionSetPosition_INST(extensionSubsystem, ExtensionSubsystem.ExtensionState.CUSTOM)
 
-                                new WaitCommand(100),
+                                //new WaitCommand(100),
 
-                                new LiftSetPosition_INST(liftSubsystem, LiftSubsystem.LiftState.HIGH_BUCKET),
-                                new DepositSetPosition_INST(depositSubsystem, DepositSubsystem.BucketState.DEPOSIT)
+                                //new LiftSetPosition_INST(liftSubsystem, LiftSubsystem.LiftState.HIGH_BUCKET),
+                                //new DepositSetPosition_INST(depositSubsystem, DepositSubsystem.BucketState.DEPOSIT)
                         ),
                         new ScheduleCommand(
                                 new ExtensionSetPosition_INST(extensionSubsystem, ExtensionSubsystem.ExtensionState.CUSTOM),
+                                new IntakePivotSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakePivotState.PIVOT_0),
                                 new IdleIntakeCommand(intakeSubsystem)
                         ),
                         () -> liftSubsystem.getError() < 5 && extensionSubsystem.getError() < 5

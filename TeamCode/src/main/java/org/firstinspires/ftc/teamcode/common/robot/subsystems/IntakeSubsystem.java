@@ -5,9 +5,12 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.pedropathing.localization.Pose;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.CRServoImplEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.checkerframework.checker.units.qual.C;
@@ -20,30 +23,33 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 
 @Config
 public class IntakeSubsystem extends SubsystemBase {
-    public static double ARM_PICK_UP_POS = 0.7;
-    public static double ARM_MOVING_POS = 0.5;
-    public static double ARM_REST_POS = 0.0;
-    public static double ARM_EJECT_POS = 0.75;
-    public static double ARM_FLOOR_POS = 1.0;
-    public static double ARM_TRANSFER_POS = 0.25;
+    public static double ARM_PICK_UP_POS = 0.5;
+    public static double ARM_MOVING_POS = 0.4;
+    public static double ARM_REST_POS = 0.2;
+    public static double ARM_EJECT_POS = 0.5;
+    public static double ARM_FLOOR_POS = 0.6;
+    public static double ARM_TRANSFER_POS = 0.1;
 
-    public static double WRIST_PICK_UP_POS = 0.2;
+    public static double WRIST_PICK_UP_POS = 0.15;
     public static double WRIST_MOVING_POS = 0.1;
     public static double WRIST_REST_POS = 0.1;
     public static double WRIST_EJECT_POS = 0.6;
     public static double WRIST_FLOOR_POS = 0.8;
-    public static double WRIST_TRANSFER_POS = 1.0;
+    public static double WRIST_TRANSFER_POS = 0.8;
+    public static double WRIST_BUCKET_POS = 0.9;
 
-    public static double PIVOT_0_POS = 0.56;
-    public static double PIVOT_90_POS = 0;
+    public static double PIVOT_0_POS = 0.65;
+    public static double PIVOT_90_POS = 0.35;
+    public static double PIVOT_TRANSFER_POS = 0.65;
     public static double PIVOT_LOCK_POS = 0.0;
 
     public static double ROLLER_ACTIVE = 1.0;
-    public static double ROLLER_HOLD = 0.02;
+    public static double ROLLER_HOLD = 0.1;
     public static double ROLLER_DISABLED = 0.0;
     public static double ROLLER_REVERSING = -1.0;
+    public static double ROLLER_TRANSFER = -0.1;
 
-    public static double CLAW_OPEN_POS = 0.32;
+    public static double CLAW_OPEN_POS = 0.35;
     public static double CLAW_CLOSED_POS = 0.5;
 
     public static double ALPHA_CUTOFF = 200; // change to distance
@@ -65,12 +71,13 @@ public class IntakeSubsystem extends SubsystemBase {
             new Position(null, 1, 1, 1, 0),
             new Position(null, 1, 1, 1, 0));
 
-    private final CRServo intakeRollerServo1;
-    private final CRServo intakeRollerServo2;
-    private final Servo intakePivotServo;
-    private final Servo intakeArmServo;
-    private final Servo intakeWristServo;
-    public final Servo intakeClawServo;
+    private final CRServoImplEx intakeRollerServo1;
+    private final CRServoImplEx intakeRollerServo2;
+    private final ServoImplEx intakePivotServo;
+    private final ServoImplEx intakeArmServo;
+    private final ServoImplEx intakeWristServo;
+    private final ServoImplEx intakeClawServo;
+
     private final RevColorSensorV3 colorSensor;
 
     private IntakeRollerState intakeRollerState;
@@ -89,7 +96,8 @@ public class IntakeSubsystem extends SubsystemBase {
         ACTIVE,
         HOLD,
         DISABLED,
-        REVERSING;
+        REVERSING,
+        TRANSFER;
 
         public double getValue() {
             switch (this) {
@@ -101,6 +109,8 @@ public class IntakeSubsystem extends SubsystemBase {
                     return ROLLER_DISABLED;
                 case REVERSING:
                     return ROLLER_REVERSING;
+                case TRANSFER:
+                    return ROLLER_TRANSFER;
                 default:
                     throw new IllegalArgumentException();
             }
@@ -141,7 +151,8 @@ public class IntakeSubsystem extends SubsystemBase {
         PICK_UP,
         EJECT,
         FLOOR,
-        TRANSFER;
+        TRANSFER,
+        BUCKET;
 
         public double getValue() {
             switch (this) {
@@ -157,6 +168,8 @@ public class IntakeSubsystem extends SubsystemBase {
                     return WRIST_FLOOR_POS;
                 case TRANSFER:
                     return WRIST_TRANSFER_POS;
+                case BUCKET:
+                    return WRIST_BUCKET_POS;
                 default:
                     throw new IllegalArgumentException();
             }
@@ -166,7 +179,8 @@ public class IntakeSubsystem extends SubsystemBase {
     public enum IntakePivotState {
         PIVOT_0,
         PIVOT_90,
-        PIVOT_LOCK;
+        PIVOT_LOCK,
+        PIVOT_TRANSFER;
 
         public double getValue() {
             switch (this) {
@@ -176,6 +190,8 @@ public class IntakeSubsystem extends SubsystemBase {
                     return PIVOT_90_POS;
                 case PIVOT_LOCK:
                     return PIVOT_LOCK_POS;
+                case PIVOT_TRANSFER:
+                    return PIVOT_TRANSFER_POS;
                 default:
                     throw new IllegalArgumentException();
             }
@@ -204,14 +220,23 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public IntakeSubsystem(HardwareMap hardwareMap) {
-        intakeRollerServo1 = hardwareMap.get(CRServo.class, HardwareMapNames.INTAKE_ROLLER_1);
-        intakeRollerServo2 = hardwareMap.get(CRServo.class, HardwareMapNames.INTAKE_ROLLER_2);
+        intakeRollerServo1 = hardwareMap.get(CRServoImplEx.class, HardwareMapNames.INTAKE_ROLLER_1);
+        intakeRollerServo2 = hardwareMap.get(CRServoImplEx.class, HardwareMapNames.INTAKE_ROLLER_2);
 
-        intakePivotServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_PIVOT);
-        intakeArmServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_BOTTOM_PIVOT);
-        intakeWristServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_TOP_PIVOT);
-        intakeClawServo = hardwareMap.get(Servo.class, HardwareMapNames.INTAKE_CLAW);
+        intakePivotServo = hardwareMap.get(ServoImplEx.class, HardwareMapNames.INTAKE_PIVOT);
+        intakeArmServo = hardwareMap.get(ServoImplEx.class, HardwareMapNames.INTAKE_BOTTOM_PIVOT);
+        intakeWristServo = hardwareMap.get(ServoImplEx.class, HardwareMapNames.INTAKE_TOP_PIVOT);
+        intakeClawServo = hardwareMap.get(ServoImplEx.class, HardwareMapNames.INTAKE_CLAW);
+
         colorSensor = hardwareMap.get(RevColorSensorV3.class, HardwareMapNames.INTAKE_COLOR_SENSOR);
+
+        intakeRollerServo1.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        intakeRollerServo2.setPwmRange(new PwmControl.PwmRange(500, 2500));
+
+        intakePivotServo.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        intakeArmServo.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        intakeWristServo.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        intakeClawServo.setPwmRange(new PwmControl.PwmRange(500, 2500));
 
         intakeRollerServo1.setDirection(DcMotorSimple.Direction.FORWARD);
         intakeRollerServo2.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -220,6 +245,7 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeArmServo.setDirection(Servo.Direction.FORWARD);
         intakeWristServo.setDirection(Servo.Direction.FORWARD);
         intakeClawServo.setDirection(Servo.Direction.FORWARD);
+
         colorSensor.enableLed(true);
 
         this.setIntakeRollerState(IntakeRollerState.DISABLED);

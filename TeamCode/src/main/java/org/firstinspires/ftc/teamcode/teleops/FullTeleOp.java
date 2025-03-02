@@ -17,6 +17,7 @@ import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
 import com.pedropathing.util.Timer;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.common.commands.autoCommands.AutoSpecimenDeposit;
@@ -36,7 +37,6 @@ import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeRollerSetStat
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetColorSensorStatus_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeWristSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.lift.LiftSetPosition_INST;
-import org.firstinspires.ftc.teamcode.common.commands.lift.ZeroLift;
 import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetArmPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetGripperPosition_INST;
 import org.firstinspires.ftc.teamcode.common.robot.Color;
@@ -52,13 +52,15 @@ import org.firstinspires.ftc.teamcode.common.robot.subsystems.Subsystems;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
+import java.util.List;
+
 @TeleOp
 public class FullTeleOp extends CommandOpMode {
     private Robot robot;
     private int pathState = 0;
     private Timer pathTimer;
     private Color specimenColor = Color.BLUE;
-    private boolean transferYellow = false;
+    private boolean transfer = false;
     //private boolean transferring = false;
 
     private GamepadEx gamepad_1;
@@ -72,14 +74,12 @@ public class FullTeleOp extends CommandOpMode {
     private final Pose specControl2 = new Pose(24.46, 42.18);
 
     private final Pose humanPlayerDepositPose = new Pose(48, 20);
-    private final Pose humanPlayerDepositIntermediate = new Pose(66, 23);
-    private final Pose humanPlayerDepositControl = new Pose(57.6, 22.9);
 
     private double previousPower = 0;
 
     private Follower follower;
 
-    private PathChain wallToChamber, chamberToWall, humanPlayerDeposit1, humanPlayerDeposit2;
+    private PathChain wallToChamber, chamberToWall;
 
     public void runOpMode() throws InterruptedException {
         waitForStart();
@@ -97,6 +97,12 @@ public class FullTeleOp extends CommandOpMode {
     @Override
     public void initialize() {
         robot = new Robot(hardwareMap, Subsystems.ALL);
+
+        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
+
+        for (LynxModule hub : allHubs) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.OFF);
+        }
 
         robot.specimen.setSpecimenArmState(SpecimenSubsystem.SpecimenArmState.WALL);
         CommandScheduler.getInstance().schedule(new IdleIntakeCommand(robot.intake));
@@ -119,12 +125,6 @@ public class FullTeleOp extends CommandOpMode {
                 .addPath(new BezierLine(new Point(chamberPose), new Point(wallPose)))
                 .setConstantHeadingInterpolation(wallPose.getHeading())
                 .setZeroPowerAccelerationMultiplier(2)
-                .build();
-
-        humanPlayerDeposit2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(humanPlayerDepositIntermediate), new Point(humanPlayerDepositPose)))
-                .setTangentHeadingInterpolation()
-                .setZeroPowerAccelerationMultiplier(10)
                 .build();
 
         gamepad_1 = new GamepadEx(gamepad1);
@@ -167,7 +167,12 @@ public class FullTeleOp extends CommandOpMode {
         );
 
         gamepad_1.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
-                new TransferSampleCommand(robot.extension, robot.intake, robot.deposit, robot.lift)
+                new SequentialCommandGroup (
+                        new TransferSampleCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
+                        new WaitCommand(100),
+                        new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET)
+                        //new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.DEPOSIT)
+                )
         );
 
         // deposit deposit
@@ -237,7 +242,8 @@ public class FullTeleOp extends CommandOpMode {
                     }
                     else if(!robot.lift.getLiftState().equals(LiftSubsystem.LiftState.TRANSFER)) {
                         schedule(
-                               new DepositTrapdoorPosition_INST(robot.deposit, DepositSubsystem.DepositTrapdoorState.OPEN)
+                               //new DepositTrapdoorPosition_INST(robot.deposit, DepositSubsystem.DepositTrapdoorState.OPEN)
+                                new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.DEPOSIT)
                         );
                     }
                     else {
@@ -261,6 +267,7 @@ public class FullTeleOp extends CommandOpMode {
                                 new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.TRANSFER)
                         );
                     }
+                    else {}
                 }
         );
 
@@ -269,13 +276,14 @@ public class FullTeleOp extends CommandOpMode {
                 () -> {
                     gamepad1.rumbleBlips(1);
                     robot.extension.setExtensionState(ExtensionSubsystem.ExtensionState.TRANSFER);
-                    humanPlayerDeposit1 = follower.pathBuilder()
-                            .addPath(new BezierCurve(new Point(follower.getPose()), new Point(humanPlayerDepositControl), new Point(humanPlayerDepositIntermediate)))
-                            .setTangentHeadingInterpolation()
-                            .setReversed(true)
-                            .setZeroPowerAccelerationMultiplier(10)
-                            .build();
-                    follower.followPath(humanPlayerDeposit1);
+                    follower.followPath(
+                            follower.pathBuilder()
+                                    .addPath(new BezierLine(follower.getPose(),
+                                            new Pose(follower.getPose().getX(), follower.getPose().getY() - 20)))
+                                    .setConstantHeadingInterpolation(90)
+                                    .setZeroPowerAccelerationMultiplier(10)
+                                    .build()
+                    );
                     setPathState(4);
                 }
         );
@@ -346,7 +354,7 @@ public class FullTeleOp extends CommandOpMode {
         CommandScheduler.getInstance().run();
 
         // Extension Triggers
-        double power =  - 0.85 * Math.pow(gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER), 3) + 0.1;
+        double power =  Math.pow(gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) - gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER), 3);
 
         if(power != previousPower) {
             robot.extension.setExtensionMotorPower(power);
@@ -359,13 +367,29 @@ public class FullTeleOp extends CommandOpMode {
             gamepad1.rumbleBlips(2);
 
             if (robot.intake.getCurrentColor().equals(Color.YELLOW)) { // yellow!
-                if (transferYellow) {
-                    schedule(new TransferSampleCommand(robot.extension, robot.intake, robot.deposit, robot.lift));
+                if (transfer) {
+                    schedule(new SequentialCommandGroup (
+                            new TransferSampleCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
+                            new WaitCommand(100),
+                            new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET)
+                            //new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.DEPOSIT)
+                    ));
                 } else {
                     schedule(new HoldSampleCommand(robot.intake));
                 }
             } else if (robot.intake.getCurrentColor().equals(specimenColor)) { // red or blue, the good one
-                schedule(new HoldSampleCommand(robot.intake));
+                if (transfer) {
+                    schedule(
+                            new SequentialCommandGroup (
+                                    new TransferSampleCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
+                                    new WaitCommand(100),
+                                    new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET),
+                                    new DepositSetPosition_INST(robot.deposit, DepositSubsystem.BucketState.DEPOSIT)
+                            )
+                    );
+                } else {
+                    schedule(new HoldSampleCommand(robot.intake));
+                }
             } else { // bad
                 schedule(
                         new SequentialCommandGroup(
@@ -422,8 +446,14 @@ public class FullTeleOp extends CommandOpMode {
                 break;
             case 4:
                 if (follower.getCurrentTValue() > 0.9) {
-                    follower.followPath(humanPlayerDeposit2);
-                    robot.extension.setExtensionState(ExtensionSubsystem.ExtensionState.EXTENDED);
+                    follower.followPath(
+                            follower.pathBuilder()
+                                    .addPath(new BezierLine(follower.getPose(), humanPlayerDepositPose))
+                                    .setTangentHeadingInterpolation()
+                                    .setZeroPowerAccelerationMultiplier(10)
+                                    .addParametricCallback(0.8, () -> robot.extension.setExtensionState(ExtensionSubsystem.ExtensionState.EXTENDED))
+                                    .build()
+                    );
                     setPathState(5);
                 }
                 break;
@@ -439,7 +469,7 @@ public class FullTeleOp extends CommandOpMode {
 
                                 new IdleIntakeCommand(robot.intake),
 
-                                new ExtensionSetPosition(robot.extension, ExtensionSubsystem.ExtensionState.TRANSFER),
+                                //new ExtensionSetPosition(robot.extension, ExtensionSubsystem.ExtensionState.TRANSFER),
                                 new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
                         )
                     );
