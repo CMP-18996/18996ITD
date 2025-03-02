@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.auto;
 
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.BezierCurve;
@@ -15,6 +16,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.ExtendToIntakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.PickupSampleCommand;
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.TransferSampleCommand;
+import org.firstinspires.ftc.teamcode.common.commands.lift.LiftSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.robot.Color;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.Team;
@@ -35,11 +37,11 @@ public class FourSampleAuto extends OpMode {
 
     private final Pose depositPose = new Pose(12.7, 133.2, Math.toRadians(315));
 
-    private final Pose spikePickup1 = new Pose(17.7, 128.5, Math.toRadians(346));
+    private final Pose spikePickup1 = new Pose(18.5, 128.5, Math.toRadians(346));
 
-    private final Pose spikePickup2 = new Pose(20.226, 131.17, Math.toRadians(0));
+    private final Pose spikePickup2 = new Pose(21, 131.17, Math.toRadians(0));
 
-    private final Pose spikePickup3 = new Pose(18.38, 129.7575, Math.toRadians(24));
+    private final Pose spikePickup3 = new Pose(19, 129.7575, Math.toRadians(24));
 
     private final Pose submersible = new Pose(72, 98, Math.toRadians(270));
 
@@ -104,6 +106,8 @@ public class FourSampleAuto extends OpMode {
                     CommandScheduler.getInstance().schedule(new ExtendToIntakeCommand(robot.extension, robot.intake));
                     robot.intake.setIntakeLockAngle(spikePickup1.getHeading());
                     robot.intake.setIntakePivotState(IntakeSubsystem.IntakePivotState.PIVOT_LOCK);
+                    robot.lift.setLiftState(LiftSubsystem.LiftState.TRANSFER);
+
 
                     setPathState(2);
                 }
@@ -122,7 +126,10 @@ public class FourSampleAuto extends OpMode {
                 break;
             case 4:
                 if (robot.intake.getCurrentColor().equals(Color.YELLOW) || pathTimer.getElapsedTime() > 2000) {
-                    CommandScheduler.getInstance().schedule(new TransferSampleCommand(robot.extension, robot.intake, robot.deposit, robot.lift));
+                    CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
+                            new TransferSampleCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
+                            new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET)
+                    ));
                     follower.followPath(scoreSpike1, true);
                     setPathState(5);
                 }
@@ -133,6 +140,7 @@ public class FourSampleAuto extends OpMode {
                     CommandScheduler.getInstance().schedule(new ExtendToIntakeCommand(robot.extension, robot.intake));
                     robot.intake.setIntakeLockAngle(spikePickup2.getHeading());
                     robot.intake.setIntakePivotState(IntakeSubsystem.IntakePivotState.PIVOT_LOCK);
+                    robot.lift.setLiftState(LiftSubsystem.LiftState.TRANSFER);
 
                     setPathState(6);
                 }
@@ -151,7 +159,11 @@ public class FourSampleAuto extends OpMode {
                 break;
             case 8:
                 if (robot.intake.getCurrentColor().equals(Color.YELLOW) || pathTimer.getElapsedTime() > 2000) {
-                    CommandScheduler.getInstance().schedule(new TransferSampleCommand(robot.extension, robot.intake, robot.deposit, robot.lift));
+//                    CommandScheduler.getInstance().schedule(new TransferSampleCommand(robot.extension, robot.intake, robot.deposit, robot.lift));
+                    CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
+                            new TransferSampleCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
+                            new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET)
+                    ));
                     follower.followPath(scoreSpike2, true);
                     setPathState(9);
                 }
@@ -162,6 +174,7 @@ public class FourSampleAuto extends OpMode {
                     CommandScheduler.getInstance().schedule(new ExtendToIntakeCommand(robot.extension, robot.intake));
                     robot.intake.setIntakeLockAngle(spikePickup3.getHeading());
                     robot.intake.setIntakePivotState(IntakeSubsystem.IntakePivotState.PIVOT_LOCK);
+                    robot.lift.setLiftState(LiftSubsystem.LiftState.TRANSFER);
 
                     setPathState(10);
                 }
@@ -174,7 +187,10 @@ public class FourSampleAuto extends OpMode {
                 break;
             case 11:
                 if (robot.intake.getCurrentColor().equals(Color.YELLOW) || pathTimer.getElapsedTime() > 2000) {
-                    CommandScheduler.getInstance().schedule(new TransferSampleCommand(robot.extension, robot.intake, robot.deposit, robot.lift));
+                    CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
+                            new TransferSampleCommand(robot.extension, robot.intake, robot.deposit, robot.lift),
+                            new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET)
+                    ));
                     follower.followPath(scoreSpike3, true);
                     setPathState(12);
                 }
@@ -188,6 +204,7 @@ public class FourSampleAuto extends OpMode {
                 break;
             case 13:
                 if (pathTimer.getElapsedTime() > 1000) {
+                    robot.lift.setLiftState(LiftSubsystem.LiftState.TRANSFER);
                     follower.followPath(park,true);
                     //CommandScheduler.getInstance().schedule(new AutoAscentCommand(robot.extension, robot.intake, robot.lift, robot.deposit));
                     setPathState(13);
