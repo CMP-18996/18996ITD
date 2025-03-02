@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.auto;
 
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.BezierLine;
@@ -18,6 +20,9 @@ import org.firstinspires.ftc.teamcode.common.commands.complexCommands.HoldSample
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.IdleIntakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.complexCommands.PickupSampleCommand;
 import org.firstinspires.ftc.teamcode.common.commands.extension.ExtensionSetPosition_INST;
+import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeArmSetPosition_INST;
+import org.firstinspires.ftc.teamcode.common.commands.intake.IntakePivotSetPosition_INST;
+import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeRollerSetState_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeWristSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetArmPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetGripperPosition_INST;
@@ -157,7 +162,7 @@ public class FiveSpecimenAuto extends OpMode {
                 break;
             case 4:
                 // swing
-                if(!robot.intake.getCurrentColor().equals(Color.NONE) || pathTimer.getElapsedTime() > 1000) {
+                if(!robot.intake.getCurrentColor().equals(Color.NONE) || pathTimer.getElapsedTime() > 750) {
                     CommandScheduler.getInstance().schedule(new HoldSampleCommand(robot.intake));
                     CommandScheduler.getInstance().schedule(new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.INSPECTION));
 
@@ -167,7 +172,7 @@ public class FiveSpecimenAuto extends OpMode {
                 break;
             case 5:
                 // throw !!!
-                if(pathTimer.getElapsedTime() > 1000) {
+                if(pathTimer.getElapsedTime() > 750) {
                     robot.intake.setIntakeRollerState(IntakeSubsystem.IntakeRollerState.REVERSING);
                     CommandScheduler.getInstance().schedule(new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.EXTENDED));
 
@@ -195,7 +200,7 @@ public class FiveSpecimenAuto extends OpMode {
                 break;
             case 8:
                 // swing
-                if(!robot.intake.getCurrentColor().equals(Color.NONE) || pathTimer.getElapsedTime() > 1000) {
+                if(!robot.intake.getCurrentColor().equals(Color.NONE) || pathTimer.getElapsedTime() > 750) {
                     CommandScheduler.getInstance().schedule(new HoldSampleCommand(robot.intake));
                     CommandScheduler.getInstance().schedule(new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.INSPECTION));
 
@@ -263,7 +268,17 @@ public class FiveSpecimenAuto extends OpMode {
                 break;
             case 15:
                 if(follower.getCurrentTValue() > 0.92) {
-                    CommandScheduler.getInstance().schedule(new AutoSpecimenGrab(robot.specimen));
+                    CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
+                            new AutoSpecimenGrab(robot.specimen),
+                            new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.TRANSFER),
+                            new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.TRANSFER),
+                            new IntakePivotSetPosition_INST(robot.intake, IntakeSubsystem.IntakePivotState.PIVOT_TRANSFER),
+
+                            new WaitCommand(500),
+
+                            new IntakeRollerSetState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.DISABLED),
+                            new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.BUCKET)
+                    ));
 
                     setPathState(16);
                 }
@@ -329,7 +344,7 @@ public class FiveSpecimenAuto extends OpMode {
         CommandScheduler.getInstance().reset();
 
         //It doesn't matter which team it is due to symmetry :)
-        robot = new Robot(hardwareMap, Subsystems.INTAKE, Subsystems.DEPOSIT, Subsystems.EXTENSION, Subsystems.SPECIMEN);
+        robot = new Robot(hardwareMap, Subsystems.INTAKE, Subsystems.DEPOSIT, Subsystems.EXTENSION, Subsystems.SPECIMEN, Subsystems.LIFT);
     }
 
     @Override
