@@ -81,6 +81,7 @@ public class FullTeleOp extends CommandOpMode {
 
     private PathChain wallToChamber, chamberToWall;
 
+    @Override
     public void runOpMode() throws InterruptedException {
         waitForStart();
         reset();
@@ -136,7 +137,6 @@ public class FullTeleOp extends CommandOpMode {
 
         // Lift High Bucket
         gamepad_1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
-                /*
                 new ConditionalCommand(
                         new SequentialCommandGroup(
                                 new DepositTrapdoorPosition_INST(robot.deposit, DepositSubsystem.DepositTrapdoorState.CLOSED),
@@ -149,8 +149,6 @@ public class FullTeleOp extends CommandOpMode {
                         ),
                         () -> !robot.lift.getLiftState().equals(LiftSubsystem.LiftState.HIGH_BUCKET)
                 )
-                */
-                () -> robot.lift.setLiftState(LiftSubsystem.LiftState.HIGH_BUCKET)
         );
 
         // MANUAL HP DEPOSIT
@@ -334,11 +332,7 @@ public class FullTeleOp extends CommandOpMode {
 
         // Enable/Disable Color Sensor
         gamepad_2.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
-                new ConditionalCommand(
-                        new IntakeSetColorSensorStatus_INST(robot.intake, IntakeSubsystem.ColorSensorStatus.DISABLED),
-                        new IntakeSetColorSensorStatus_INST(robot.intake, IntakeSubsystem.ColorSensorStatus.ENABLED),
-                        () -> robot.intake.getColorSensorStatus().equals(IntakeSubsystem.ColorSensorStatus.ENABLED)
-                )
+                new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.INSPECTION)
         );
 
         gamepad_2.getGamepadButton(GamepadKeys.Button.X).whenPressed(
@@ -354,6 +348,8 @@ public class FullTeleOp extends CommandOpMode {
         );
 
         pathTimer.resetTimer();
+
+        CommandScheduler.getInstance().cancelAll();
     }
 
     @Override
@@ -373,6 +369,7 @@ public class FullTeleOp extends CommandOpMode {
             previousPower = power;
         }
 
+        /*
         if(!robot.intake.getCurrentColor().equals(Color.NONE) &&
             !robot.intake.getCurrentColor().equals(robot.intake.getPreviousColor())) {
 
@@ -416,6 +413,8 @@ public class FullTeleOp extends CommandOpMode {
             }
         }
 
+         */
+
         telemetry.addData("PATH STATE", pathState);
         telemetry.addData("LIFT STATE", robot.lift.getLiftState());
         telemetry.addData("X VEL", follower.poseUpdater.getVelocity().getXComponent());
@@ -424,6 +423,7 @@ public class FullTeleOp extends CommandOpMode {
 
         telemetry.addData("Lift error", robot.lift.getError());
         telemetry.addData("Lift power", robot.lift.getPower());
+        telemetry.addData("Integral sum", robot.lift.getIntegralSum());
         telemetry.update();
 
         if(pathState != 0) {

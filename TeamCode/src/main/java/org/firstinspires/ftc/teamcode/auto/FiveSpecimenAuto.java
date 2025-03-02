@@ -350,6 +350,10 @@ public class FiveSpecimenAuto extends OpMode {
         //It doesn't matter which team it is due to symmetry :)
         robot = new Robot(hardwareMap, Subsystems.INTAKE, Subsystems.DEPOSIT, Subsystems.EXTENSION, Subsystems.SPECIMEN, Subsystems.LIFT);
 
+        robot.intake.setIntakeWristState(IntakeSubsystem.IntakeWristState.TRANSFER);
+        robot.intake.setIntakeArmState(IntakeSubsystem.IntakeArmState.TRANSFER);
+        robot.intake.setIntakePivotState(IntakeSubsystem.IntakePivotState.PIVOT_TRANSFER);
+
         CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
                 new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.TRANSFER),
                 new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.TRANSFER),

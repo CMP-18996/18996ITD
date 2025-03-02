@@ -131,4 +131,8 @@ public class LiftSubsystem extends SubsystemBase {
     public double getPower() {
         return pwr;
     }
+
+    public double getIntegralSum() {
+        return integralSum;
+    }
 }
