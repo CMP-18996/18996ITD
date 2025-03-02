@@ -279,10 +279,14 @@ public class FullTeleOp extends CommandOpMode {
                 () -> {
                     gamepad1.rumbleBlips(1);
                     robot.extension.setExtensionState(ExtensionSubsystem.ExtensionState.TRANSFER);
+                    robot.intake.setIntakeArmState(IntakeSubsystem.IntakeArmState.EJECT);
+                    robot.intake.setIntakeWristState(IntakeSubsystem.IntakeWristState.EJECT);
+                    robot.intake.setIntakePivotState(IntakeSubsystem.IntakePivotState.PIVOT_0);
+
                     follower.followPath(
                             follower.pathBuilder()
                                     .addPath(new BezierLine(follower.getPose(),
-                                            new Pose(follower.getPose().getX(), follower.getPose().getY() - 20)))
+                                            new Pose(follower.getPose().getX(), follower.getPose().getY() - 15)))
                                     .setConstantHeadingInterpolation(90)
                                     .setZeroPowerAccelerationMultiplier(10)
                                     .build()
@@ -453,7 +457,7 @@ public class FullTeleOp extends CommandOpMode {
                 }
                 break;
             case 4:
-                if (follower.getCurrentTValue() > 0.9) {
+                if (follower.getCurrentTValue() > 0.8) {
                     follower.followPath(
                             follower.pathBuilder()
                                     .addPath(new BezierLine(follower.getPose(), humanPlayerDepositPose))
@@ -466,14 +470,14 @@ public class FullTeleOp extends CommandOpMode {
                 }
                 break;
             case 5:
-                if (follower.getCurrentTValue() > 0.8) {
+                if (follower.getCurrentTValue() > 0.6) {
                     schedule(
                         new SequentialCommandGroup(
                                 new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.EJECT),
                                 new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.EJECT),
                                 new IntakeRollerSetState_INST(robot.intake, IntakeSubsystem.IntakeRollerState.REVERSING),
 
-                                new WaitCommand(500),
+                                new WaitCommand(100),
 
                                 new IdleIntakeCommand(robot.intake),
 

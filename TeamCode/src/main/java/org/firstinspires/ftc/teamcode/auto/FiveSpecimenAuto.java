@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.common.commands.complexCommands.PickupSamp
 import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetArmPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetGripperPosition_INST;
 import org.firstinspires.ftc.teamcode.common.robot.Color;
+import org.firstinspires.ftc.teamcode.common.robot.MatchDataStorage;
 import org.firstinspires.ftc.teamcode.common.robot.Robot;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.ExtensionSubsystem;
 import org.firstinspires.ftc.teamcode.common.robot.subsystems.IntakeSubsystem;
@@ -50,7 +51,7 @@ public class FiveSpecimenAuto extends OpMode {
 
     private final Pose spikePickup2 = new Pose(30.24, 38.80, Math.toRadians(300));
 
-    private final Pose spikePickup3 = new Pose(31.72 + 0.5, 31.29 -1, Math.toRadians(295));
+    private final Pose spikePickup3 = new Pose(31.00, 29.00, Math.toRadians(295));
 
     //private final Pose spikeDrop1 = new Pose(30.59, 46.81, Math.toRadians(240));
 
@@ -293,6 +294,8 @@ public class FiveSpecimenAuto extends OpMode {
         follower.update();
         autonomousPathUpdate();
         CommandScheduler.getInstance().run();
+
+        MatchDataStorage.robotPose = follower.getPose();
 
         // Feedback to Driver Hub
         telemetry.addData("path state", pathState);
