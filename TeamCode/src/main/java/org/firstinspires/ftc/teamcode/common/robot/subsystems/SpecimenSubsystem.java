@@ -26,7 +26,7 @@ public class SpecimenSubsystem extends SubsystemBase {
     public static double WRIST_REST_POS = 0.0;
 
     public static double GRIPPER_OPEN_POS = 0.65;
-    public static double GRIPPER_CLOSED_POS = 0.12;
+    public static double GRIPPER_CLOSED_POS = 0.1;
 
     private double armValue;
     private double wristValue;

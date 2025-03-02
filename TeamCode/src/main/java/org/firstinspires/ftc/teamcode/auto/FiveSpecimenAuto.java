@@ -55,9 +55,9 @@ public class FiveSpecimenAuto extends OpMode {
 
     private final Pose chamberPose = new Pose(38, 66, Math.toRadians(0));
 
-    private final Pose spikePickup1 = new Pose(28, 46.81, Math.toRadians(301));
+    private final Pose spikePickup1 = new Pose(27.5, 46, Math.toRadians(301));
 
-    private final Pose spikePickup2 = new Pose(29.25, 38.5, Math.toRadians(300));
+    private final Pose spikePickup2 = new Pose(28.5, 38, Math.toRadians(300));
 
     private final Pose spikePickup3 = new Pose(31, 30.29, Math.toRadians(295));
 
@@ -138,7 +138,7 @@ public class FiveSpecimenAuto extends OpMode {
                 break;
             case 1:
                 // LET GO !!!!
-                if(follower.getCurrentTValue() > 0.95) {
+                if(follower.getCurrentTValue() > 0.97) {
                     CommandScheduler.getInstance().schedule(new SpecimenSetGripperPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenGripperState.OPEN));
 
                     setPathState(2);
