@@ -136,6 +136,7 @@ public class FullTeleOp extends CommandOpMode {
 
         // Lift High Bucket
         gamepad_1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
+                /*
                 new ConditionalCommand(
                         new SequentialCommandGroup(
                                 new DepositTrapdoorPosition_INST(robot.deposit, DepositSubsystem.DepositTrapdoorState.CLOSED),
@@ -148,6 +149,8 @@ public class FullTeleOp extends CommandOpMode {
                         ),
                         () -> !robot.lift.getLiftState().equals(LiftSubsystem.LiftState.HIGH_BUCKET)
                 )
+                */
+                () -> robot.lift.setLiftState(LiftSubsystem.LiftState.HIGH_BUCKET)
         );
 
         // MANUAL HP DEPOSIT
@@ -351,7 +354,12 @@ public class FullTeleOp extends CommandOpMode {
 
     @Override
     public void run() {
+        telemetry.addData("LIFT STATE !", robot.lift.getLiftState());
+
         CommandScheduler.getInstance().run();
+
+        telemetry.addData("LIFT STATE 2", robot.lift.getLiftState());
+
 
         // Extension Triggers
         double power =  Math.pow(gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) - gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER), 3);

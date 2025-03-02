@@ -53,21 +53,21 @@ public class TransferSampleCommand extends SequentialCommandGroup {
                                 new IntakeWristSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeWristState.TRANSFER),
                                 new IntakePivotSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakePivotState.PIVOT_TRANSFER),
 
-                                new WaitCommand(2000),
+                                new WaitCommand(500),
 
                                 new IntakeRollerSetState_INST(intakeSubsystem, IntakeSubsystem.IntakeRollerState.DISABLED),
                                 new IntakeWristSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakeWristState.BUCKET),
 
-                                new WaitCommand(1000),
+                                new WaitCommand(200),
 
                                 new IntakeClawSetState_INST(intakeSubsystem, IntakeSubsystem.IntakeClawState.OPEN),
                                 new IntakeRollerSetState_INST(intakeSubsystem, IntakeSubsystem.IntakeRollerState.TRANSFER),
 
-                                new WaitCommand(1000),
+                                new WaitCommand(100),
 
                                 new IntakeClawSetState_INST(intakeSubsystem, IntakeSubsystem.IntakeClawState.CLOSED),
 
-                                new WaitCommand(1000),
+                                new WaitCommand(500),
 
                                 new IdleIntakeCommand(intakeSubsystem),
                                 new IntakePivotSetPosition_INST(intakeSubsystem, IntakeSubsystem.IntakePivotState.PIVOT_0),
