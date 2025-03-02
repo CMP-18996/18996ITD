@@ -34,6 +34,9 @@ public class LiftSubsystem extends SubsystemBase {
     private double integralSum = 0;
     private final ElapsedTime timer = new ElapsedTime();
 
+
+    private double pwr = 0;
+
     public enum LiftState {
         TRANSFER,
         LOW_BUCKET,
@@ -120,7 +123,16 @@ public class LiftSubsystem extends SubsystemBase {
                 power = Range.clip(power, -MAX_DOWN_SPEED, MAX_UP_SPEED);
             }
 
+            pwr = power;
             liftMotor.setPower(power);
         }
+    }
+
+    public double getPower() {
+        return pwr;
+    }
+
+    public double getIntegralSum() {
+        return integralSum;
     }
 }

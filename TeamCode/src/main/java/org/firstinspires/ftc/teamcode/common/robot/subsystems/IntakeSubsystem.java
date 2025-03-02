@@ -34,11 +34,11 @@ public class IntakeSubsystem extends SubsystemBase {
     public static double WRIST_MOVING_POS = 0.1;
     public static double WRIST_REST_POS = 0.1;
     public static double WRIST_EJECT_POS = 0.6;
-    public static double WRIST_FLOOR_POS = 0.8;
+    public static double WRIST_FLOOR_POS = 0.4;
     public static double WRIST_TRANSFER_POS = 0.8;
     public static double WRIST_BUCKET_POS = 0.9;
 
-    public static double PIVOT_0_POS = 0.65;
+    public static double PIVOT_0_POS = 0.02;
     public static double PIVOT_90_POS = 0.35;
     public static double PIVOT_TRANSFER_POS = 0.65;
     public static double PIVOT_LOCK_POS = 0.0;
