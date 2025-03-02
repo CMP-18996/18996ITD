@@ -51,15 +51,23 @@ public class FiveSpecimenAuto extends OpMode {
 
     private final Pose startPose = new Pose(7.5625, 55.3125, Math.toRadians(0));
 
-    private final Pose preloadDepositPose = new Pose(39, 72, Math.toRadians(0));
+    private final Pose preloadDepositPose = new Pose(38, 72, Math.toRadians(0));
 
-    private final Pose chamberPose = new Pose(38, 66, Math.toRadians(0));
+    private final Pose chamberPose = new Pose(38, 72, Math.toRadians(0));
 
+    /*
     private final Pose spikePickup1 = new Pose(27.5, 46, Math.toRadians(301));
 
     private final Pose spikePickup2 = new Pose(28.5, 38, Math.toRadians(300));
 
-    private final Pose spikePickup3 = new Pose(31, 30.29, Math.toRadians(295));
+    private final Pose spikePickup3 = new Pose(25.5, 28, 5.25);
+     */
+
+    private final Pose spikePickup1 = new Pose(28.75, 49, 5.23);
+
+    private final Pose spikePickup2 = new Pose(32.4, 41, 5.08);
+
+    private final Pose spikePickup3 = new Pose(34.7, 30.5, 5.0);
 
     //private final Pose spikeDrop1 = new Pose(30.59, 46.81, Math.toRadians(240));
 
@@ -67,7 +75,7 @@ public class FiveSpecimenAuto extends OpMode {
 
     //private final Pose spikeDrop3 = new Pose(31.7, 31.2, Math.toRadians(225));
 
-    private final Pose wallPose = new Pose(7.5, 28, 0);
+    private final Pose wallPose = new Pose(8, 23, Math.toRadians(0));
 
     private final Pose parkPose = new Pose(15, 20, Math.toRadians(45));
 
@@ -104,7 +112,7 @@ public class FiveSpecimenAuto extends OpMode {
         spike3toSpecimen = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(spikePickup3), new Point(wallPose)))
                 .setLinearHeadingInterpolation(spikePickup3.getHeading(), wallPose.getHeading())
-                .setZeroPowerAccelerationMultiplier(1)
+                .setZeroPowerAccelerationMultiplier(3)
                 .build();
 
         wallToChamber = follower.pathBuilder()
@@ -138,7 +146,7 @@ public class FiveSpecimenAuto extends OpMode {
                 break;
             case 1:
                 // LET GO !!!!
-                if(follower.getCurrentTValue() > 0.97) {
+                if(follower.getCurrentTValue() > 0.95) {
                     CommandScheduler.getInstance().schedule(new SpecimenSetGripperPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenGripperState.OPEN));
 
                     setPathState(2);
@@ -166,7 +174,7 @@ public class FiveSpecimenAuto extends OpMode {
                 break;
             case 4:
                 // swing
-                if(!robot.intake.getCurrentColor().equals(Color.NONE) || pathTimer.getElapsedTime() > 1000) {
+                if(!robot.intake.getCurrentColor().equals(Color.NONE) || pathTimer.getElapsedTime() > 400) {
                     CommandScheduler.getInstance().schedule(new HoldSampleCommand(robot.intake));
                     CommandScheduler.getInstance().schedule(new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.INSPECTION));
 
@@ -204,7 +212,7 @@ public class FiveSpecimenAuto extends OpMode {
                 break;
             case 8:
                 // swing
-                if(!robot.intake.getCurrentColor().equals(Color.NONE) || pathTimer.getElapsedTime() > 1000) {
+                if(!robot.intake.getCurrentColor().equals(Color.NONE) || pathTimer.getElapsedTime() > 400) {
                     CommandScheduler.getInstance().schedule(new HoldSampleCommand(robot.intake));
                     CommandScheduler.getInstance().schedule(new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.INSPECTION));
 
@@ -227,7 +235,8 @@ public class FiveSpecimenAuto extends OpMode {
                 // RETRACT AND MOVE TO SPIKE 3
                 if(pathTimer.getElapsedTime() > 300) {
                     CommandScheduler.getInstance().schedule(new IdleIntakeCommand(robot.intake));
-                    robot.intake.setIntakeLockAngle(spikePickup3.getHeading());
+                    robot.intake.setIntakeLockAngle(Math.toRadians(270));
+
                     robot.intake.setIntakePivotState(IntakeSubsystem.IntakePivotState.PIVOT_LOCK);
 
                     follower.followPath(pickupSpike3,true);
@@ -253,7 +262,7 @@ public class FiveSpecimenAuto extends OpMode {
                 break;
             case 13:
                 // throw !!!
-                if(pathTimer.getElapsedTime() > 1500) {
+                if(pathTimer.getElapsedTime() > 1000) {
                     robot.intake.setIntakeRollerState(IntakeSubsystem.IntakeRollerState.REVERSING);
                     CommandScheduler.getInstance().schedule(new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.EXTENDED));
 
@@ -271,7 +280,7 @@ public class FiveSpecimenAuto extends OpMode {
                 }
                 break;
             case 15:
-                if(follower.getCurrentTValue() > 0.92) {
+                if(follower.getCurrentTValue() > 0.95) {
                     CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
                             new AutoSpecimenGrab(robot.specimen),
                             new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.TRANSFER),
@@ -289,7 +298,7 @@ public class FiveSpecimenAuto extends OpMode {
                 break;
 
             case 16:
-                if(pathTimer.getElapsedTime() > 300) {
+                if(pathTimer.getElapsedTime() > 400) {
 
                     follower.followPath(wallToChamber);
                     setPathState(17);

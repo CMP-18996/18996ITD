@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 @Config
 public class SpecimenSubsystem extends SubsystemBase {
     public static double ARM_CHAMBER_POS = 0.686;
-    public static double ARM_WALL_POS = 0.3225;
+    public static double ARM_WALL_POS = 0.3525;
     public static double ARM_REST_POS = 0.2625;
 
     public static double WRIST_CHAMBER_POS = 1.0;

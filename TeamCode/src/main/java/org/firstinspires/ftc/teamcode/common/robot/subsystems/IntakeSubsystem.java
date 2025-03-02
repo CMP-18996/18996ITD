@@ -33,7 +33,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public static double WRIST_PICK_UP_POS = 0.15;
     public static double WRIST_MOVING_POS = 0.1;
     public static double WRIST_REST_POS = 0.1;
-    public static double WRIST_EJECT_POS = 0.6;
+    public static double WRIST_EJECT_POS = 0.4;
     public static double WRIST_FLOOR_POS = 0.4;
     public static double WRIST_TRANSFER_POS = 0.8;
     public static double WRIST_BUCKET_POS = 0.9;
@@ -46,7 +46,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public static double ROLLER_ACTIVE = 1.0;
     public static double ROLLER_HOLD = 0.1;
     public static double ROLLER_DISABLED = 0.0;
-    public static double ROLLER_REVERSING = -1.0;
+    public static double ROLLER_REVERSING = -0.6;
     public static double ROLLER_TRANSFER = -0.1;
 
     public static double CLAW_OPEN_POS = 0.35;
@@ -342,6 +342,7 @@ public class IntakeSubsystem extends SubsystemBase {
         }
     }
 
+    /*
     @Override
     public void periodic() {
         if(elapsedTime.milliseconds() > colorUpdatePeriod) {
@@ -349,6 +350,8 @@ public class IntakeSubsystem extends SubsystemBase {
             updateCurrentColor();
         }
     }
+
+     */
 
     // move these to another class
     public static double colorDistance(Position p1, Position p2) {

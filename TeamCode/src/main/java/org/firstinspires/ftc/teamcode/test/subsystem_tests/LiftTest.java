@@ -24,7 +24,7 @@ public class LiftTest extends CommandOpMode {
     @Override
     public void initialize() {
         CommandScheduler.getInstance().reset();
-        robot = new Robot(hardwareMap, subsystems);
+        robot = new Robot(hardwareMap, Subsystems.ALL);
         gamepad = new GamepadEx(gamepad1);
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(

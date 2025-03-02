@@ -37,6 +37,7 @@ import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeRollerSetStat
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeSetColorSensorStatus_INST;
 import org.firstinspires.ftc.teamcode.common.commands.intake.IntakeWristSetPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.lift.LiftSetPosition_INST;
+import org.firstinspires.ftc.teamcode.common.commands.lift.ZeroLift;
 import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetArmPosition_INST;
 import org.firstinspires.ftc.teamcode.common.commands.specimen.SpecimenSetGripperPosition_INST;
 import org.firstinspires.ftc.teamcode.common.robot.Color;
@@ -66,9 +67,9 @@ public class FullTeleOp extends CommandOpMode {
     private GamepadEx gamepad_1;
     private GamepadEx gamepad_2;
 
-    private final Pose wallPose = new Pose(7.5, 28, Math.toRadians(0));
+    private final Pose wallPose = new Pose(8, 25, Math.toRadians(0));
 
-    private final Pose chamberPose = new Pose(38, 68, Math.toRadians(0));
+    private final Pose chamberPose = new Pose(38, 74, Math.toRadians(0));
 
     private final Pose specControl1 = new Pose(23.21, 73.87);
     private final Pose specControl2 = new Pose(24.46, 42.18);
@@ -99,12 +100,6 @@ public class FullTeleOp extends CommandOpMode {
     public void initialize() {
         robot = new Robot(hardwareMap, Subsystems.ALL);
 
-        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
-
-        for (LynxModule hub : allHubs) {
-            hub.setBulkCachingMode(LynxModule.BulkCachingMode.OFF);
-        }
-
         robot.specimen.setSpecimenArmState(SpecimenSubsystem.SpecimenArmState.WALL);
         CommandScheduler.getInstance().schedule(new IdleIntakeCommand(robot.intake));
 
@@ -117,7 +112,7 @@ public class FullTeleOp extends CommandOpMode {
         follower.startTeleopDrive();
 
         wallToChamber = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(wallPose), new Point(specControl1), new Point(specControl2), new Point(chamberPose)))
+                .addPath(new BezierLine(new Point(wallPose), new Point(chamberPose)))
                 .setConstantHeadingInterpolation(chamberPose.getHeading())
                 .setZeroPowerAccelerationMultiplier(3)
                 .build();
@@ -140,7 +135,7 @@ public class FullTeleOp extends CommandOpMode {
                 new ConditionalCommand(
                         new SequentialCommandGroup(
                                 new DepositTrapdoorPosition_INST(robot.deposit, DepositSubsystem.DepositTrapdoorState.CLOSED),
-                                //new ZeroLift(robot.lift),
+                                new ZeroLift(robot.lift),
                                 new LiftSetPosition_INST(robot.lift, LiftSubsystem.LiftState.HIGH_BUCKET)
                         ),
                         new ScheduleCommand(
@@ -192,7 +187,7 @@ public class FullTeleOp extends CommandOpMode {
         // AUTO SPECIMEN CYCLE
         gamepad_1.getGamepadButton(GamepadKeys.Button.A).whenPressed(
                 () -> {
-                    follower.setPose(new Pose(7.5, 28, 0));
+                    follower.setPose(wallPose);
                     follower.followPath(chamberToWall);
                     setPathState(1);
                 }
@@ -207,9 +202,17 @@ public class FullTeleOp extends CommandOpMode {
         );
 
         gamepad_1.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
-                () -> {
-                    // compact for hang?
-                }
+                new SequentialCommandGroup(
+                        new IntakePivotSetPosition_INST(robot.intake, IntakeSubsystem.IntakePivotState.PIVOT_0),
+                        new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.TRANSFER),
+                        new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.TRANSFER),
+                        new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.TRANSFER),
+
+                        new WaitCommand(1000),
+                        new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.CUSTOM)
+
+
+                )
         );
 
         // Specimen Claw
@@ -294,6 +297,7 @@ public class FullTeleOp extends CommandOpMode {
         );
 
         // FLOOR GRAB
+        /*
         gamepad_1.getGamepadButton(GamepadKeys.Button.RIGHT_STICK_BUTTON).whenPressed(
                 new ScheduleCommand(
                         new IntakePivotSetPosition_INST(robot.intake, IntakeSubsystem.IntakePivotState.PIVOT_0),
@@ -308,6 +312,16 @@ public class FullTeleOp extends CommandOpMode {
                     }
                 }
         );
+
+         */
+        gamepad_1.getGamepadButton(GamepadKeys.Button.RIGHT_STICK_BUTTON).whenPressed(
+                new SequentialCommandGroup(
+                        new IntakeArmSetPosition_INST(robot.intake, IntakeSubsystem.IntakeArmState.EJECT),
+                        new IntakeWristSetPosition_INST(robot.intake, IntakeSubsystem.IntakeWristState.EJECT),
+                        new IntakePivotSetPosition_INST(robot.intake, IntakeSubsystem.IntakePivotState.PIVOT_0)
+                )
+        );
+
 
         //  SECOND DRIVER
         //  SECOND DRIVER
@@ -328,11 +342,6 @@ public class FullTeleOp extends CommandOpMode {
         // Specimen Arm to Wall
         gamepad_2.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
                 new SpecimenSetArmPosition_INST(robot.specimen, SpecimenSubsystem.SpecimenArmState.WALL)
-        );
-
-        // Enable/Disable Color Sensor
-        gamepad_2.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
-                new ExtensionSetPosition_INST(robot.extension, ExtensionSubsystem.ExtensionState.INSPECTION)
         );
 
         gamepad_2.getGamepadButton(GamepadKeys.Button.X).whenPressed(
@@ -438,14 +447,14 @@ public class FullTeleOp extends CommandOpMode {
     private void updateAutoCycle() {
         switch(pathState) {
             case 1:
-                if (follower.getCurrentTValue() > 0.9) {
+                if (follower.getCurrentTValue() > 0.95) {
                     CommandScheduler.getInstance().schedule(new AutoSpecimenGrab(robot.specimen));
 
                     setPathState(2);
                 }
                 break;
             case 2:
-                if (pathTimer.getElapsedTime() > 300) {
+                if (pathTimer.getElapsedTime() > 400) {
 
                     follower.followPath(wallToChamber);
                     setPathState(3);

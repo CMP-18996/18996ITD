@@ -18,6 +18,7 @@ public class LiftSubsystem extends SubsystemBase {
     public static double Kd = 0.0;
     public static double Kf = 0.4;
     public static int INTEGRAL_ENABLE_POINT = 20;
+    boolean lifting = false;
 
     public static int TRANSFER_POS = 0;
     public static int LOW_BASKET_POS = 420;
@@ -69,6 +70,7 @@ public class LiftSubsystem extends SubsystemBase {
         liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         this.setLiftState(LiftState.TRANSFER);
+        liftMotor.setPower(0);
     }
 
     public void setLiftState(LiftState liftState) {
@@ -93,6 +95,20 @@ public class LiftSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        if (Math.abs(getError()) < 20 && !lifting) {
+            lifting = true;
+            if (getError() > 0) {
+                liftMotor.setPower(0.9);
+            }
+            else {
+                liftMotor.setPower(-0.6);
+            }
+        }
+        else if (lifting) {
+            liftMotor.setPower(0);
+            lifting = false;
+        }
+        /*
         if(liftState.equals(LiftState.ZEROING)) {
             liftMotor.setPower(-0.3);
         }
@@ -126,6 +142,8 @@ public class LiftSubsystem extends SubsystemBase {
             pwr = power;
             liftMotor.setPower(power);
         }
+
+         */
     }
 
     public double getPower() {

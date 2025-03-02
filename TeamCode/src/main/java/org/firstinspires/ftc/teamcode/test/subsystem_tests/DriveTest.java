@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.test.subsystem_tests;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.util.Constants;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -11,6 +12,7 @@ import org.firstinspires.ftc.teamcode.common.robot.HardwareMapNames;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
+@Disabled
 @TeleOp(name = "Drive Test")
 public class DriveTest extends LinearOpMode {
 
